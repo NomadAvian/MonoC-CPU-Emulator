@@ -2,34 +2,40 @@
 #define MEMORY_H_INCLUDE
 
 #include <string.h>
+#include <vector>
 
 #include "../common.h"
 
+// Memory accesses wrap around the address space as per the specs
+// The wrapping is implemented via bit operations so the size_
+// should always be a power of 2
 class Memory {
 public:
-    Memory(size_t size = 128 * 1024 * 1024) :
-        size_(size), data_(new Byte[size]()) {}
+    Memory(
+		size_t size = 128 * 1024 * 1024,
+		bool read_only = false) :
+        size_(size),
+		read_only(read_only),
+		data_(std::vector<Byte>(size)) {}
 
-    bool CheckBound(Word addr, size_t sz) const;
+    Word WrapAddr(Word addr) const;
 
-    Byte ReadByte(Word addr)  const;
-    Half ReadHalf(Word addr)  const;
-	Word ReadWord(Word addr)  const;
+    Byte ReadByte(Word addr) const;
+    Half ReadHalf(Word addr) const;
+	Word ReadWord(Word addr) const;
 
 	void WriteByte(Word addr, Byte value);
 	void WriteHalf(Word addr, Half value);
 	void WriteWord(Word addr, Word value);
 
-    ~Memory() {
-        delete [] data_;
-    }
+	size_t size() const { return size_; }
 
-    // disable copying memory instances
-    Memory(const Memory&) = delete;
-    Memory& operator=(const Memory&) = delete;
+    ~Memory() {}
+
 private:
-    size_t size_;
-    Byte*  data_;
+	size_t size_;
+	bool   read_only;
+	std::vector<Byte> data_;
 };
 
 #endif // !MEMORY_H_INCLUDE

@@ -3,7 +3,38 @@
 
 #include "../common.h"
 #include "memory.h"
-#include "../isa/isa.h"
+
+namespace isa {
+
+enum class Opcode {
+	// register immediate
+	ADDI, SLTI, SLTIU, ANDI,
+	ORI, XORI, SLLI, SRLI,
+	SRAI, LUI, AUIPC,
+
+	// register to register
+	ADD, SUB, SLT, SLTU, AND,
+	OR, XOR, SLL, SRL, SRA,
+
+	// control transfer
+	JAL, JALR, BEQ, BNE,
+	BLT, BGE, BLTU, BGEU,
+
+	// load/store
+	LB, LH, LW, LBU, LHU,
+	SB, SH, SW,
+
+	// env
+	FENCE, ECALL, EBREAK,
+
+	// M extension
+	MUL, MULH, MULHSU, MULHU,
+	DIV, DIVU, REM, REMU,
+
+	UNKNOWN,
+};
+
+} // Opcode
 
 struct Reg {
     Word value;
@@ -20,12 +51,13 @@ public:
         pc.value = 0;
     }
 
+	Word fetch();
+
 private:
     Reg        x[32];
     Reg        pc;
     Memory     ram;
     Memory     rom;
-    ISA        isa;
 };
 
 #endif // !CPU_H_INCLUDE
