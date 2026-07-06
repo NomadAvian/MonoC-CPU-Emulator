@@ -1,7 +1,7 @@
 #ifndef ISA_H_INCLUDE
 #define ISA_H_INCLUDE
 
-class ISA() {
+class ISA {
 public:
 
 private:

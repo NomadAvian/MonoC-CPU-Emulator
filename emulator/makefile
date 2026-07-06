@@ -1,19 +1,20 @@
 .PHONY: all run clean
 
-SRC := $(wildcard src/*.cpp)
+SRC := $(shell find src -name '*.cpp')
 
 ifeq ($(OS),Windows_NT)
-	EXE = .exe
+    EXE = .exe
 else
-	EXE = 
+    EXE =
 endif
 
-TARGET = ./bin/main(EXE)
+TARGET = ./bin/main$(EXE)
 
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	g++ $(SRC) -o $(TARGET)
+	mkdir -p bin
+	g++ -std=c++20 -Wall -Wextra $(SRC) -o $(TARGET)
 
 run: $(TARGET)
 	./$(TARGET)
