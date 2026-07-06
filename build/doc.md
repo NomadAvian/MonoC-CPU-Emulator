@@ -1,9 +1,9 @@
-### Compile (macOs)
+### Compile
  ```cpp
- g++ main.cpp \
+ g++ ../backend/main.cpp \
     -std=c++17 \
     -I/opt/homebrew/include \
     -pthread \
-    -o server
+    -o crow_server
 ```
 
