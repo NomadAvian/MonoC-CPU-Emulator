@@ -1,4 +1,4 @@
-#include "../core/alu.h"
+#include "../../emulator/src/core/alu.h"
 
 #include <charconv>
 #include <cstdint>
@@ -11,7 +11,7 @@
 #include <vector>
 
 
-const std::string kTestDataPath = "./src/data/alu_inputs.csv";
+const std::string kTestDataPath = "./data/alu_inputs.csv";
 
 struct TestCase {
     std::string operation;

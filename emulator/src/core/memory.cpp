@@ -30,12 +30,12 @@ Word Memory::ReadWord(Word addr) const {
 }
 
 void Memory::WriteByte(Word addr, Byte value) {
-	if (read_only) return;
+	if (read_only_) return;
 	data_[WrapAddr(addr)] = value;
 }
 
 void Memory::WriteHalf(Word addr, Half value) {
-	if (read_only) return;
+	if (read_only_) return;
 	Byte first  = static_cast<Byte>((value) & 0xFF);
 	Byte second = static_cast<Byte>((value >> 8) & 0xFF);
 
@@ -44,7 +44,7 @@ void Memory::WriteHalf(Word addr, Half value) {
 }
 
 void Memory::WriteWord(Word addr, Word value) {
-	if (read_only) return;
+	if (read_only_) return;
 	Byte b0 = static_cast<Byte>((value)       & 0xFF);
 	Byte b1 = static_cast<Byte>((value >> 8)  & 0xFF);
 	Byte b2 = static_cast<Byte>((value >> 16) & 0xFF);

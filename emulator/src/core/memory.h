@@ -1,5 +1,5 @@
-#ifndef MEMORY_H_INCLUDE
-#define MEMORY_H_INCLUDE
+#ifndef MEMORY_MEMORY_H_
+#define MEMORY_MEMORY_H_
 
 #include <string.h>
 #include <vector>
@@ -11,14 +11,11 @@
 // should always be a power of 2
 class Memory {
 public:
-    Memory(
-		size_t size = 128 * 1024 * 1024,
-		bool read_only = false) :
-        size_(size),
-		read_only(read_only),
-		data_(std::vector<Byte>(size)) {}
-
-    Word WrapAddr(Word addr) const;
+    Memory(size_t size = 128 * 1024 * 1024,
+		   bool read_only = false)
+        : size_(size),
+		  read_only_(read_only),
+		  data_(size) {}
 
     Byte ReadByte(Word addr) const;
     Half ReadHalf(Word addr) const;
@@ -30,12 +27,14 @@ public:
 
 	size_t size() const { return size_; }
 
-    ~Memory() {}
+    ~Memory() = default;
 
 private:
 	size_t size_;
-	bool   read_only;
+	bool   read_only_;
 	std::vector<Byte> data_;
+
+    Word WrapAddr(Word addr) const;
 };
 
-#endif // !MEMORY_H_INCLUDE
+#endif // MEMORY_MEMORY_H_
