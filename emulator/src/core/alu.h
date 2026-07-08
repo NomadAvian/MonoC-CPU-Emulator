@@ -37,12 +37,15 @@ enum class AluOp {
 };
 
 struct AluOutput {
-    uint32_t result;
-    bool is_neg;
-    bool is_zero;
-    bool carry;
+    uint32_t result = 0;
+    bool is_neg     = false;
+    bool is_zero    = false;
+    bool carry      = false;
 };
 
+// the ALU does not need to be a class as it does not have a state
+// but it is kept as one to conceptually represent it as a
+// component of the cpu
 class Alu {
 public:
     Alu() = default;
