@@ -1,7 +1,5 @@
 #include "cpu.h"
 
-#include <iostream>
-
 namespace cpu {
 
     int32_t CPU::SignExtend(uint32_t value, uint32_t bits) const {
