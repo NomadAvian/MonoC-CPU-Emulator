@@ -18,7 +18,7 @@ greeting_tool = types.Tool(function_declarations=[
 
 config = types.GenerateContentConfig(tools=[greeting_tool])
 
-USER_QUERY = "What does my greeting say?"
+USER_QUERY = "how to greeet??"
 
 # model decides to call the tool
 response = client.models.generate_content(

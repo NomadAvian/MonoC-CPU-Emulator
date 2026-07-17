@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# crow-gemini-mcp test — starts crow server, runs gemini orchestrator, then kills server
+# crow-ollama-mcp test — starts crow server, runs ollama orchestrator, then kills server
 set -e
-set -a; source .env; set +a  # auto-export all vars from .env to subprocesses
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$SCRIPT_DIR/../.."
@@ -14,7 +13,6 @@ echo "[test] Cleaning old server..."
 pkill -f "crow_server" 2>/dev/null || true
 kill "$(lsof -ti :6969)" 2>/dev/null || true
 
-
 echo "[test] Building Crow server..."
 g++ "$ROOT/backend/main.cpp" \
     -std=c++20 \
@@ -25,7 +23,7 @@ g++ "$ROOT/backend/main.cpp" \
 "$BUILD_DIR/crow_server" &
 SERVER_PID=$!
 
-trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT #if something breaks kill this instance
+trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
 
 echo "[test] Crow started (PID $SERVER_PID)"
 for i in $(seq 1 20); do
@@ -37,4 +35,4 @@ done
 
 echo "[test] Crow says: $RESULT"
 cd "$AI_DIR"
-uv run python src/monoc_mcp/gemini.py
+uv run python src/monoc_mcp/ollama_orchestrator.py
