@@ -45,6 +45,14 @@ struct Reg {
     Word value;
 };
 
+struct DecodedInstruction {
+    isa::Opcode opcode;
+    Word rs1;
+    Word rs2;
+    Word rd;
+    int32_t imm;
+};
+
 class CPU {
 public:
     CPU() : ram_(), rom_() {
@@ -60,16 +68,20 @@ public:
 
 	Word Fetch() const;
 
-    void Decode     (Word instruction);
-    void DecodeRType(Word instruction);
-    void DecodeIType(Word instruction);
-    void DecodeSType(Word instruction);
-    void DecodeUType(Word instruction);
+    DecodedInstruction Decode     (Word instruction);
+    DecodedInstruction DecodeRType(Word instruction);
+    DecodedInstruction DecodeIType(Word instruction);
+    DecodedInstruction DecodeSType(Word instruction);
+    DecodedInstruction DecodeUType(Word instruction);
+    DecodedInstruction DecodeJType(Word instruction);
+    DecodedInstruction DecodeBType(Word instruction);
 
-    void ExecuteRType();
-    void ExecuteIType();
-    void ExecuteSType();
-    void ExecuteUType();
+    void ExecuteRType(DecodedInstruction instr);
+    void ExecuteIType(DecodedInstruction instr);
+    void ExecuteSType(DecodedInstruction instr);
+    void ExecuteUType(DecodedInstruction instr);
+    void ExecuteJType(DecodedInstruction instr);
+    void ExecuteBType(DecodedInstruction instr);
 
     void WriteReg(size_t index, Word value);
     Word ReadReg (size_t index) const;
@@ -80,6 +92,9 @@ private:
     Memory     ram_;
     Memory     rom_;
     alu::Alu   alu_;
+    
+    int32_t SignExtend(uint32_t value, uint32_t bits) const;
+    
 };
 
 } // namespace cpu
