@@ -106,7 +106,7 @@ int main() {
    for (const auto& tc : test_cases) {
     Word instr = ParseHex(tc.instruction_hex);
     auto decoded = cpu.Decode(instr);
-    bool pass = (static_cast<int>(decoded.opcode) == tc.opcode) &&
+    bool pass = (static_cast<uint32_t>(decoded.opcode) == tc.opcode) &&
                 (decoded.rs1 == tc.rs1) &&
                 (decoded.rs2 == tc.rs2) &&
                 (decoded.rd  == tc.rd)  &&

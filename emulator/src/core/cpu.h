@@ -55,16 +55,17 @@ struct DecodedInstruction {
 
 class CPU {
 public:
-    CPU() : ram_(), rom_() {
+    CPU(std::string filename) : ram_(), rom_() {
         // initialize registers
         for (int i = 0; i < 32; i++) {
             x[i].value = 0;
         }
         // initialize program counter
         pc_.value = 0;
+        LoadROM(filename);
     }
 
-    void LoadROM(std::string filename);
+    void LoadROM(const std::string& filename);
 
 	Word Fetch() const {
         return rom_.ReadWord(pc_.value);

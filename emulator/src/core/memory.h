@@ -1,8 +1,10 @@
 #ifndef MEMORY_MEMORY_H_
 #define MEMORY_MEMORY_H_
 
-#include <string.h>
+#include <string>
 #include <vector>
+#include <bit>
+#include <cassert>
 
 #include "../common.h"
 
@@ -13,9 +15,12 @@ class Memory {
 public:
     Memory(size_t size = 128 * 1024 * 1024,
 		   bool read_only = false)
-        : size_(size),
-		  read_only_(read_only),
-		  data_(size) {}
+        : read_only_(read_only),
+		  data_(size) {
+        assert(std::__has_single_bit(size));
+    }
+
+    void LoadFile(const std::string& filename);
 
     Byte ReadByte(Word addr) const;
     Half ReadHalf(Word addr) const;
@@ -25,12 +30,11 @@ public:
 	void WriteHalf(Word addr, Half value);
 	void WriteWord(Word addr, Word value);
 
-	size_t size() const { return size_; }
+	size_t size() const { return data_.size(); }
 
     ~Memory() = default;
 
 private:
-	size_t size_;
 	bool   read_only_;
 	std::vector<Byte> data_;
 
