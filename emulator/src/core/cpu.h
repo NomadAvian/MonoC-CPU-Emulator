@@ -66,7 +66,9 @@ public:
 
     void LoadROM(std::string filename);
 
-	Word Fetch() const;
+	Word Fetch() const {
+        return rom_.ReadWord(pc_.value);
+    }
 
     DecodedInstruction Decode     (Word instruction);
     DecodedInstruction DecodeRType(Word instruction);
@@ -92,9 +94,9 @@ private:
     Memory     ram_;
     Memory     rom_;
     alu::Alu   alu_;
-    
+
     int32_t SignExtend(uint32_t value, uint32_t bits) const;
-    
+
 };
 
 } // namespace cpu
