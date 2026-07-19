@@ -331,9 +331,18 @@ namespace cpu {
         return instr;
     }
 
-}
+    void CPU::WriteReg(size_t index, Word value) {
+        if (index < 1 || index > 31)
+            return;
+        x[index].value = value;
+    }
 
+    Word CPU::ReadReg(size_t index) const {
+        if (index < 0 || index > 31)
+            return 0;
+        return x[index].value;
+    }
 
-
+} // namespace cpu
 
 

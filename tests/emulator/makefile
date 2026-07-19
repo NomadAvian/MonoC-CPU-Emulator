@@ -15,5 +15,8 @@ TARGET = ./test$(EXE)
 alu:
 	$(CXX) $(CXXFLAGS) ./alu_test.cpp $(ROOT_DIR)/core/alu.cpp -o $(TARGET) && $(TARGET)
 
+memory:
+	$(CXX) $(CXXFLAGS) ./memory_test.cpp $(ROOT_DIR)/core/memory.cpp -o $(TARGET) && $(TARGET)
+
 clean:
 	rm -f $(TARGET)
