@@ -87,7 +87,7 @@ void ReadCsv(
 
 int main() {
     std::vector<TestCase> test_cases;
-    cpu::CPU cpu;
+    cpu::CPU cpu("");
     try {
         ReadCsv(kTestDataPath, test_cases);
     } catch (const std::exception& e) {

@@ -11,6 +11,14 @@ int32_t CPU::SignExtend(uint32_t value, uint32_t bits) const {
     return static_cast<int32_t>(value << shift) >> shift;
 }
 
+Word CPU::ExtractRs1(Word instruction){
+    return (instruction >> 15) & 0x1F;
+}
+
+Word CPU::ExtractRs2(Word instruction){
+    return (instruction >> 20) & 0x1F;
+}
+
 DecodedInstruction CPU::Decode(Word instruction) {
     // extract the opcode from the instruction
     uint32_t opcode = instruction & 0x7F;
@@ -48,8 +56,8 @@ DecodedInstruction CPU::DecodeRType(Word instruction) {
     // the opcode (7 bits) [6:0] are not needed as we already know it's R-type
     instr.rd = (instruction >> 7) & 0x1F; // extract rd (5 bits) [11:7]
     uint32_t funct3 = (instruction >> 12) & 0x07; // extract funct3 (3 bits) [14:12]
-    instr.rs1 = (instruction >> 15) & 0x1F; // extract rs1 (5 bits) [19:15]
-    instr.rs2 = (instruction >> 20) & 0x1F; // extract rs2 (5 bits) [24:20]
+    instr.rs1 = ExtractRs1(instruction); // extract rs1 (5 bits) [19:15]
+    instr.rs2 = ExtractRs2(instruction); // extract rs2 (5 bits) [24:20]
     uint32_t funct7 = (instruction >> 25) & 0x7F; // extract funct7 (7 bits) [31:25]
 
     instr.imm = 0; // R-type instructions do not have an immediate value
@@ -138,7 +146,7 @@ DecodedInstruction CPU::DecodeIType(Word instruction) {
     uint32_t opcode = (instruction & 0x7F); // extract opcode (7 bits) [6:0]
     instr.rd = (instruction >> 7) & 0x1F; // extract rd (5 bits) [11:7]
     uint32_t funct3 = (instruction >> 12) & 0x07; // extract funct3 (3 bits) [14:12]
-    instr.rs1 = (instruction >> 15) & 0x1F; // extract rs1 (5 bits) [19:15]
+    instr.rs1 = ExtractRs1(instruction); // extract rs1 (5 bits) [19:15]
     instr.rs2 = 0; // I-type instructions do not have rs2
     uint32_t imm = (instruction >> 20) & 0xFFF; // extract immediate (12 bits) [31:20]
 
@@ -232,8 +240,8 @@ DecodedInstruction CPU::DecodeSType(Word instruction) {
     // the opcode (7 bits) [6:0] are not needed as we already know it's S-type
     uint32_t imm4_0 = (instruction >> 7) & 0x1F; // extract imm[4:0] (5 bits) [11:7]
     uint32_t funct3 = (instruction >> 12) & 0x07; // extract funct3 (3 bits) [14:12]
-    instr.rs1 = (instruction >> 15) & 0x1F; // extract rs1 (5 bits) [19:15]
-    instr.rs2 = (instruction >> 20) & 0x1F; // extract rs2 (5 bits) [24:20]
+    instr.rs1 = ExtractRs1(instruction); // extract rs1 (5 bits) [19:15]
+    instr.rs2 = ExtractRs2(instruction); // extract rs2 (5 bits) [24:20]
     instr.rd = 0; // S-type instructions do not have a destination register
     uint32_t imm11_5 = (instruction >> 25) & 0x7F; // extract imm[11:5] (7 bits) [31:25]
 
@@ -282,8 +290,8 @@ DecodedInstruction CPU::DecodeBType(Word instruction) {
     uint32_t imm11 = (instruction >> 7) & 0x1; // extract imm[11] (1 bit) [7]
     uint32_t imm4_1 = (instruction >> 8) & 0xF; // extract imm[4:1] (4 bits) [11:8]
     uint32_t funct3 = (instruction >> 12) & 0x07; // extract funct3 (3 bits) [14:12]
-    instr.rs1 = (instruction >> 15) & 0x1F; // extract rs1 (5 bits) [19:15]
-    instr.rs2 = (instruction >> 20) & 0x1F; // extract rs2 (5 bits) [24:20]
+    instr.rs1 = ExtractRs1(instruction); // extract rs1 (5 bits) [19:15]
+    instr.rs2 = ExtractRs2(instruction); // extract rs2 (5 bits) [24:20]
     instr.rd = 0; // B-type instructions do not have a destination register
     uint32_t imm10_5 = (instruction >> 25) & 0x3F; // extract imm[10:5] (6 bits) [30:25]
     uint32_t imm12 = (instruction >> 31) & 0x1; // extract imm[12] (1 bit) [31]
