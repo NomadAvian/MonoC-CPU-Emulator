@@ -55,7 +55,7 @@ struct DecodedInstruction {
 
 class CPU {
 public:
-    CPU(std::string filename) : ram_(), rom_() {
+    CPU(std::string filename = "") : ram_(), rom_() {
         // initialize registers
         for (int i = 0; i < 32; i++) {
             x[i].value = 0;
@@ -97,6 +97,9 @@ private:
     alu::Alu   alu_;
 
     int32_t SignExtend(uint32_t value, uint32_t bits) const;
+
+    Word ExtractRs1(Word instruction);
+    Word ExtractRs2(Word instruction);
 
 };
 
