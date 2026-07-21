@@ -1,10 +1,19 @@
-# httpx wrapper for crow's api(s)
+# crow apis wrapper
+# mcp server calls these functions directly from mcp_server.py
 
 import httpx
 
 CROW_BASE = "http://localhost:6969"
 
 def get_greeting() -> str:
-    """Fetch the greeting from the Crow server"""
-    return httpx.get(CROW_BASE, timeout=5).text
+    """greeting test from crow server"""
+    return httpx.get(CROW_BASE + "/ai/test", timeout=5).text
 
+def get_registers() -> dict:
+    return httpx.get(f"{CROW_BASE}/cpu/registers", timeout=5).json()
+
+def get_memory(addr: str) -> dict:
+    return httpx.get(f"{CROW_BASE}/cpu/memory/{addr}", timeout=5).json()
+
+def step_cpu() -> dict:
+    return httpx.post(f"{CROW_BASE}/cpu/step", timeout=5).json()
