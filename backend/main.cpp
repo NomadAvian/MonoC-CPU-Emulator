@@ -8,7 +8,9 @@ int main()
     crow::SimpleApp app;
     cpu::CPU* cpu_instance = nullptr;
 
-    CROW_ROUTE(app, "/ai/test")([](){
+    // GET /ai/test
+    CROW_ROUTE(app, "/ai/test").methods(crow::HTTPMethod::GET)
+    ([](){
         return "Hello World, this is a test for MCP & Backend Server";
     });
 

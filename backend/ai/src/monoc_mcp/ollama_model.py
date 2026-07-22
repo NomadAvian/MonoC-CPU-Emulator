@@ -15,6 +15,8 @@ tools = [{
     },
 }]
 
+# TODO: add other tools
+
 USER_QUERY = "What does my greeting say?"
 
 # --- turn 1: model decides to call the tool ---
@@ -39,6 +41,6 @@ if response.message.tool_calls:
         ],
         tools=tools,
     )
-    print(final.message.content)
+    print(f"LLM Reponse: {final.message.content}")
 else:
     print(response.message.content)

@@ -1,7 +1,7 @@
 [project]
 name = "monoc-mcp"
 version = "0.1.0"
-description = "This is a ai orchestrator and mcp server implementation code base"
+description = "This is an AI orchestrator and mcp server implementation code base for MonoC Cpu Emulator"
 readme = "README.md"
 authors = [
     { name = "Toha", email = "abutohaalnur@gmail.com" }

@@ -6,7 +6,7 @@ set -a; source .env; set +a  # auto-export all vars from .env to subprocesses
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$SCRIPT_DIR/../.."
 BUILD_DIR="$ROOT/build"
-AI_DIR="$ROOT/ai"
+AI_DIR="$ROOT/backend/ai"
 
 mkdir -p "$BUILD_DIR"
 
@@ -29,7 +29,7 @@ trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT #if something breaks kill thi
 
 echo "[test] Crow started (PID $SERVER_PID)"
 for i in $(seq 1 20); do
-    if RESULT=$(curl -sf http://localhost:6969/); then
+    if RESULT=$(curl -sf http://localhost:6969/ai/test); then
         break
     fi
     sleep 0.5
@@ -37,4 +37,4 @@ done
 
 echo "[test] Crow says: $RESULT"
 cd "$AI_DIR"
-uv run python src/monoc_mcp/gemini.py
+uv run python src/monoc_mcp/gemini_model.py
