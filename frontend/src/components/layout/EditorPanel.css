@@ -1,0 +1,13 @@
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.editor-panel__editor {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}

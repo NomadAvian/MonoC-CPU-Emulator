@@ -1,0 +1,25 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: var(--bg-base);
+  overflow: hidden;
+}
+
+/* Workspace = everything below TopBar */
+.workspace {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  gap: 0;
+}
+
+/* Center column: EditorPanel + BottomPanel stacked */
+.center-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
