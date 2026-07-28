@@ -3,11 +3,9 @@ import {create} from 'zustand'
 const initialState = {
     registers: Array(32).fill(0),
     programCounter: 0,
-    halter: false,
-    // falgs? instruction Register?
+    status: 'stopped',
 }
 
-//TODO: include api fetching here directly, instead of using wrapper
 export const useCPUStore = create((set) => ({
     ...initialState,
 
@@ -19,5 +17,6 @@ export const useCPUStore = create((set) => ({
             return {registers}
         }),
     setProgramCounter: (programCounter) => set({programCounter}),
+    setStatus: (status) => set({status}),
     resetCPU: () => set(initialState),
 }))

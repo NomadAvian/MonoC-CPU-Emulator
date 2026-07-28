@@ -1,0 +1,44 @@
+.disassembler {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.disassembler__empty {
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 16px 4px;
+  font-family: var(--font-sans);
+}
+
+.disassembler__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.disassembler__table th {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.disassembler__table td {
+  padding: 3px 8px;
+  color: var(--text-primary);
+}
+
+.disassembler__table tr:hover td {
+  background: var(--bg-hover);
+}
+
+.disassembler__row--active td {
+  background: var(--accent-dim);
+}
+
+.disassembler__addr { color: var(--cyan); }
+.disassembler__hex  { color: var(--text-muted); }
+.disassembler__ins  { color: var(--text-primary); }

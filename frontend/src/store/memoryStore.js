@@ -14,6 +14,8 @@ export const useMemoryStore = create((set) => ({
 
   setRom: (rom) => set({ rom }),
 
+  setLazyLoad: (lazyLoad) => set({ lazyLoad }),
+
   addMemoryWrite: (write) =>
     set((state) => ({
       mem_writes: [...state.mem_writes, write],

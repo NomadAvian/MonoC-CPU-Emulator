@@ -1,0 +1,51 @@
+.resize-divider {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background var(--transition);
+}
+
+/* === Horizontal (between side panels) === */
+.resize-divider--horizontal {
+  width: 5px;
+  cursor: col-resize;
+  flex-direction: column;
+}
+
+/* === Vertical (between editor and bottom panel) === */
+.resize-divider--vertical {
+  height: 5px;
+  cursor: row-resize;
+  width: 100%;
+  flex-direction: row;
+}
+
+/* The visible track that appears on hover */
+.resize-divider__track {
+  border-radius: 99px;
+  background: transparent;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.resize-divider--horizontal .resize-divider__track {
+  width: 2px;
+  height: 40px;
+}
+
+.resize-divider--vertical .resize-divider__track {
+  height: 2px;
+  width: 40px;
+}
+
+.resize-divider:hover .resize-divider__track,
+.resize-divider:active .resize-divider__track {
+  background: var(--accent);
+  transform: scaleY(1.5);
+}
+
+.resize-divider:hover,
+.resize-divider:active {
+  background: var(--accent-glow);
+}

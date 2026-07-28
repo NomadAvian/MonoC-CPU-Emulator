@@ -1,0 +1,45 @@
+.control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 42px;
+  padding: 0 12px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.control-bar__status {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 54px;
+}
+
+.control-bar__status--running { color: var(--green); }
+.control-bar__status--halted { color: var(--red); }
+
+.control-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.control-bar__btn {
+  flex-direction: column;
+  gap: 6px;
+  height: 36px;
+  padding: 0 12px;
+}
+
+
+.control-bar__btn-label {
+  line-height: 1;
+}
+
+.control-bar__btn-shortcut {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1;
+}

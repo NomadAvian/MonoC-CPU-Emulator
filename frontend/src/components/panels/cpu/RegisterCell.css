@@ -1,0 +1,35 @@
+.reg-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 10px;
+  transition: background var(--transition);
+}
+
+.reg-cell:hover {
+  background: var(--bg-hover);
+}
+
+.reg-cell--highlighted {
+  background: var(--accent-dim);
+  border-left: 2px solid var(--accent);
+}
+
+.reg-cell__name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  min-width: 32px;
+  text-transform: uppercase;
+}
+
+.reg-cell__value {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
+}
+
+.reg-cell--highlighted .reg-cell__value {
+  color: var(--accent);
+}
