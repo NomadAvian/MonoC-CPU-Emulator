@@ -25,5 +25,8 @@ decode:
 memory:
 	$(CXX) $(CXXFLAGS) ./memory_test.cpp $(ROOT_DIR)/core/memory.cpp -o $(TARGET) && $(TARGET)
 
+assembler:
+	$(CXX) $(CXXFLAGS) ./asm_tokenizer_test.cpp $(ROOT_DIR)/assembler/*.cpp -o $(TARGET) && $(TARGET) 
+
 clean:
 	rm -f $(TARGET)
