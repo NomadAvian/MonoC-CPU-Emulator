@@ -55,18 +55,21 @@ struct DecodedInstruction {
 
 class CPU {
 public:
-    CPU() : ram_(), rom_() {
+    CPU(std::string filename = "") : ram_(), rom_() {
         // initialize registers
         for (int i = 0; i < 32; i++) {
             x[i].value = 0;
         }
         // initialize program counter
         pc_.value = 0;
+        LoadROM(filename);
     }
 
-    void LoadROM(std::string filename);
+    void LoadROM(const std::string& filename);
 
-	Word Fetch() const;
+	Word Fetch() const {
+        return rom_.ReadWord(pc_.value);
+    }
 
     DecodedInstruction Decode     (Word instruction);
     DecodedInstruction DecodeRType(Word instruction);
@@ -92,9 +95,12 @@ private:
     Memory     ram_;
     Memory     rom_;
     alu::Alu   alu_;
-    
+
     int32_t SignExtend(uint32_t value, uint32_t bits) const;
-    
+
+    Word ExtractRs1(Word instruction);
+    Word ExtractRs2(Word instruction);
+
 };
 
 } // namespace cpu

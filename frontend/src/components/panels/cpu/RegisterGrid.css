@@ -1,0 +1,26 @@
+.reg-grid {
+  padding: 8px 0;
+}
+
+.reg-grid__section-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 6px 10px 2px;
+}
+
+.reg-grid__pinned {
+  display: flex;
+  flex-direction: column;
+}
+
+.reg-grid__divider {
+  margin: 6px 10px;
+}
+
+.reg-grid__list {
+  display: flex;
+  flex-direction: column;
+}

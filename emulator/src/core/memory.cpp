@@ -1,10 +1,34 @@
 #include "memory.h"
 
+#include <fstream>
+#include <string>
+#include <iostream>
+#include <bitset>
+
 #include "../common.h"
 
 Word Memory::WrapAddr(Word addr) const {
 	// fast modulo with powers of 2
-    return addr & static_cast<Word>(size_ - 1);
+    return addr & static_cast<Word>(size() - 1);
+}
+
+void Memory::LoadFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file)  {
+        std::cerr << "Could not open file: " << filename << std::endl;
+        return;
+    }
+
+    std::string line;
+    Word addr = 0;
+
+    while (std::getline(file, line)) {
+        if (line.empty())
+            continue;
+        Word instruction = std::bitset<32>(line).to_ulong();
+        WriteWord(addr, instruction);
+        addr += 4;
+    }
 }
 
 Byte Memory::ReadByte(Word addr) const {
