@@ -79,12 +79,12 @@ public:
     DecodedInstruction DecodeJType(Word instruction);
     DecodedInstruction DecodeBType(Word instruction);
 
-    void ExecuteRType(DecodedInstruction instr);
-    void ExecuteIType(DecodedInstruction instr);
-    void ExecuteSType(DecodedInstruction instr);
-    void ExecuteUType(DecodedInstruction instr);
-    void ExecuteJType(DecodedInstruction instr);
-    void ExecuteBType(DecodedInstruction instr);
+    bool ExecuteRType(DecodedInstruction instr);
+    bool ExecuteIType(DecodedInstruction instr);
+    bool ExecuteSType(DecodedInstruction instr);
+    bool ExecuteUType(DecodedInstruction instr);
+    bool ExecuteJType(DecodedInstruction instr);
+    bool ExecuteBType(DecodedInstruction instr);
 
     void WriteReg(size_t index, Word value);
     Word ReadReg (size_t index) const;
@@ -100,6 +100,8 @@ private:
 
     Word ExtractRs1(Word instruction);
     Word ExtractRs2(Word instruction);
+    alu::AluOp MapToAluOp(isa::Opcode opcode) const;
+    alu::AluOutput EffectiveAddress(Word base, int32_t offset) const;
 
 };
 
