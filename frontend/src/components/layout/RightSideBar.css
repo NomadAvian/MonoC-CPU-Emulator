@@ -7,6 +7,10 @@
   border-left: 1px solid var(--border);
   flex-shrink: 0;
   overflow: hidden;
+  border-radius: var(--radius-lg);
+  margin: 12px 12px 12px 0;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .right-sidebar__header {
@@ -20,8 +24,6 @@
 }
 
 .right-sidebar__hide-btn {
-  padding: 0 12px;
-  font-size: 12px;
   flex-shrink: 0;
   margin-left: auto;
 }

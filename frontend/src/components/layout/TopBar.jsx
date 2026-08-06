@@ -3,6 +3,10 @@ import './TopBar.css'
 import SettingsModal from '../settings/SettingsModal'
 import { useUIStore } from '../../store/uiStore'
 
+import aiIcon from '../../assets/ai.svg'
+import docsIcon from '../../assets/docs.svg'
+import settingsIcon from '../../assets/settings.svg'
+import profileIcon from '../../assets/profile.svg'
 
 export default function TopBar() {
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -24,14 +28,17 @@ export default function TopBar() {
             id="topbar-chat-btn"
             aria-pressed={isChatOpen}
             onClick={toggleChat}
+            style={{ color: 'var(--accent)' }}
           >
-            Chat
+            <img src={aiIcon} alt="" className="topbar__icon" />
+            AI Chat
           </button>
           <button
             className="ui-button ui-button--ghost topbar__nav-btn"
             id="topbar-settings-btn"
             onClick={() => setSettingsOpen(true)}
           >
+            <img src={settingsIcon} alt="" className="topbar__icon" />
             Settings
           </button>
           <a
@@ -41,9 +48,11 @@ export default function TopBar() {
             target="_blank"
             rel="noreferrer"
           >
+            <img src={docsIcon} alt="" className="topbar__icon" />
             Docs
           </a>
           <button className="ui-button ui-button--accent topbar__nav-btn topbar__nav-btn--accent" id="topbar-profile-btn">
+            <img src={profileIcon} alt="" className="topbar__icon" />
             Profile
           </button>
         </nav>

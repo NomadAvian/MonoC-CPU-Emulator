@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './SettingsModal.css'
 import { useUIStore } from '../../store/uiStore'
+import closeIcon from '../../assets/close.svg'
 
 const FORMAT_OPTIONS = ['Hex', 'Unsigned', 'Binary']
 const MODE_OPTIONS   = ['Dark', 'Light']
@@ -40,11 +41,11 @@ export default function SettingsModal({ onClose }) {
           <span className="settings-modal__title">Settings</span>
           <button
             id="settings-close-btn"
-            className="ui-button ui-button--ghost"
+            className="icon-btn settings-modal__close-btn"
             onClick={onClose}
             aria-label="Close settings"
           >
-            Close
+            <img src={closeIcon} alt="Close" />
           </button>
         </div>
 

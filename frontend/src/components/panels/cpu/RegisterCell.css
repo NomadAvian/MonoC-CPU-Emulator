@@ -17,7 +17,8 @@
 
 .reg-cell__name {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 500;
   color: var(--text-muted);
   min-width: 32px;
   text-transform: uppercase;
@@ -25,7 +26,8 @@
 
 .reg-cell__value {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--text-primary);
   letter-spacing: 0.03em;
 }

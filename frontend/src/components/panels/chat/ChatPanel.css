@@ -33,18 +33,18 @@
 
 /* Input area */
 .chat-panel__input-wrap {
+  position: relative;
   padding: 10px;
   border-top: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   background: var(--bg-surface);
   flex-shrink: 0;
 }
 
 .chat-panel__input {
-  padding: 8px 10px;
+  width: 100%;
+  padding: 8px 40px 8px 10px; /* Extra padding on right for the button */
   resize: none;
+  display: block;
 }
 
 .chat-panel__input::placeholder {
@@ -52,8 +52,11 @@
 }
 
 .chat-panel__send-btn {
-  align-self: flex-end;
-  padding: 6px 16px;
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  padding: 4px; /* small square padding */
+  border-radius: var(--radius-sm);
 }
 
 .chat-panel__send-btn:disabled {
@@ -65,7 +68,8 @@
 .chat-message {
   padding: 8px 12px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 400;
   line-height: 1.5;
   max-width: 90%;
   word-wrap: break-word;

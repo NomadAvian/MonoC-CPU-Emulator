@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 30px;
+  height: 44px;
   padding: 0 16px;
   background: var(--bg-panel);
   border-bottom: 1px solid var(--border);
@@ -17,11 +17,11 @@
 }
 
 .topbar__logo-text {
-  font-family: var(--font-mono);
-  font-size: 15px;
-  font-weight: 600;
+  font-family: var(--font-sans);
+  font-size: var(--fs-lg);
+  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .topbar__nav {
@@ -31,8 +31,18 @@
 }
 
 .topbar__nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 5px 14px;
+  font-size: var(--fs-base); /* Increased from sm to base */
   text-decoration: none;
+}
+
+.topbar__icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.9;
 }
 
 .topbar__nav-btn--accent {

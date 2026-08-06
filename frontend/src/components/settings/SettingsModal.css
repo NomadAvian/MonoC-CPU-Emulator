@@ -5,9 +5,9 @@
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   display: flex;
-  align-items: flex-start;
-  justify-content: flex-end;
-  padding: 52px 16px 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   animation: overlay-in 150ms ease forwards;
 }
 

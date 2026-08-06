@@ -1,15 +1,11 @@
-# frontend will POST messages here and receive the AI response
-# React (:5173) -> POST /chat -> FastAPI (:8000) -> chat_service.py -> Ollama
- 
+# frontend POST messages here and receive the AI response
+# Ollama is the primary model; Gemini is the fallback when Ollama is unavailable
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-#from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from monoc_mcp.chat_service import chat
-
-# the shape of the JSON body validated by Pydantic
-class ChatRequest(BaseModel):
-    messages: list[dict]
+from monoc_mcp.chat_service import chat as ollama_chat
+from monoc_mcp.gemini_chat_service import chat as gemini_chat
 
 # CORS policy management
 app = FastAPI()
@@ -26,25 +22,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# the shape of the JSON body validated by Pydantic
+class ChatRequest(BaseModel):
+    messages: list[dict]
 
-#   receives a ChatRequest (list of messages) from the frontend
-#   calls chat() function from chat_service.py
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
-    result = chat(request.messages)
+    try:
+        result = ollama_chat(request.messages)
+        print("[api] responded via Ollama")
+    except Exception as e:
+        print(f"[api] Ollama unavailable , falling back to Gemini")
+        result = gemini_chat(request.messages)
+        print("[api] responded via Gemini (fallback)")
     return {"response": result}
-
-
-# SSE FORMAT: Each event is sent as:
-#   data: {"token": "Hello"}\n\n
-#   data: {"token": " world"}\n\n
-#   data: [DONE]\n\n
-#
-# To stream in FastAPI:
-#   1. Create a generator function that yields SSE-formatted strings
-#   2. Return StreamingResponse(generator(), media_type="text/event-stream")
-#
-# For now you can skip this and just return the full response.
-# The frontend (Exercise 3) will handle both cases.
-
-

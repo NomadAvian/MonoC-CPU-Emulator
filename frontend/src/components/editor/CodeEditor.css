@@ -29,6 +29,7 @@
 .cm-editor {
   height: 100%;
   background: var(--bg-base) !important;
+  font-size: 15px;
 }
 
 .cm-scroller {
