@@ -1,4 +1,4 @@
-# crow apis wrapper
+# mcp server and crow server interface
 # mcp server calls these functions directly from mcp_server.py
 
 import httpx

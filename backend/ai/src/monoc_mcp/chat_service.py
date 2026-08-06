@@ -1,3 +1,4 @@
+# ai chat loop environment
 import json
 import ollama
 from monoc_mcp.crow_client import get_greeting, get_registers, get_memory, step_cpu
@@ -73,15 +74,11 @@ You have access to these tools to inspect the live CPU state:
 - read_memory(addr): Read 64 bytes of RAM starting at an address
 - step_cpu_once: Execute one instruction and see the result
 
-When a student asks about CPU state, USE your tools to get real data
+When an user asks about CPU state, USE your tools to get real data
 rather than guessing. Explain things clearly and at a beginner level.
-Keep responses concise — this is a small chat panel, not an essay.
+Keep responses concise — this is a small chat panel, not an essay. Strictly don't use any emojis.
 """
 
-# why add the same query twice?
-#     Ollama's API is STATELESS. Each call gets the FULL conversation.
-#     The model doesn't remember previous calls. That's why we append
-#     to `messages` and re-send everything each loop iteration.def chat(messages):
 def chat(messages):
     if not messages or messages[0].get("role") != "system":
         messages = [{"role": "system", "content": SYSTEM_PROMPT}] + messages

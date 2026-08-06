@@ -55,3 +55,38 @@
   align-self: flex-end;
   padding: 6px 16px;
 }
+
+.chat-panel__send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+.chat-message {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 90%;
+  word-wrap: break-word;
+}
+
+.chat-message p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.chat-message--user {
+  align-self: flex-end;
+  background: var(--accent, #3b82f6);
+  color: #fff;
+  border-bottom-right-radius: 2px;
+}
+
+.chat-message--assistant {
+  align-self: flex-start;
+  background: var(--bg-surface, #2a2a2a);
+  color: var(--text, #e0e0e0);
+  border-bottom-left-radius: 2px;
+  border: 1px solid var(--border, #3a3a3a);
+}
