@@ -9,6 +9,8 @@
   /* cards, inputs        */
   --bg-hover: #2e3341;
   /* hover state          */
+  --active-line: rgba(255, 255, 255, 0.06);
+  --selection: rgba(180, 180, 180, 0.20);
 
   --border: #2e3341;
   --border-bright: rgba(255, 255, 255, 0.499);
@@ -69,6 +71,8 @@
   --bg-surface: #dce0e8;
   --bg-elevated: #ffffff;
   --bg-hover: #ccd0da;
+  --active-line: rgba(0, 0, 0, 0.06);
+  --selection: rgba(180, 180, 180, 0.20);
 
   --border: #ccd0da;
   --border-bright: #9ca0b0;
