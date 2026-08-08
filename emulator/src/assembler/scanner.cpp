@@ -27,7 +27,11 @@ const std::unordered_set<std::string> Scanner::kInstructions = {
 
     // RV32M Standard Extension
     "mul", "mulh", "mulhsu", "mulhu",
-    "div", "divu", "rem", "remu"
+    "div", "divu", "rem", "remu",
+
+    // Pseudo-instructions
+    "la", "li", "j", "mv", "call", "nop",
+    "ble", "bgt", "bleu", "bgtu"
 };
 
 // Set of canonical and ABI register names
