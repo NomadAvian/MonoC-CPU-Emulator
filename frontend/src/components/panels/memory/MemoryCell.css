@@ -12,7 +12,7 @@
 
 .mem-cell__addr {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 13px;
   color: var(--cyan);
   min-width: 68px;
 }
@@ -24,6 +24,6 @@
 
 .mem-cell__value {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-primary);
 }

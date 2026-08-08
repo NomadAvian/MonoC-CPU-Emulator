@@ -51,7 +51,7 @@ export default function TopBar() {
             <img src={docsIcon} alt="" className="topbar__icon" />
             Docs
           </a>
-          <button className="ui-button ui-button--accent topbar__nav-btn topbar__nav-btn--accent" id="topbar-profile-btn">
+          <button className="ui-button ui-button--ghost topbar__nav-btn" id="topbar-profile-btn">
             <img src={profileIcon} alt="" className="topbar__icon" />
             Profile
           </button>

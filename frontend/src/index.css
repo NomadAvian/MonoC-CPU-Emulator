@@ -46,11 +46,11 @@
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* reading size */
-  --fs-base: 15px;
-  --fs-sm: 13px;
-  --fs-xs: 11.5px;
-  --fs-lg: 17px;
-  --fs-header: 34px;
+  --fs-base: 18px;
+  --fs-sm: 15.5px;
+  --fs-xs: 14px;
+  --fs-lg: 20px;
+  --fs-header: 40px;
 
   --radius-sm: 4px;
   --radius-md: 8px;

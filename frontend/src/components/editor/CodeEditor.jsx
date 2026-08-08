@@ -10,7 +10,14 @@ export default function CodeEditor() {
 
   useEffect(() => {
     const view = new EditorView({
-      doc: 'sample text\nPlease work',
+      doc: [
+        '# Example program',
+        '# Sum of two numbers',
+        '',
+        'addi x1, x0, 5   # x1 = 5',
+        'addi x2, x0, 3   # x2 = 3',
+        'add  x3, x1, x2  # x3 = x1 + x2 = 8',
+      ].join('\n'),
       parent: containerRef.current,
       extensions: [
         basicSetup,
@@ -21,17 +28,6 @@ export default function CodeEditor() {
           ...historyKeymap,
           indentWithTab,
         ]),
-        EditorView.theme({
-          '&': { fontSize: '14px' },
-          '.cm-content': { padding: '8px 0' },
-          '.cm-gutters': { backgroundColor: 'var(--bg-base)', border: 'none' },
-          '.cm-activeLine': { backgroundColor: 'var(--active-line)' },
-          '.cm-selectionBackground': { backgroundColor: 'var(--selection)' },
-          '&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground': {
-            backgroundColor: 'var(--selection)',
-          },
-          '.cm-cursor, .cm-dropCursor': { borderLeftColor: '#7DCFFF' },
-        })
       ],
     })
     return () => view.destroy()
