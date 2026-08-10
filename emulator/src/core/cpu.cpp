@@ -9,6 +9,26 @@ void CPU::LoadROM(const std::string& filename) {
     rom_.LoadFile(filename);
 }
 
+Word CPU::pc() const {
+        return pc_.value;
+}
+
+Word CPU::ReadMemoryWord(Word address) const {
+    return ram_.ReadWord(address);
+}
+
+Half CPU::ReadMemoryHalf(Word address) const {
+    return ram_.ReadHalf(address);
+}
+
+Byte CPU::ReadMemoryByte(Word address) const {
+    return ram_.ReadByte(address);
+}
+
+void CPU::set_pc_for_testing(Word value) {
+    pc_.value = value;
+}
+
 int32_t CPU::SignExtend(uint32_t value, uint32_t bits) const {
     uint32_t shift = 32 - bits;
     return static_cast<int32_t>(value << shift) >> shift;

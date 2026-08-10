@@ -89,6 +89,17 @@ public:
     void WriteReg(size_t index, Word value);
     Word ReadReg (size_t index) const;
 
+    Word pc() const;
+
+    Word ReadMemoryWord(Word address) const;
+    Half ReadMemoryHalf(Word address) const;
+    Byte ReadMemoryByte(Word address) const;
+
+    void set_pc_for_testing(Word value);
+    void write_memory_word_for_testing(Word addr, Word value) {
+        ram_.WriteWord(addr, value);
+    }
+
 private:
     Reg        x[32];
     Reg        pc_;
