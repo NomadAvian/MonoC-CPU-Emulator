@@ -1,5 +1,6 @@
 {
   "name": "monoc-frontend",
+  "engines": { "node": ">=20.12" },
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@uiw/react-codemirror": "^4.24.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "zustand": "^5.0.14"
