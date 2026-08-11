@@ -1,18 +1,20 @@
 # frontend POST messages here and receive the AI response
 # Ollama is the primary model; Gemini is the fallback when Ollama is unavailable
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+import monoc_mcp.db as db
 from monoc_mcp.chat_service import chat as ollama_chat
 from monoc_mcp.gemini_chat_service import chat as gemini_chat
 
 # CORS policy management
 app = FastAPI()
 origins = [
-    "http://localhost:6969", # crow
-    "http://localhost:5173", # react
-    "http://localhost:8000", # default
+    "http://localhost:6969",  # crow
+    "http://localhost:5173",  # react
+    "http://localhost:8000",  # default
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -22,9 +24,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # the shape of the JSON body validated by Pydantic
 class ChatRequest(BaseModel):
     messages: list[dict]
+
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
@@ -36,3 +40,29 @@ async def chat_endpoint(request: ChatRequest):
         result = gemini_chat(request.messages)
         print("[api] responded via Gemini (fallback)")
     return {"response": result}
+
+
+class SignupRequest(BaseModel):
+    username: str
+    email: str
+    password: str
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/auth/signup")
+def signup(req: SignupRequest):
+    if not db.create_user(req.username, req.email, req.password):
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return {"success": True}
+
+
+@app.post("/auth/login")
+def login(req: LoginRequest):
+    res = db.login_user(req.email, req.password)
+    if not res:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return res

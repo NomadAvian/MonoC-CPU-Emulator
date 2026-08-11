@@ -34,12 +34,14 @@
 
 
 .control-bar__btn-label {
+  font-size: 12px;
+  font-weight: 500;
   line-height: 1;
 }
 
 .control-bar__btn-shortcut {
   color: var(--text-muted);
-  font-size: var(--fs-xs);
+  font-size: 10px;
   font-weight: 400;
   line-height: 1;
   letter-spacing: .05em;

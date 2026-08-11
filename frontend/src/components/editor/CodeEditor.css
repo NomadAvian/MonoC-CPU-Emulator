@@ -57,6 +57,11 @@
   background-color: var(--selection) !important;
 }
 
+.cm-editor .cm-activeLineGutter {
+  color: #CBA6F7 !important;
+  background-color: var(--active-line) !important;
+}
+
 .cm-editor .cm-cursor,
 .cm-editor .cm-dropCursor {
   border-left-color: #7DCFFF !important;

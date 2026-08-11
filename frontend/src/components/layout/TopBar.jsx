@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import './TopBar.css'
 import SettingsModal from '../settings/SettingsModal'
+import AuthModal from '../panels/auth/AuthModal'
 import { useUIStore } from '../../store/uiStore'
+import { useAuthStore } from '../../store/authStore'
 
 import aiIcon from '../../assets/ai.svg'
 import docsIcon from '../../assets/docs.svg'
@@ -10,8 +12,21 @@ import profileIcon from '../../assets/profile.svg'
 
 export default function TopBar() {
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [authOpen, setAuthOpen] = useState(false)
+  
   const isChatOpen = useUIStore(s => s.isChatOpen)
   const toggleChat = useUIStore(s => s.toggleChat)
+  
+  const user = useAuthStore(s => s.user)
+  const logout = useAuthStore(s => s.logout)
+
+  const handleProfileClick = () => {
+    if (user) {
+      if (window.confirm('Log out?')) logout();
+    } else {
+      setAuthOpen(true);
+    }
+  }
 
   return (
     <>
@@ -51,14 +66,19 @@ export default function TopBar() {
             <img src={docsIcon} alt="" className="topbar__icon" />
             Docs
           </a>
-          <button className="ui-button ui-button--ghost topbar__nav-btn" id="topbar-profile-btn">
+          <button 
+            className="ui-button ui-button--ghost topbar__nav-btn" 
+            id="topbar-profile-btn"
+            onClick={handleProfileClick}
+          >
             <img src={profileIcon} alt="" className="topbar__icon" />
-            Profile
+            {user ? user.username : 'Log In'}
           </button>
         </nav>
       </header>
 
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
+      {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
     </>
   )
 }
