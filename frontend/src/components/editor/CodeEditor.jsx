@@ -36,7 +36,7 @@ export default function CodeEditor() {
     return () => view.destroy()
   }, [])
 
-  // Sync external store changes (e.g. from Profile load) to CodeMirror
+  // sync external store changes to CodeMirror
   useEffect(() => {
     if (viewRef.current) {
       const currentDoc = viewRef.current.state.doc.toString()

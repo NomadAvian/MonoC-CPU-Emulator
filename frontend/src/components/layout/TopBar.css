@@ -33,26 +33,22 @@
 .topbar__nav-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 14px;
-  font-size: var(--fs-base); /* Increased from sm to base */
+  justify-content: center;
+  padding: 6px;
+  border: none;
+  background: transparent;
   text-decoration: none;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.topbar__nav-btn:hover .topbar__icon {
+  opacity: 1;
 }
 
 .topbar__icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.9;
-}
-
-.topbar__nav-btn--accent {
-  border-color: var(--accent-border);
-  color: var(--accent);
-  background: var(--accent-dim);
-}
-
-.topbar__nav-btn--active {
-  color: var(--accent);
-  background: var(--accent-dim);
-  border-color: var(--accent-border);
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }

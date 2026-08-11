@@ -24,8 +24,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# the shape of the JSON body validated by Pydantic
+# ------------- chat apis -------------
 class ChatRequest(BaseModel):
     messages: list[dict]
 
@@ -41,6 +40,7 @@ async def chat_endpoint(request: ChatRequest):
         print("[api] responded via Gemini (fallback)")
     return {"response": result}
 
+# ----------- auth apis -----------
 
 class SignupRequest(BaseModel):
     username: str
@@ -68,6 +68,7 @@ def login(req: LoginRequest):
     return res
 
 
+# ----------- user apis ------------ 
 class SaveCodeRequest(BaseModel):
     token: str
     name: str

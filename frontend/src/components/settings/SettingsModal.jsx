@@ -91,28 +91,6 @@ export default function SettingsModal({ onClose }) {
           {/* File actions */}
           <div className="settings-modal__divider" />
 
-          <button 
-            id="settings-save-code" 
-            className="ui-button settings-modal__action-btn"
-            onClick={async () => {
-              const user = useAuthStore.getState().user;
-              if (!user) {
-                alert("Please log in to save code.");
-                return;
-              }
-              const name = window.prompt("Enter code name:");
-              if (!name) return;
-              try {
-                const currentCode = useEditorStore.getState().code;
-                await useAuthStore.getState().saveCode(name, currentCode);
-                alert("Code saved successfully!");
-              } catch (err) {
-                alert(err.message);
-              }
-            }}
-          >
-            Save Code
-          </button>
           <button id="settings-load-file" className="ui-button settings-modal__action-btn">
             Load File
           </button>
