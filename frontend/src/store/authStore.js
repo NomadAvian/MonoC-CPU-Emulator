@@ -43,5 +43,25 @@ export const useAuthStore = create((set) => ({
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
     set({ token: null, user: null });
+  },
+
+  saveCode: async (name, code) => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) throw new Error("Must be logged in to save code");
+    const res = await fetch(`${API_URL}/user/codes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, name, code })
+    });
+    if (!res.ok) throw new Error("Failed to save code");
+  },
+
+  fetchSavedCodes: async () => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return [];
+    const res = await fetch(`${API_URL}/user/codes?token=${encodeURIComponent(token)}`);
+    if (!res.ok) throw new Error("Failed to fetch codes");
+    const data = await res.json();
+    return data.codes || [];
   }
 }))

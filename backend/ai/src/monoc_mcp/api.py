@@ -66,3 +66,23 @@ def login(req: LoginRequest):
     if not res:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return res
+
+
+class SaveCodeRequest(BaseModel):
+    token: str
+    name: str
+    code: str
+
+
+@app.post("/user/codes")
+def save_code(req: SaveCodeRequest):
+    success = db.save_user_code(req.token, req.name, req.code)
+    if not success:
+        raise HTTPException(status_code=401, detail="Invalid session token")
+    return {"success": True}
+
+
+@app.get("/user/codes")
+def get_codes(token: str):
+    return {"codes": db.get_user_codes(token)}
+

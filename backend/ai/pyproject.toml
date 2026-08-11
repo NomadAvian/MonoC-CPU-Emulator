@@ -15,7 +15,7 @@ dependencies = [
     "ollama>=0.6.2",
     "python-dotenv>=1.2.2",
     "uvicorn>=0.50.1",
-    "passlib[bcrypt]>=1.7.4",
+    "bcrypt>=4.0.0",
 ]
 
 [project.scripts]

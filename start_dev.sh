@@ -5,12 +5,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$SCRIPT_DIR"
 BUILD_DIR="$ROOT/build"
 
-echo "[test] Building Crow server..."
-g++ "$ROOT/backend/main.cpp" \
-    -std=c++20 \
-    -I/opt/homebrew/include \
-    -pthread \
-    -o "$BUILD_DIR/crow_server"
+# echo "[test] Building Crow server..."
+# g++ "$ROOT/backend/main.cpp" \
+#     -std=c++20 \
+#     -I/opt/homebrew/include \
+#     -pthread \
+#     -o "$BUILD_DIR/crow_server"
 
 trap 'kill 0' EXIT
 
