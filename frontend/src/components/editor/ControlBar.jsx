@@ -6,22 +6,27 @@ import stepIcon from '../../assets/step-once.svg'
 import resetIcon from '../../assets/reset.svg'
 
 const CONTROLS = [
-  { id: 'ctrl-play',      label: 'Run',       icon: playIcon, shortcut: 'Ctrl-R', variant: 'success' },
-  { id: 'ctrl-stop',      label: 'Stop',      icon: stopIcon, shortcut: 'Ctrl-S', variant: 'danger' },
-  { id: 'ctrl-step-over', label: 'Step Over', icon: stepIcon, shortcut: 'Ctrl-Shift-S', variant: 'default' },
-  { id: 'ctrl-reset',     label: 'Reset',     icon: resetIcon, shortcut: 'Ctrl-Shift-R', variant: 'default' },
+  { id: 'ctrl-compile',   label: 'Compile',   /* icon: playIcon, shortcut: 'Ctrl-R',       */ variant: 'success' },
+  { id: 'ctrl-play',      label: 'Run',       /* icon: playIcon, shortcut: 'Ctrl-R',       */ variant: 'success' },
+  { id: 'ctrl-stop',      label: 'Stop',      /* icon: stopIcon, shortcut: 'Ctrl-S',       */ variant: 'danger' },
+  { id: 'ctrl-step-over', label: 'Step Over', /* icon: stepIcon, shortcut: 'Ctrl-Shift-S', */ variant: 'default' },
+  { id: 'ctrl-reset',     label: 'Reset',     /* icon: resetIcon, shortcut: 'Ctrl-Shift-R',*/ variant: 'default' },
 ]
 
 export default function ControlBar() {
   const status = useCPUStore(s => s.status)
   const setStatus = useCPUStore(s => s.setStatus)
-  const resetCPU = useCPUStore(s => s.resetCPU)
+  const step = useCPUStore(s => s.step)
+  const reset = useCPUStore(s => s.reset)
+  const compile = useCPUStore(s => s.compile)
 
   {/*TODO: dummy stop play for now, update please */}
   const handleControl = (id) => {
-    if (id === 'ctrl-reset') resetCPU()
+    if (id === 'ctrl-compile') compile()
+    if (id === 'ctrl-reset') reset()
     if (id === 'ctrl-stop') setStatus('stopped')
     if (id === 'ctrl-play') setStatus('running')
+    if (id === 'ctrl-step-over') step()
   }
 
   return (

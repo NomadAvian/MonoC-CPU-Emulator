@@ -1,12 +1,34 @@
 #include "cpu.h"
 
 #include <cassert>
+#include <fstream>
 #include <stdexcept>
 
 namespace cpu {
 
 void CPU::LoadROM(const std::string& filename) {
-    rom_.LoadFile(filename);
+    // TODO: more elegant solution to relative filepaths ?
+    // resolve a bare filename
+    static const char* kCandidates[] = {
+        "",
+        "emulator/roms/",
+        "../emulator/roms/",
+        "roms/",
+    };
+    std::string path;
+    for (const char* dir : kCandidates) {
+        const std::string candidate = dir + filename;
+        if (std::ifstream(candidate)) {
+            path = candidate;
+            break;
+        }
+    }
+
+    if (path.empty())
+        throw std::runtime_error("CPU: could not open ROM file: " + filename);
+    
+    Reset();
+    rom_.LoadFile(path);
 }
 
 Word CPU::pc() const {
@@ -34,20 +56,32 @@ int32_t CPU::SignExtend(uint32_t value, uint32_t bits) const {
     return static_cast<int32_t>(value << shift) >> shift;
 }
 
-Word CPU::ExtractRs1(Word instruction){
-    return (instruction >> 15) & 0x1F;
+Word CPU::ExtractOpcode(Word instruction) {
+    return instruction & 0x7F;             // [6:0]
 }
 
-Word CPU::ExtractRs2(Word instruction){
-    return (instruction >> 20) & 0x1F;
+Word CPU::ExtractRd(Word instruction) {
+    return (instruction >> 7) & 0x1F;      // [11:7]
+}
+
+Word CPU::ExtractFunct3(Word instruction) {
+    return (instruction >> 12) & 0x07;     // [14:12]
+}
+
+Word CPU::ExtractFunct7(Word instruction) {
+    return (instruction >> 25) & 0x7F;     // [31:25]
+}
+
+Word CPU::ExtractRs1(Word instruction) {
+    return (instruction >> 15) & 0x1F;     // [19:15]
+}
+
+Word CPU::ExtractRs2(Word instruction) {
+    return (instruction >> 20) & 0x1F;     // [24:20]
 }
 
 DecodedInstruction CPU::Decode(Word instruction) {
-    // extract the opcode from the instruction
-    uint32_t opcode = instruction & 0x7F;
-
-    // determine the instruction type based on the opcode
-    switch (opcode) {
+    switch (ExtractOpcode(instruction)) {
         case 0x33: // R-type
         case 0x0B: // M-extension (R-type)
             return DecodeRType(instruction);
@@ -67,7 +101,7 @@ DecodedInstruction CPU::Decode(Word instruction) {
         case 0x0F: // Fence (I-type)
             return DecodeIType(instruction);
         case 0x73: // Environment (ECALL, EBREAK)
-            return DecodeIType(instruction); // treat as I-type for decoding
+            return DecodeIType(instruction);
         default:
             return {isa::Opcode::kUnknown, 0, 0, 0, 0};
     }
@@ -76,16 +110,14 @@ DecodedInstruction CPU::Decode(Word instruction) {
 DecodedInstruction CPU::DecodeRType(Word instruction) {
 
     DecodedInstruction instr;
-    // the opcode (7 bits) [6:0] are not needed as we already know it's R-type
-    instr.rd = (instruction >> 7) & 0x1F; // extract rd (5 bits) [11:7]
-    uint32_t funct3 = (instruction >> 12) & 0x07; // extract funct3 (3 bits) [14:12]
-    instr.rs1 = ExtractRs1(instruction); // extract rs1 (5 bits) [19:15]
-    instr.rs2 = ExtractRs2(instruction); // extract rs2 (5 bits) [24:20]
-    uint32_t funct7 = (instruction >> 25) & 0x7F; // extract funct7 (7 bits) [31:25]
+    // R-type instructions do not carry an immediate
+    instr.imm = 0;
+    instr.rd = ExtractRd(instruction);
+    uint32_t funct3 = ExtractFunct3(instruction);
+    instr.rs1 = ExtractRs1(instruction);
+    instr.rs2 = ExtractRs2(instruction);
+    uint32_t funct7 = ExtractFunct7(instruction);
 
-    instr.imm = 0; // R-type instructions do not have an immediate value
-    
-    // determine the specific R-type instruction based on funct3 and funct7
     if(funct7 == 0x01) {
         // M-extension instructions
         switch (funct3) {
@@ -166,12 +198,12 @@ DecodedInstruction CPU::DecodeRType(Word instruction) {
 DecodedInstruction CPU::DecodeIType(Word instruction) {
 
     DecodedInstruction instr;
-    uint32_t opcode = (instruction & 0x7F); // extract opcode (7 bits) [6:0]
-    instr.rd = (instruction >> 7) & 0x1F; // extract rd (5 bits) [11:7]
-    uint32_t funct3 = (instruction >> 12) & 0x07; // extract funct3 (3 bits) [14:12]
-    instr.rs1 = ExtractRs1(instruction); // extract rs1 (5 bits) [19:15]
+    uint32_t opcode = ExtractOpcode(instruction);
+    instr.rd = ExtractRd(instruction);
+    uint32_t funct3 = ExtractFunct3(instruction);
+    instr.rs1 = ExtractRs1(instruction);
     instr.rs2 = 0; // I-type instructions do not have rs2
-    uint32_t imm = (instruction >> 20) & 0xFFF; // extract immediate (12 bits) [31:20]
+    uint32_t imm = (instruction >> 20) & 0xFFF; // [31:20]
 
     instr.imm = SignExtend(imm, 12); // sign-extend the immediate value
 
@@ -260,16 +292,16 @@ DecodedInstruction CPU::DecodeIType(Word instruction) {
 
 DecodedInstruction CPU::DecodeSType(Word instruction) {
     DecodedInstruction instr;
-    // the opcode (7 bits) [6:0] are not needed as we already know it's S-type
-    uint32_t imm4_0 = (instruction >> 7) & 0x1F; // extract imm[4:0] (5 bits) [11:7]
-    uint32_t funct3 = (instruction >> 12) & 0x07; // extract funct3 (3 bits) [14:12]
-    instr.rs1 = ExtractRs1(instruction); // extract rs1 (5 bits) [19:15]
-    instr.rs2 = ExtractRs2(instruction); // extract rs2 (5 bits) [24:20]
     instr.rd = 0; // S-type instructions do not have a destination register
-    uint32_t imm11_5 = (instruction >> 25) & 0x7F; // extract imm[11:5] (7 bits) [31:25]
+    uint32_t funct3 = ExtractFunct3(instruction);
+    instr.rs1 = ExtractRs1(instruction);
+    instr.rs2 = ExtractRs2(instruction);
 
-    uint32_t imm = (imm11_5 << 5) | imm4_0; // combine to form the full immediate
-    instr.imm = SignExtend(imm, 12); // sign-extend the immediate value
+    // imm[11:5] in [31:25], imm[4:0] in [11:7]
+    uint32_t imm11_5 = (instruction >> 25) & 0x7F;
+    uint32_t imm4_0  = (instruction >> 7)  & 0x1F;
+    uint32_t imm = (imm11_5 << 5) | imm4_0;
+    instr.imm = SignExtend(imm, 12);
 
     // determine the specific S-type instruction based on funct3
     switch (funct3) {
@@ -289,14 +321,13 @@ DecodedInstruction CPU::DecodeSType(Word instruction) {
 }
 
 DecodedInstruction CPU::DecodeUType(Word instruction) {
-    DecodedInstruction instr;        
-    uint32_t opcode = instruction & 0x7F; // extract opcode (7 bits) [6:0]
-    instr.rd = (instruction >> 7) & 0x1F; // extract rd (5 bits) [11:7]
-    uint32_t imm = instruction & 0xFFFFF000; // extract immediate (20 bits) [31:12]
+    DecodedInstruction instr;
     instr.rs1 = 0; // U-type instructions do not have rs1
     instr.rs2 = 0; // U-type instructions do not have rs2
-    instr.imm = static_cast<int32_t>(imm); // no sign-extension needed for U-type
+    instr.rd = ExtractRd(instruction);
+    instr.imm = static_cast<int32_t>(instruction & 0xFFFFF000); // no sign-extension needed for U-type
 
+    uint32_t opcode = ExtractOpcode(instruction);
     if(opcode == 0x37) { // LUI
         instr.opcode = isa::Opcode::kLui; // load upper immediate
     } else if(opcode == 0x17) { // AUIPC
@@ -309,18 +340,19 @@ DecodedInstruction CPU::DecodeUType(Word instruction) {
 
 DecodedInstruction CPU::DecodeBType(Word instruction) {
     DecodedInstruction instr;
-    // the opcode (7 bits) [6:0] are not needed as we already know it's B-type
-    uint32_t imm11 = (instruction >> 7) & 0x1; // extract imm[11] (1 bit) [7]
-    uint32_t imm4_1 = (instruction >> 8) & 0xF; // extract imm[4:1] (4 bits) [11:8]
-    uint32_t funct3 = (instruction >> 12) & 0x07; // extract funct3 (3 bits) [14:12]
-    instr.rs1 = ExtractRs1(instruction); // extract rs1 (5 bits) [19:15]
-    instr.rs2 = ExtractRs2(instruction); // extract rs2 (5 bits) [24:20]
     instr.rd = 0; // B-type instructions do not have a destination register
-    uint32_t imm10_5 = (instruction >> 25) & 0x3F; // extract imm[10:5] (6 bits) [30:25]
-    uint32_t imm12 = (instruction >> 31) & 0x1; // extract imm[12] (1 bit) [31]
+    uint32_t funct3 = ExtractFunct3(instruction);
+    instr.rs1 = ExtractRs1(instruction);
+    instr.rs2 = ExtractRs2(instruction);
 
-    uint32_t imm = (imm12 << 12) | (imm11 << 11) | (imm10_5 << 5) | (imm4_1 << 1); // combine to form the full immediate
-    instr.imm = SignExtend(imm, 13); // sign-extend the immediate value
+    // B-type immediate is spread across several fields
+    uint32_t imm12   = (instruction >> 31) & 0x1;   // imm[12]
+    uint32_t imm11   = (instruction >> 7)  & 0x1;   // imm[11]
+    uint32_t imm10_5 = (instruction >> 25) & 0x3F;  // imm[10:5]
+    uint32_t imm4_1  = (instruction >> 8)  & 0xF;   // imm[4:1]
+
+    uint32_t imm = (imm12 << 12) | (imm11 << 11) | (imm10_5 << 5) | (imm4_1 << 1);
+    instr.imm = SignExtend(imm, 13);
 
     // determine the specific B-type instruction based on funct3
     switch (funct3) {
@@ -350,18 +382,19 @@ DecodedInstruction CPU::DecodeBType(Word instruction) {
 
 DecodedInstruction CPU::DecodeJType(Word instruction) {
     DecodedInstruction instr;
-    // the opcode (7 bits) [6:0] are not needed as we already know it's J-type
-    instr.opcode = isa::Opcode::kJal; // JAL instruction        
+    instr.opcode = isa::Opcode::kJal; // JAL instruction
     instr.rs1 = 0; // J-type instructions do not have rs1
     instr.rs2 = 0; // J-type instructions do not have rs2
-    instr.rd = (instruction >> 7) & 0x1F; // extract rd (5 bits) [11:7]
-    uint32_t imm19_12 = (instruction >> 12) & 0xFF; // extract imm[19:12] (8 bits) [19:12]
-    uint32_t imm11 = (instruction >> 20) & 0x1; // extract imm[11] (1 bit) [20]
-    uint32_t imm10_1 = (instruction >> 21) & 0x3FF; // extract imm[10:1] (10 bits) [30:21]
-    uint32_t imm20 = (instruction >> 31) & 0x1; // extract imm[20] (1 bit) [31]
+    instr.rd = ExtractRd(instruction);
 
-    uint32_t imm = (imm20 << 20) | (imm19_12 << 12) | (imm11 << 11) | (imm10_1 << 1); // combine to form the full immediate
-    instr.imm = SignExtend(imm, 21); // sign-extend the immediate value
+    // J-type immediate is spread across several fields
+    uint32_t imm20    = (instruction >> 31) & 0x1;   // imm[20]
+    uint32_t imm19_12 = (instruction >> 12) & 0xFF;  // imm[19:12]
+    uint32_t imm11    = (instruction >> 20) & 0x1;   // imm[11]
+    uint32_t imm10_1  = (instruction >> 21) & 0x3FF; // imm[10:1]
+
+    uint32_t imm = (imm20 << 20) | (imm19_12 << 12) | (imm11 << 11) | (imm10_1 << 1);
+    instr.imm = SignExtend(imm, 21);
 
     return instr;
 }
@@ -453,16 +486,91 @@ alu::AluOp CPU::MapToAluOp(isa::Opcode opcode) const {
 }
 
 alu::AluOutput CPU::EffectiveAddress(Word base, int32_t offset) const {
-    return alu_.Execute(base, static_cast<Word>(offset), alu::AluOp::kAdd); // compute effective address by adding base and offset
+    // compute effective address by adding base and offset
+    return alu_.Execute(base, static_cast<Word>(offset), alu::AluOp::kAdd);
+}
+
+bool CPU::Execute(DecodedInstruction instr) {
+    switch (instr.opcode) {
+        // R-type
+        case isa::Opcode::kAdd:
+        case isa::Opcode::kSub:
+        case isa::Opcode::kSll:
+        case isa::Opcode::kSlt:
+        case isa::Opcode::kSltu:
+        case isa::Opcode::kXor:
+        case isa::Opcode::kSrl:
+        case isa::Opcode::kSra:
+        case isa::Opcode::kOr:
+        case isa::Opcode::kAnd:
+        // M-extension (R-type)
+        case isa::Opcode::kMul:
+        case isa::Opcode::kMulh:
+        case isa::Opcode::kMulhsu:
+        case isa::Opcode::kMulhu:
+        case isa::Opcode::kDiv:
+        case isa::Opcode::kDivu:
+        case isa::Opcode::kRem:
+        case isa::Opcode::kRemu:
+            return ExecuteRType(instr);
+
+        // I-type (including loads, JALR, FENCE, ECALL, EBREAK)
+        case isa::Opcode::kAddi:
+        case isa::Opcode::kSlti:
+        case isa::Opcode::kSltiu:
+        case isa::Opcode::kAndi:
+        case isa::Opcode::kOri:
+        case isa::Opcode::kXori:
+        case isa::Opcode::kSlli:
+        case isa::Opcode::kSrli:
+        case isa::Opcode::kSrai:
+        case isa::Opcode::kLb:
+        case isa::Opcode::kLh:
+        case isa::Opcode::kLw:
+        case isa::Opcode::kLbu:
+        case isa::Opcode::kLhu:
+        case isa::Opcode::kJalr:
+        case isa::Opcode::kFence:
+        case isa::Opcode::kEcall:
+        case isa::Opcode::kEbreak:
+            return ExecuteIType(instr);
+
+        // S-type
+        case isa::Opcode::kSb:
+        case isa::Opcode::kSh:
+        case isa::Opcode::kSw:
+            return ExecuteSType(instr);
+
+        // U-type
+        case isa::Opcode::kLui:
+        case isa::Opcode::kAuipc:
+            return ExecuteUType(instr);
+
+        // J-type
+        case isa::Opcode::kJal:
+            return ExecuteJType(instr);
+
+        // B-type
+        case isa::Opcode::kBeq:
+        case isa::Opcode::kBne:
+        case isa::Opcode::kBlt:
+        case isa::Opcode::kBge:
+        case isa::Opcode::kBltu:
+        case isa::Opcode::kBgeu:
+            return ExecuteBType(instr);
+
+        default:
+            return false;
+    }
 }
 
 bool CPU::ExecuteRType(DecodedInstruction instr) {
-    Word rs1 = ReadReg(static_cast<size_t>(instr.rs1)); // read the value of the first source register
-    Word rs2 = ReadReg(static_cast<size_t>(instr.rs2)); // read the value of the second source register
+    Word rs1 = ReadReg(static_cast<size_t>(instr.rs1));
+    Word rs2 = ReadReg(static_cast<size_t>(instr.rs2));
     alu::AluOp alu_opcode = MapToAluOp(instr.opcode);
-    alu::AluOutput alu_output = alu_.Execute(rs1,rs2,alu_opcode); // execute the ALU operation based on the opcode and source register values
-    WriteReg(static_cast<size_t>(instr.rd), alu_output.result);  // write the result to the destination register, rd
-    return false; // pc is unchanged
+    alu::AluOutput alu_output = alu_.Execute(rs1, rs2, alu_opcode);
+    WriteReg(static_cast<size_t>(instr.rd), alu_output.result);
+    return false;
 }
 
 bool CPU::ExecuteIType(DecodedInstruction instr) {
@@ -477,10 +585,10 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
         case isa::Opcode::kSlli:
         case isa::Opcode::kSrli:
         case isa::Opcode::kSrai: {
-            Word rs1 = ReadReg(static_cast<size_t>(instr.rs1)); // read the value of the first source register
-            Word rs2 = static_cast<Word>(instr.imm);  // use the immediate value as the second operand
+            Word rs1 = ReadReg(static_cast<size_t>(instr.rs1));
+            Word rs2 = static_cast<Word>(instr.imm); // immediate as second operand
             alu::AluOp alu_opcode = MapToAluOp(instr.opcode);
-            alu::AluOutput alu_output = alu_.Execute(rs1, rs2, alu_opcode); // execute the ALU operation based on the opcode and operands
+            alu::AluOutput alu_output = alu_.Execute(rs1, rs2, alu_opcode);
             WriteReg(static_cast<size_t>(instr.rd), alu_output.result);
             return false;
         }
@@ -496,26 +604,26 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
             switch (instr.opcode) {
                 case isa::Opcode::kLb: {
                     Byte raw = ram_.ReadByte(addr.result);
-                    WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(SignExtend(raw, 8))); // sign-extend the byte to a word and write to rd
+                    WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(SignExtend(raw, 8))); // sign-extend byte
                     break;
                 }
                 case isa::Opcode::kLbu: {
                     Byte raw = ram_.ReadByte(addr.result);
-                    WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(raw)); // write the byte to rd with zero-extension
+                    WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(raw));
                     break;
                 }
                 case isa::Opcode::kLh: {
                     Half raw = ram_.ReadHalf(addr.result);
-                    WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(SignExtend(raw, 16))); // sign-extend the halfword to a word and write to rd
+                    WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(SignExtend(raw, 16))); // sign-extend halfword
                     break;
                 }
                 case isa::Opcode::kLhu: {
                     Half raw = ram_.ReadHalf(addr.result);
-                    WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(raw)); // write the halfword to rd with zero-extension
+                    WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(raw));
                     break; 
                 }
                 case isa::Opcode::kLw: {
-                    WriteReg(static_cast<size_t>(instr.rd), ram_.ReadWord(addr.result)); // read the word from memory and write to rd
+                    WriteReg(static_cast<size_t>(instr.rd), ram_.ReadWord(addr.result));
                     break;
                 }
                 default:
@@ -528,22 +636,21 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
         case isa::Opcode::kJalr: {
             Word return_address = pc_.value + 4;
             Word base = ReadReg(static_cast<size_t>(instr.rs1));
-            alu::AluOutput target_address = EffectiveAddress(base, instr.imm); // compute the target address by adding the base register value and the immediate offset
+            alu::AluOutput target_address = EffectiveAddress(base, instr.imm);
             target_address.result &= ~1u;  // clear LSB per spec
             if (target_address.result & 0x3) {
-                throw std::runtime_error("JALR: misaligned target address"); // check for misalignment, throw an error if the target address is not aligned to 4 bytes
+                throw std::runtime_error("JALR: misaligned target address");
             }
-            WriteReg(static_cast<size_t>(instr.rd), return_address); // write the return address to the destination register, rd
-            pc_.value = target_address.result; // update the program counter to the target address
+            WriteReg(static_cast<size_t>(instr.rd), return_address);
+            pc_.value = target_address.result;
             return true;
         }
 
         case isa::Opcode::kFence:
             return false;  // nop for single core
         case isa::Opcode::kEcall:
-            return false;  // reserved for future system call handling
         case isa::Opcode::kEbreak:
-            std::abort();  // reserved for future debugging support
+            std::abort();
         default:
             assert(false); 
             return false;
@@ -556,13 +663,13 @@ bool CPU::ExecuteSType(DecodedInstruction instr) {
     alu::AluOutput addr = EffectiveAddress(base, instr.imm);
     switch (instr.opcode){
         case isa::Opcode::kSb:
-            ram_.WriteByte(static_cast<size_t>(addr.result), static_cast<Byte>(value & 0xFF)); // write the least significant byte of value to memory
+            ram_.WriteByte(static_cast<size_t>(addr.result), static_cast<Byte>(value & 0xFF));
             break;
         case isa::Opcode::kSh:
-            ram_.WriteHalf(static_cast<size_t>(addr.result), static_cast<Half>(value & 0xFFFF)); // write the least significant halfword of value to memory
+            ram_.WriteHalf(static_cast<size_t>(addr.result), static_cast<Half>(value & 0xFFFF));
             break;
         case isa::Opcode::kSw:
-            ram_.WriteWord(static_cast<size_t>(addr.result), value); // write the entire word value to memory
+            ram_.WriteWord(static_cast<size_t>(addr.result), value);
             break;
         default:
             assert(false);
@@ -572,15 +679,15 @@ bool CPU::ExecuteSType(DecodedInstruction instr) {
 
 bool CPU::ExecuteJType(DecodedInstruction instr) {
     Word return_address = pc_.value + 4; // address of the next instruction
-    WriteReg(static_cast<size_t>(instr.rd), return_address); // write return address to rd
+    WriteReg(static_cast<size_t>(instr.rd), return_address);
     alu::AluOutput target_address = EffectiveAddress(pc_.value, instr.imm);
-    if (target_address.result & 0x3){  // check for misalignment, throw an error if the target address is not aligned to 4 bytes
+    if (target_address.result & 0x3){
         throw std::runtime_error("JAL: misaligned target address");    
     }
     else {
-        pc_.value = target_address.result; // jump to the target address
+        pc_.value = target_address.result;
     }
-    return true; // indicate that the PC has been updated
+    return true;
 }
 
 bool CPU::ExecuteUType(DecodedInstruction instr) {
@@ -594,9 +701,9 @@ bool CPU::ExecuteUType(DecodedInstruction instr) {
             break;
         }
         default:
-            assert(false && "ExecuteUType: unhandled opcode");
+            assert(false);
     }
-    return false; // indicate that the PC has not been updated
+    return false;
 }
 
 bool CPU::ExecuteBType(DecodedInstruction instr) {
@@ -624,17 +731,36 @@ bool CPU::ExecuteBType(DecodedInstruction instr) {
             take_branch = (rs1 >= rs2); 
             break;
         default:
-            assert(false && "ExecuteBType: unhandled opcode");  
+            assert(false);
     }
 
     if(take_branch) {
         if (target_address.result & 0x3) {
             throw std::runtime_error("Branch: misaligned target address");
         } else {
-            pc_.value = target_address.result; // branch taken
+            pc_.value = target_address.result;
         }
     }
-    return take_branch; // return whether pc has been updated (branch taken) or not (branch not taken)   
+    return take_branch; // branch taken / not taken
+}
+
+void CPU::Reset() {
+    // TODO: should also reset all of memory space (how to implement efficiently ?)
+    // initialize registers
+    for (int i = 0; i < 32; i++) {
+        x[i].value = 0;
+    }
+    // initialize program counter
+    pc_.value = 0;
+}
+
+void CPU::Step() {
+    Word instr = Fetch();
+    DecodedInstruction decoded_instr = Decode(instr);
+    bool pc_changed = Execute(decoded_instr);
+    if (!pc_changed) {
+        pc_.value += 4;
+    }
 }
 
 } // namespace cpu
