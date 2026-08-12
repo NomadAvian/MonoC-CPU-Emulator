@@ -53,6 +53,10 @@ export const useAuthStore = create((set) => ({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token, name, code })
     });
+    if (res.status === 401) {
+      useAuthStore.getState().logout();
+      throw new Error("Session expired. Please log in again.");
+    }
     if (!res.ok) throw new Error("Failed to save code");
   },
 
@@ -60,8 +64,27 @@ export const useAuthStore = create((set) => ({
     const token = localStorage.getItem('auth_token');
     if (!token) return [];
     const res = await fetch(`${API_URL}/user/codes?token=${encodeURIComponent(token)}`);
+    if (res.status === 401) {
+      useAuthStore.getState().logout();
+      return [];
+    }
     if (!res.ok) throw new Error("Failed to fetch codes");
     const data = await res.json();
     return data.codes || [];
+  },
+
+  deleteCode: async (name) => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) throw new Error("Must be logged in to delete code");
+    const res = await fetch(`${API_URL}/user/codes/delete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, name })
+    });
+    if (res.status === 401) {
+      useAuthStore.getState().logout();
+      throw new Error("Session expired. Please log in again.");
+    }
+    if (!res.ok) throw new Error("Failed to delete code");
   }
 }))

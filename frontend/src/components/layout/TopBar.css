@@ -27,28 +27,31 @@
 .topbar__nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
 
 .topbar__nav-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border: none;
-  background: transparent;
+  border-radius: 10px;
+  background: #252A35;
   text-decoration: none;
   cursor: pointer;
-  margin-right: 6px;
+  transition: background 0.2s, transform 0.15s;
 }
 
-.topbar__nav-btn:hover .topbar__icon {
-  opacity: 1;
+.topbar__nav-btn:hover {
+  background: #2e3444;
 }
 
 .topbar__icon {
   width: 18px;
   height: 18px;
-  opacity: 0.7;
-  transition: opacity 0.2s;
+  opacity: 0.85;
+  transition: opacity 0.2s, filter 0.2s;
 }

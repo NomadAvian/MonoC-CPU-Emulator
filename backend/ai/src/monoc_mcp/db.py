@@ -16,10 +16,8 @@ def init_db():
     try:
         with sqlite3.connect(DB) as conn:
             cursor = conn.cursor()
-            # only for dev works!
-            cursor.execute("DROP TABLE IF EXISTS users")
             cursor.execute("""
-                CREATE TABLE users(
+                CREATE TABLE IF NOT EXISTS users(
                     username TEXT,
                     email TEXT UNIQUE,
                     password TEXT,
@@ -96,4 +94,21 @@ def get_user_codes(token):
             return json.loads(row[0] or "[]")
         except Exception:
             return []
+
+
+def delete_user_code(token, name):
+    import json
+    with sqlite3.connect(DB) as conn:
+        row = conn.execute("SELECT saved_codes FROM users WHERE token = ?", (token,)).fetchone()
+        if not row:
+            return False
+        try:
+            codes = json.loads(row[0] or "[]")
+        except Exception:
+            codes = []
+        new_codes = [c for c in codes if c.get("name") != name]
+        conn.execute("UPDATE users SET saved_codes = ? WHERE token = ?", (json.dumps(new_codes), token))
+        conn.commit()
+        return True
+
 

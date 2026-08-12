@@ -5,6 +5,7 @@
   flex-direction: column;
   gap: 1px;
   min-height: 100%;
+  padding: 8px;
 }
 
 .log-panel__header {

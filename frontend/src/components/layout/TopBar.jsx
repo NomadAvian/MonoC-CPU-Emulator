@@ -58,18 +58,17 @@ export default function TopBar() {
         {/* Right: Nav actions (Order: AI, Settings, Save, Docs, Profile) */}
         <nav className="topbar__nav">
           <button
-            className={`ui-button ui-button--ghost topbar__nav-btn ${isChatOpen ? 'topbar__nav-btn--active' : ''}`}
+            className={`topbar__nav-btn ${isChatOpen ? 'topbar__nav-btn--active' : ''}`}
             id="topbar-chat-btn"
             aria-pressed={isChatOpen}
             onClick={toggleChat}
             title="AI Chat"
-            style={{ color: 'var(--accent)' }}
           >
             <img src={aiIcon} alt="AI Chat" className="topbar__icon" />
           </button>
 
           <button
-            className="ui-button ui-button--ghost topbar__nav-btn"
+            className="topbar__nav-btn"
             id="topbar-settings-btn"
             onClick={() => setSettingsOpen(true)}
             title="Settings"
@@ -78,7 +77,7 @@ export default function TopBar() {
           </button>
 
           <button
-            className="ui-button ui-button--ghost topbar__nav-btn"
+            className="topbar__nav-btn"
             id="topbar-save-btn"
             onClick={handleSaveClick}
             title="Save Code"
@@ -87,7 +86,7 @@ export default function TopBar() {
           </button>
 
           <a
-            className="ui-button ui-button--ghost topbar__nav-btn"
+            className="topbar__nav-btn"
             id="topbar-docs-btn"
             href="https://github.com"
             target="_blank"
@@ -98,7 +97,7 @@ export default function TopBar() {
           </a>
 
           <button 
-            className="ui-button ui-button--ghost topbar__nav-btn" 
+            className="topbar__nav-btn" 
             id="topbar-profile-btn"
             onClick={handleProfileClick}
             title={user ? user.username : 'Log In'}

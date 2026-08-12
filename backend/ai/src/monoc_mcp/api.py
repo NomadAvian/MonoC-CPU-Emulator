@@ -87,3 +87,17 @@ def save_code(req: SaveCodeRequest):
 def get_codes(token: str):
     return {"codes": db.get_user_codes(token)}
 
+
+class DeleteCodeRequest(BaseModel):
+    token: str
+    name: str
+
+
+@app.post("/user/codes/delete")
+def delete_code(req: DeleteCodeRequest):
+    success = db.delete_user_code(req.token, req.name)
+    if not success:
+        raise HTTPException(status_code=400, detail="Failed to delete code")
+    return {"success": True}
+
+

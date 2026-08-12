@@ -92,9 +92,43 @@
   color: var(--text);
 }
 
-.profile-modal__item-hint {
-  font-size: 11px;
-  color: var(--text-muted);
+.profile-modal__item-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.profile-modal__action-btn {
+  width: 26px;
+  height: 26px;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background 0.2s;
+}
+
+.profile-modal__action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.profile-modal__action-btn--delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.profile-modal__action-btn img {
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.profile-modal__action-btn:hover img {
+  opacity: 1;
+}
+
+.profile-modal__action-btn--delete:hover img {
+  filter: invert(36%) sepia(87%) saturate(2468%) hue-rotate(336deg) brightness(98%) contrast(93%);
 }
 
 .profile-modal__footer {
