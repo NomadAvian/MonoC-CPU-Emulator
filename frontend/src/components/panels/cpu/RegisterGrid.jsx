@@ -1,5 +1,6 @@
 import './RegisterGrid.css'
 import RegisterCell from './RegisterCell'
+import { useEffect } from 'react'
 import { useCPUStore } from '../../../store/cpuStore'
 import { useUIStore } from '../../../store/uiStore'
 import { formatValue } from '../../../../utils/format'
@@ -8,6 +9,11 @@ export default function RegisterGrid() {
   const registers = useCPUStore(s => s.registers)
   const programCounter = useCPUStore(s => s.programCounter)
   const format = useUIStore(s => s.format)
+  const fetchRegisters = useCPUStore(s => s.fetchRegisters)
+
+  useEffect(() => {
+    fetchRegisters()
+  }, [fetchRegisters])
 
   const sp = registers[1] ?? 0
 

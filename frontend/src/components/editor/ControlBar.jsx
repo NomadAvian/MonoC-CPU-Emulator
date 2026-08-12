@@ -18,6 +18,7 @@ export default function ControlBar() {
   const run = useCPUStore(s => s.run)
   const pause = useCPUStore(s => s.pause)
   const reset = useCPUStore(s => s.reset)
+  
 
   const handleControl = (id) => {
     if (id === 'ctrl-reset') reset()

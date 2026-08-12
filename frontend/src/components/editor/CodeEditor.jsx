@@ -8,18 +8,19 @@ import './CodeEditor.css'
 
 export default function CodeEditor() {
   const containerRef = useRef(null)
-  const viewRef = useRef(null)
-  const code = useEditorStore(s => s.code)
-  const setCode = useEditorStore(s => s.setCode)
+  const setSource = useEditorStore(s => s.setSource)
 
   useEffect(() => {
     const view = new EditorView({
-      doc: code,
+      doc: useEditorStore.getState().source,
       parent: containerRef.current,
       extensions: [
         basicSetup,
         riscv,
         history(),
+        EditorView.updateListener.of((u) => {
+          if (u.docChanged) setSource(u.state.doc.toString())
+        }),
         keymap.of([
           ...defaultKeymap,
           ...historyKeymap,
@@ -34,7 +35,7 @@ export default function CodeEditor() {
     })
     viewRef.current = view
     return () => view.destroy()
-  }, [])
+  }, [setSource])
 
   // sync external store changes to CodeMirror
   useEffect(() => {

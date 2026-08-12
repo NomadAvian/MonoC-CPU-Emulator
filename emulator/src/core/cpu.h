@@ -56,18 +56,50 @@ struct DecodedInstruction {
 class CPU {
 public:
     CPU(std::string filename = "") : ram_(), rom_() {
-        // initialize registers
-        for (int i = 0; i < 32; i++) {
-            x[i].value = 0;
-        }
-        // initialize program counter
-        pc_.value = 0;
+        Reset();
         LoadROM(filename);
     }
 
-    void LoadROM(const std::string& filename);
+    void LoadROM(const std::string& filename);	
 
-	Word Fetch() const {
+    Word ReadReg (size_t index) const;
+
+    Word pc() const;
+
+    Word ReadMemoryWord(Word address) const;
+    Half ReadMemoryHalf(Word address) const;
+    Byte ReadMemoryByte(Word address) const;
+
+    void set_pc_for_testing(Word value);
+    void write_memory_word_for_testing(Word addr, Word value) {
+        ram_.WriteWord(addr, value);
+    }
+
+    void Reset();
+    void Step();
+
+private:
+    Reg        x[32];
+    Reg        pc_;
+    Memory     ram_;
+    Memory     rom_;
+    alu::Alu   alu_;
+
+    int32_t SignExtend(uint32_t value, uint32_t bits) const;
+
+    // fixed bit-field extractors
+    Word ExtractOpcode(Word instruction);
+    Word ExtractRd    (Word instruction);
+    Word ExtractFunct3(Word instruction);
+    Word ExtractFunct7(Word instruction);
+    Word ExtractRs1   (Word instruction);
+    Word ExtractRs2   (Word instruction);
+    alu::AluOp MapToAluOp(isa::Opcode opcode) const;
+    alu::AluOutput EffectiveAddress(Word base, int32_t offset) const;
+
+    void WriteReg(size_t index, Word value);
+
+    Word Fetch() const {
         return rom_.ReadWord(pc_.value);
     }
 
@@ -79,27 +111,15 @@ public:
     DecodedInstruction DecodeJType(Word instruction);
     DecodedInstruction DecodeBType(Word instruction);
 
-    void ExecuteRType(DecodedInstruction instr);
-    void ExecuteIType(DecodedInstruction instr);
-    void ExecuteSType(DecodedInstruction instr);
-    void ExecuteUType(DecodedInstruction instr);
-    void ExecuteJType(DecodedInstruction instr);
-    void ExecuteBType(DecodedInstruction instr);
+    // returns whether pc_ has been updated
+    bool Execute     (DecodedInstruction instr);
 
-    void WriteReg(size_t index, Word value);
-    Word ReadReg (size_t index) const;
-
-private:
-    Reg        x[32];
-    Reg        pc_;
-    Memory     ram_;
-    Memory     rom_;
-    alu::Alu   alu_;
-
-    int32_t SignExtend(uint32_t value, uint32_t bits) const;
-
-    Word ExtractRs1(Word instruction);
-    Word ExtractRs2(Word instruction);
+    bool ExecuteRType(DecodedInstruction instr);
+    bool ExecuteIType(DecodedInstruction instr);
+    bool ExecuteSType(DecodedInstruction instr);
+    bool ExecuteUType(DecodedInstruction instr);
+    bool ExecuteJType(DecodedInstruction instr);
+    bool ExecuteBType(DecodedInstruction instr);
 
 };
 
