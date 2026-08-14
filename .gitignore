@@ -4,6 +4,7 @@
 *.obj
 *.o
 .env
+.zed
 
 .DS_Store
 

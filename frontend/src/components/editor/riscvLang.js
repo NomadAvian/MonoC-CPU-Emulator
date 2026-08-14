@@ -12,9 +12,9 @@ const riscvLanguage = StreamLanguage.define({
 
         if (stream.match(/\.[a-z][a-z0-9]*/i, true)) return 'meta'
 
-        if (stream.match(/\b\d+\b/)) return 'number'
         if (stream.match(/0[xX][0-9a-fA-F]+/)) return 'number'
         if (stream.match(/0[bB][01]+/)) return 'number'
+        if (stream.match(/-?\d+/)) return 'number'
 
         if (stream.match(/\bx([0-9]|[12]\d|3[01])\b/)) return 'atom'
 

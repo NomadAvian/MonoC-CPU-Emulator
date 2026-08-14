@@ -15,7 +15,7 @@ class Memory {
 public:
   Memory(size_t size = 128 * 1024 * 1024, bool read_only = false)
       : read_only_(read_only), data_(size) {
-    assert(std::__has_single_bit(size));
+    assert(std::has_single_bit(size));
   }
 
   void LoadFile(const std::string &filename);

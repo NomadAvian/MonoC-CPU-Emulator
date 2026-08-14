@@ -27,7 +27,7 @@
 .topbar__nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
 }
 
 .topbar__nav-btn {

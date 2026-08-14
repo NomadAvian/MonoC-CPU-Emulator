@@ -8,6 +8,7 @@ import { formatValue } from '../../../../utils/format'
 export default function RegisterGrid() {
   const registers = useCPUStore(s => s.registers)
   const programCounter = useCPUStore(s => s.programCounter)
+  const changedRegisters = useCPUStore(s => s.changedRegisters)
   const format = useUIStore(s => s.format)
   const fetchRegisters = useCPUStore(s => s.fetchRegisters)
 
@@ -21,8 +22,8 @@ export default function RegisterGrid() {
     <div className="reg-grid">
       <div className="reg-grid__section-label">Pinned Registers</div>
       <div className="reg-grid__pinned">
-        <RegisterCell name="PC" value={formatValue(programCounter, format)} />
-        <RegisterCell name="SP" value={formatValue(sp, format)} />
+        <RegisterCell name="PC" value={formatValue(programCounter, format)} highlighted={changedRegisters.has('pc')} />
+        <RegisterCell name="SP" value={formatValue(sp, format)} highlighted={changedRegisters.has(1)} />
       </div>
 
       <div className="divider-h reg-grid__divider" />
@@ -30,7 +31,7 @@ export default function RegisterGrid() {
       <div className="reg-grid__section-label">Registers</div>
       <div className="reg-grid__list">
         {registers.map((val, i) => (
-          <RegisterCell key={i} name={`R${i}`} value={formatValue(val, format)} />
+          <RegisterCell key={i} name={`R${i}`} value={formatValue(val, format)} highlighted={changedRegisters.has(i)} />
         ))}
       </div>
     </div>

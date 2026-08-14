@@ -4,8 +4,8 @@
 # Crow headers are installed system-wide (default include path).
 
 CXX      = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra -O2 -pthread
-
+# CXXFLAGS = -std=c++20 -Wall -Wextra -O2 -pthread
+CXXFLAGS = -std=c++20 -Wall -Wextra -O2 -pthread -I/opt/homebrew/include -L/opt/homebrew/lib
 BACKEND_DIR = ../backend
 EMU_CORE    = ../emulator/src/core
 EMU_ASM     = ../emulator/src/assembler

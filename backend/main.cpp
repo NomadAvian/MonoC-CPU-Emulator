@@ -16,14 +16,6 @@ int main()
         return "Hello World, this is a test for MCP & Backend Server";
     });
 
-    // POST /cpu/load
-    // creates/resets the CPU and loads a ROM
-    CROW_ROUTE(app, "/cpu/load").methods(crow::HTTPMethod::POST)
-    ([&cpu_instance](const crow::request& req) {
-        // TODO
-        return crow::response(200, "loaded the cpu");
-    });
-
     // POST /cpu/compile
     // assembles the source buffer into a ROM and loads it into the CPU
     CROW_ROUTE(app, "/cpu/compile").methods(crow::HTTPMethod::POST)
@@ -65,7 +57,6 @@ int main()
     CROW_ROUTE(app, "/cpu/step").methods(crow::HTTPMethod::POST)
     ([&cpu_instance]() {
         if (!cpu_instance) return crow::response(400, "no cpu loaded");
-        // TODO: is this enough ?
         cpu_instance->Step();
         return crow::response(200, "stepped");
     });
@@ -99,6 +90,15 @@ int main()
         auto body = crow::json::load(req.body);
         // TODO send to Ollama/Gemini
         return crow::response(200, "ai is up");
+    });
+
+    CROW_ROUTE(app, "/ai/cpu_state").methods(crow::HTTPMethod::POST)
+    // chat message is handeled by api.py /chat route
+    // this route will stream cpu states and context ONLY
+    // my idea: crow -> python server (new route) -> merge the response -
+    // with user's chat response -> LLM
+    ([](){
+        // TODO: 32 reg + source streaming..
     });
 
     app.port(6969).multithreaded().run();

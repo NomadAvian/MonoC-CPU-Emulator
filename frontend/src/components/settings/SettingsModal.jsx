@@ -5,7 +5,7 @@ import { useAuthStore } from '../../store/authStore'
 import { useEditorStore } from '../../store/editorStore'
 import closeIcon from '../../assets/close.svg'
 
-const FORMAT_OPTIONS = ['Hex', 'Unsigned', 'Binary']
+const FORMAT_OPTIONS = ['Hex', 'Unsigned']
 const MODE_OPTIONS   = ['Dark', 'Light']
 
 

@@ -22,7 +22,7 @@
 .control-bar__actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
 }
 
 .control-bar__btn {
@@ -46,3 +46,31 @@
   line-height: 1;
   letter-spacing: .05em;
 }
+
+.control-bar__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.control-bar__btn--loading {
+  opacity: 0.8;
+}
+
+.control-bar__status--compiled { color: var(--cyan); }
+.control-bar__status--halted   { color: var(--yellow); }
+
+/* Spinner */
+.control-bar__spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--text-muted);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
