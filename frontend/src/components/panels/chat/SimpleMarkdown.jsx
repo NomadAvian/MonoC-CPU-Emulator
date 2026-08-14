@@ -1,7 +1,7 @@
 export function SimpleMarkdown({ content }) {
   if (!content) return null
 
-  // 1. Extract fenced code blocks first, replacing them with placeholders
+  // 1. extract fenced code blocks first, replacing them with placeholders
   const codeBlocks = []
   let processed = content.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
     const index = codeBlocks.length
@@ -13,7 +13,7 @@ export function SimpleMarkdown({ content }) {
     return `%%CODEBLOCK_${index}%%`
   })
 
-  // 2. Extract inline code, protecting it from further transforms
+  // 2. extract inline code, protecting it from further transforms
   const inlineCode = []
   processed = processed.replace(/`([^`]+)`/g, (_, code) => {
     const index = inlineCode.length
@@ -21,7 +21,12 @@ export function SimpleMarkdown({ content }) {
     return `%%INLINE_${index}%%`
   })
 
-  // 3. Now apply block-level and inline markdown (safe — no code left)
+  // 3. clean up LaTeX math notation 
+  processed = processed.replace(/\$\$?([\s\S]+?)\$\$?/g, (_, math) => {
+    return math.replace(/\\text\{([^}]+)\}/g, '$1').replace(/\\/g, '')
+  })
+
+  // 4. apply block-level and inline markdown 
   processed = processed
     // headings
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')

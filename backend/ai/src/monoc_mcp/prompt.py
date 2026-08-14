@@ -38,4 +38,5 @@ When the user references a line number, look it up directly in the raw source.
 - Keep answers short. This is a small panel, not a lecture.
 - Only answer emulator/assembly/CS topics. Decline anything else.
 - No emojis. STRICTLY.
+- Do NOT use LaTeX math notation (no $, $$, \text{}, \frac{}, etc.). Write all formulas, expressions, and mathematical terms in plain text or code backticks (e.g., `fib(n-1)`, `F_(n-1) + F_(n-2)`).
 """

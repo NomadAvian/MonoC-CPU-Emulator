@@ -179,7 +179,17 @@ export default function CodeEditor() {
 
       if (instrIndex >= 0 && instrIndex < cachedMap.length) {
         const lineNumber = cachedMap[instrIndex]
-        view.dispatch({ effects: setHighlightLine.of(lineNumber) })
+        try {
+          const line = view.state.doc.line(lineNumber)
+          view.dispatch({
+            effects: [
+              setHighlightLine.of(lineNumber),
+              EditorView.scrollIntoView(line.from, { y: 'center' }),
+            ],
+          })
+        } catch {
+          view.dispatch({ effects: setHighlightLine.of(lineNumber) })
+        }
       } else {
         view.dispatch({ effects: setHighlightLine.of(-1) })
       }
