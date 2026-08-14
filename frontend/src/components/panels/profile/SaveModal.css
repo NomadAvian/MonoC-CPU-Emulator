@@ -13,7 +13,7 @@
 
 .save-modal h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--fs-lg);
   color: var(--text);
   text-align: center;
 }
@@ -31,7 +31,7 @@
 
 .save-error {
   color: #ef4444;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   text-align: center;
   background: rgba(239, 68, 68, 0.1);
   padding: 8px;
@@ -40,7 +40,7 @@
 
 .save-success {
   color: #10b981;
-  font-size: 14px;
+  font-size: var(--fs-sm);
   text-align: center;
   background: rgba(16, 185, 129, 0.1);
   padding: 12px;

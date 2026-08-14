@@ -63,10 +63,10 @@ export default function SaveButtonGroup({ onSaveClick }) {
           <div style={{ position: 'fixed', inset: 0, zIndex: 199 }} onClick={() => setFileMenuOpen(false)} />
           <div className="save-btn-menu">
             <button className="ui-button" onClick={handleLoadClick}>
-              Import Local File
+              Import File
             </button>
             <button className="ui-button" onClick={handleExport}>
-              Export Local File
+              Export File
             </button>
           </div>
         </>

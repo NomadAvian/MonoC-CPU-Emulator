@@ -40,7 +40,7 @@
 }
 
 .settings-modal__title {
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -59,7 +59,7 @@
 }
 
 .settings-modal__label {
-  font-size: 11px;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -74,6 +74,7 @@
 .settings-modal__opt-btn {
   flex: 1;
   padding: 5px 8px;
+  font-size: var(--fs-sm);
 }
 
 .settings-modal__opt-btn:hover {

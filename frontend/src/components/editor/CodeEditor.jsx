@@ -1,4 +1,3 @@
-// ─── Imports ────────────────────────────────────────────────
 import { useEffect, useRef } from 'react'
 import { basicSetup } from 'codemirror'
 import { EditorView, keymap, Decoration } from '@codemirror/view'

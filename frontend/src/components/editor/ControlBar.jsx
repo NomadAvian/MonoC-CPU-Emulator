@@ -33,8 +33,11 @@ export default function ControlBar() {
 
   const getButtonState = (id) => {
     if (id === 'ctrl-compile') return { disabled: compiling, loading: compiling }
-    if (id === 'ctrl-step-over') return { disabled: halted || compiling }
-    return { disabled: compiling }
+    if (id === 'ctrl-play') return { disabled: compiling || halted }
+    if (id === 'ctrl-stop') return { disabled: compiling || status !== 'running' }
+    if (id === 'ctrl-step-over') return { disabled: compiling || halted || status === 'stopped' }
+    if (id === 'ctrl-reset') return { disabled: compiling }
+    return { disabled: false }
   }
 
   return (

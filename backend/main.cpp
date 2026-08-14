@@ -90,11 +90,10 @@ int main() {
     return crow::response(200, res);
   });
 
-  //TODO
-  // need: make a route + function which answers the
-  // llm: what instruction is at PC right now
-  // goal: user says what does line 5 do?  llm reads the source (cpu/source)
-
+  // TODO
+  //  need: make a route + function which answers the
+  //  llm: what instruction is at PC right now
+  //  goal: user says what does line 5 do?  llm reads the source (cpu/source)
 
   app.port(6969).multithreaded().run();
 }

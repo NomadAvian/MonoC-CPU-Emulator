@@ -30,6 +30,9 @@ export function SimpleMarkdown({ content }) {
     // bold, italic
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    // lists
+    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
     // blank lines → paragraph breaks
     .replace(/\n{2,}/g, '</p><p>')
 
@@ -39,5 +42,5 @@ export function SimpleMarkdown({ content }) {
   // 5. Restore code blocks
   processed = processed.replace(/%%CODEBLOCK_(\d+)%%/g, (_, i) => codeBlocks[i])
 
-  return <div className="markdown-body" dangerouslySetInnerHTML={{ __html: `<p>${processed}</p>` }} />
+  return <div className="markdown-body" dangerouslySetInnerHTML={{ __html: processed }} />
 }

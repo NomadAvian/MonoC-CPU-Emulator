@@ -58,9 +58,9 @@ export default function TopBar() {
             id="topbar-chat-btn"
             aria-pressed={isChatOpen}
             onClick={toggleChat}
-            title="AI Chat"
+            title="MonoC AI"
           >
-            <img src={aiIcon} alt="AI Chat" className="topbar__icon" />
+            <img src={aiIcon} alt="MonoC AI" className="topbar__icon" />
           </button>
 
           <button

@@ -13,16 +13,17 @@ export async function stepCpu() {
 }
 
 export async function resetCpu() {
-    const res = await fetch(`${BASE}/cpu/reset`, { method: `POST` })
-    if (!res.ok) throw new Error(`POST /cpu/reset failed: ${res.status}`)
-    return res.text()
+  const res = await fetch(`${BASE}/cpu/reset`, { method: `POST` })
+  if (!res.ok) throw new Error(`POST /cpu/reset failed: ${res.status}`)
+  return res.text()
 }
 
 export async function compile(source) {
-    const res = await fetch(`${BASE}/cpu/compile`, { method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source })
-     })
-    if (!res.ok) throw new Error(`POST /cpu/compile failed: ${res.status}`)
-    return res.json()
+  const res = await fetch(`${BASE}/cpu/compile`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ source })
+  })
+  if (!res.ok) throw new Error(`POST /cpu/compile failed: ${res.status}`)
+  return res.json()
 }

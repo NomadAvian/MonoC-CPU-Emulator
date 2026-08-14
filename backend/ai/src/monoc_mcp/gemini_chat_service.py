@@ -8,7 +8,7 @@ from google import genai
 from google.genai import types
 from monoc_mcp.crow_client import get_registers, get_memory, get_source, step_cpu
 
-MODEL = "gemini-flash-latest"
+MODEL = "gemini-2.5-flash"
 
 _client = None
 
