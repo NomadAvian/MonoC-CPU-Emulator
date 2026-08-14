@@ -1,25 +1,28 @@
 import { useState } from 'react'
 import './TopBar.css'
-import SettingsModal from '../settings/SettingsModal'
+import SettingsModal from '../panels/settings/SettingsModal'
 import AuthModal from '../panels/profile/AuthModal'
 import ProfileModal from '../panels/profile/ProfileModal'
+import LibraryPanel from '../panels/library/LibraryPanel'
+import SaveModal from '../panels/profile/SaveModal'
+import SaveButtonGroup from '../panels/save/SaveButtonGroup'
 import { useUIStore } from '../../store/uiStore'
 import { useAuthStore } from '../../store/authStore'
-import { useEditorStore } from '../../store/editorStore'
 
 import aiIcon from '../../assets/ai.svg'
 import docsIcon from '../../assets/docs.svg'
 import settingsIcon from '../../assets/settings.svg'
 import profileIcon from '../../assets/profile.svg'
-import saveIcon from '../../assets/save.svg'
+import libraryIcon from '../../assets/library.svg'
 
 export default function TopBar() {
+  const [libraryOpen, setLibraryOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [saveOpen, setSaveOpen] = useState(false)
 
-  const isChatOpen = useUIStore(s => s.isChatOpen)
-  const toggleChat = useUIStore(s => s.toggleChat)
+  const { isChatOpen, toggleChat } = useUIStore()
 
   const user = useAuthStore(s => s.user)
 
@@ -31,20 +34,12 @@ export default function TopBar() {
     }
   }
 
-  const handleSaveClick = async () => {
+  const handleSaveClick = () => {
     if (!user) {
-      alert("Please log in to save code.");
+      setAuthOpen(true);
       return;
     }
-    const name = window.prompt("Enter code name:");
-    if (!name) return;
-    try {
-      const currentCode = useEditorStore.getState().source;
-      await useAuthStore.getState().saveCode(name, currentCode);
-      alert("Code saved successfully!");
-    } catch (err) {
-      alert(err.message);
-    }
+    setSaveOpen(true);
   }
 
   return (
@@ -55,8 +50,9 @@ export default function TopBar() {
           <span className="topbar__logo-text">MonoC</span>
         </div>
 
-        {/* Right: Nav actions (Order: AI, Settings, Save, Docs, Profile) */}
+        {/* Right: Nav actions */}
         <nav className="topbar__nav">
+
           <button
             className={`topbar__nav-btn ${isChatOpen ? 'topbar__nav-btn--active' : ''}`}
             id="topbar-chat-btn"
@@ -69,6 +65,15 @@ export default function TopBar() {
 
           <button
             className="topbar__nav-btn"
+            id="topbar-library-btn"
+            onClick={() => setLibraryOpen(true)}
+            title="Code Library"
+          >
+            <img src={libraryIcon} alt="Code Library" className="topbar__icon" />
+          </button>
+
+          <button
+            className="topbar__nav-btn"
             id="topbar-settings-btn"
             onClick={() => setSettingsOpen(true)}
             title="Settings"
@@ -76,14 +81,7 @@ export default function TopBar() {
             <img src={settingsIcon} alt="Settings" className="topbar__icon" />
           </button>
 
-          <button
-            className="topbar__nav-btn"
-            id="topbar-save-btn"
-            onClick={handleSaveClick}
-            title="Save Code"
-          >
-            <img src={saveIcon} alt="Save Code" className="topbar__icon" />
-          </button>
+          <SaveButtonGroup onSaveClick={handleSaveClick} />
 
           <a
             className="topbar__nav-btn"
@@ -107,9 +105,11 @@ export default function TopBar() {
         </nav>
       </header>
 
+      {libraryOpen && <LibraryPanel onClose={() => setLibraryOpen(false)} />}
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
       {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
+      {saveOpen && <SaveModal onClose={() => setSaveOpen(false)} />}
     </>
   )
 }

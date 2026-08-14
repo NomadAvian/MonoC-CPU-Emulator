@@ -1,5 +1,5 @@
 from mcp.server.fastmcp import FastMCP
-from .crow_client import *
+from .crow_client import get_registers, get_memory, step_cpu as crow_step_cpu
 
 mcp = FastMCP("monoc_mcp")
 
@@ -18,4 +18,4 @@ def read_memory(addr: str) -> dict:
 @mcp.tool()
 def step_cpu() -> dict:
     """Execute one instruction on the CPU and return the new program counter (PC) and whether the CPU halted"""
-    return step_cpu()
+    return crow_step_cpu()  # step_cpu() introduces recursion bug

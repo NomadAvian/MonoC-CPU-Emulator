@@ -1,0 +1,49 @@
+.save-modal {
+  background: #252A35;
+  border: 1px solid var(--border);
+  padding: 32px;
+  border-radius: 12px;
+  width: 360px;
+  max-width: 90%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.save-modal h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text);
+  text-align: center;
+}
+
+.save-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.save-submit {
+  padding: 10px;
+  font-weight: 600;
+}
+
+.save-error {
+  color: #ef4444;
+  font-size: 13px;
+  text-align: center;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.save-success {
+  color: #10b981;
+  font-size: 14px;
+  text-align: center;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 12px;
+  border-radius: 6px;
+  font-weight: 500;
+}

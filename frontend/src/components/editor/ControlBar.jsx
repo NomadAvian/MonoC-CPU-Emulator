@@ -1,9 +1,9 @@
 import './ControlBar.css'
 import { useCPUStore } from '../../store/cpuStore'
-import playIcon from '../../assets/play.svg'
-import stopIcon from '../../assets/stop.svg'
-import stepIcon from '../../assets/step-once.svg'
-import resetIcon from '../../assets/reset.svg'
+// import playIcon from '../../assets/play.svg'
+// import stopIcon from '../../assets/stop.svg'
+// import stepIcon from '../../assets/step-once.svg'
+// import resetIcon from '../../assets/reset.svg'
 
 
 const CONTROLS = [

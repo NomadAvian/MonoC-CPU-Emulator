@@ -1,0 +1,43 @@
+/* Split Button Styles */
+.save-btn-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.save-btn-main {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-right: 1px !important;
+}
+
+.save-btn-caret {
+  width: 24px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.save-btn-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background: #252A35;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 200;
+  min-width: 150px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.save-btn-menu .ui-button {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  justify-content: flex-start;
+  white-space: nowrap;
+}

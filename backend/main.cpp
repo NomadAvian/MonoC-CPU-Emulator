@@ -78,7 +78,7 @@ int main() {
     if (!cpu_instance)
       return crow::response(400, "no cpu loaded");
     // TODO
-    return crow::response(200, "memory");
+    return crow::response(501, "memory not implemented yet");
   });
 
   // GET /cpu/source

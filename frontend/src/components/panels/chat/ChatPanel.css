@@ -73,6 +73,8 @@
   line-height: 1.5;
   max-width: 100%;
   word-wrap: break-word;
+  /* All messages left-aligned */
+  align-self: flex-start;
 }
 
 .chat-message p {
@@ -94,12 +96,15 @@
   font-style: italic;
 }
 
+/* Inline code — accent-tinted */
 .chat-message code {
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
   font-size: 0.85em;
   padding: 2px 6px;
   border-radius: 4px;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
 }
 
 .chat-message pre {
@@ -110,9 +115,12 @@
   overflow-x: auto;
 }
 
+/* Code inside pre blocks resets to normal monospace look */
 .chat-message pre code {
   padding: 0;
   background: transparent;
+  color: var(--text-primary);
+  border: none;
   font-size: 0.85em;
 }
 
@@ -146,27 +154,27 @@
   opacity: 0.9;
 }
 
+/* User messages — left-aligned with accent left border */
 .chat-message--user {
-  align-self: flex-end;
-  background: var(--accent, #3b82f6);
-  color: #fff;
-  border-bottom-right-radius: 2px;
+  background: var(--accent-dim);
+  color: var(--text-primary);
+  border-left: 3px solid var(--accent);
 }
 
+/* Assistant messages */
 .chat-message--assistant {
-  align-self: flex-start;
   background: var(--bg-surface, #2a2a2a);
   color: var(--text, #e0e0e0);
-  border-bottom-left-radius: 2px;
   border: 1px solid var(--border, #3a3a3a);
 }
 
+/* Fenced code block wrapper */
 .chat-codeblock {
   margin: 8px 0;
   border-radius: 6px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--border, #3a3a3a);
+  border: 1px solid var(--accent-border);
 }
 
 .chat-codeblock__lang {
@@ -174,10 +182,10 @@
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: rgba(255, 255, 255, 0.07);
-  color: var(--text-muted, #888);
+  background: var(--accent-dim);
+  color: var(--accent);
   font-family: monospace;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--accent-border);
 }
 
 .chat-codeblock pre {
@@ -185,4 +193,51 @@
   padding: 10px 12px;
   background: transparent;
   overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.chat-codeblock pre code {
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  padding: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Thinking indicator ─────────────────────────────────── */
+.chat-thinking {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 16px;
+}
+
+.chat-thinking__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.4;
+  animation: thinking-pulse 1.4s ease-in-out infinite;
+}
+
+.chat-thinking__dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.chat-thinking__dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes thinking-pulse {
+  0%, 80%, 100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

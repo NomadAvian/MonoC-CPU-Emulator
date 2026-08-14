@@ -48,6 +48,14 @@ export default function ChatPanel() {
           ))
         )}
 
+        {isLoading && (
+          <div className="chat-message chat-message--assistant chat-thinking">
+            <span className="chat-thinking__dot" />
+            <span className="chat-thinking__dot" />
+            <span className="chat-thinking__dot" />
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
 
       </div>
@@ -57,7 +65,7 @@ export default function ChatPanel() {
         <textarea
           id="chat-input"
           className="ui-input chat-panel__input"
-          placeholder="ask anything…"
+          placeholder="Ask anything…"
           rows={4}
           value={input}
           onChange={(e) => setInput(e.target.value)}

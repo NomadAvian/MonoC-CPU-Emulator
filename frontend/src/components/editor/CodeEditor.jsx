@@ -1,8 +1,11 @@
+// ─── Imports ────────────────────────────────────────────────
 import { useEffect, useRef } from 'react'
 import { basicSetup } from 'codemirror'
 import { EditorView, keymap, Decoration } from '@codemirror/view'
 import { indentWithTab, defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { StateEffect, StateField, EditorState, Compartment } from '@codemirror/state'
+import { indentUnit } from '@codemirror/language'
+
 import { riscv } from './riscvLang'
 import { useEditorStore } from '../../store/editorStore'
 import { useCPUStore } from '../../store/cpuStore'
@@ -10,7 +13,8 @@ import { useUIStore } from '../../store/uiStore'
 import './CodeEditor.css'
 
 
-// ------------ helper functions ---------------
+// ─── Helper functions for highlighting ──────────────────────
+
 // StateEffect to set the highlighted line number
 // 1 indexed, -1 to clear the highlights
 const setHighlightLine = StateEffect.define()
@@ -41,7 +45,7 @@ const highlightLineField = StateField.define({
   provide: f => EditorView.decorations.from(f),
 })
 
- // builds a mapping from instruction index (0 based) to editor line number (1 based)
+// builds a mapping from instruction index (0 based) to editor line number (1 based)
 function buildInstructionLineMap(source) {
   const lines = source.split('\n')
   const editorMap = []
@@ -56,17 +60,24 @@ function buildInstructionLineMap(source) {
   }
   return editorMap
 }
-// -------------- helper functions ends --------------
+
+
+// ─── Component ──────────────────────────────────────────────
 
 export default function CodeEditor() {
-  const containerRef = useRef(null)
-  const viewRef = useRef(null)
+
+  // ── Refs ──
+  const containerRef       = useRef(null)
+  const viewRef            = useRef(null)
   const tabSizeCompartment = useRef(new Compartment())
-  
+  const externalUpdate     = useRef(false)
+
+  // ── Store selectors ──
   const setSource = useEditorStore(s => s.setSource)
   const fontStyle = useUIStore(s => s.fontStyle)
   const tabSize   = useUIStore(s => s.tabSize)
 
+  // ── INIT: create the CodeMirror editor instance ──
   useEffect(() => {
     const view = new EditorView({
       doc: useEditorStore.getState().source,
@@ -76,9 +87,12 @@ export default function CodeEditor() {
         riscv,
         history(),
         highlightLineField,
-        tabSizeCompartment.current.of(EditorState.tabSize.of(tabSize)),
+        tabSizeCompartment.current.of([
+          EditorState.tabSize.of(tabSize),
+          indentUnit.of(' '.repeat(tabSize)),
+        ]),
         EditorView.updateListener.of((u) => {
-          if (u.docChanged) setSource(u.state.doc.toString())
+          if (u.docChanged && !externalUpdate.current) setSource(u.state.doc.toString())
         }),
         keymap.of([
           ...defaultKeymap,
@@ -92,19 +106,37 @@ export default function CodeEditor() {
       viewRef.current = null
       view.destroy()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setSource]) // Run once on mount
+  }, [setSource])
 
-  // update tab size dynamically
+  // ── LOADFILE: sync external source changes into codemirror ──
+  useEffect(() => {
+    const unsub = useEditorStore.subscribe((state, prev) => {
+      const view = viewRef.current
+      if (!view || state.source === prev.source) return
+      const currentDoc = view.state.doc.toString()
+      if (state.source === currentDoc) return
+      externalUpdate.current = true
+      view.dispatch({
+        changes: { from: 0, to: currentDoc.length, insert: state.source },
+      })
+      externalUpdate.current = false
+    })
+    return unsub
+  }, [])
+
+  // ── TABSIZE: update tab size dynamically ──
   useEffect(() => {
     if (viewRef.current) {
       viewRef.current.dispatch({
-        effects: tabSizeCompartment.current.reconfigure(EditorState.tabSize.of(tabSize))
+        effects: tabSizeCompartment.current.reconfigure([
+          EditorState.tabSize.of(tabSize),
+          indentUnit.of(' '.repeat(tabSize)),
+        ])
       })
     }
   }, [tabSize])
 
-  // subscribes to CPU store changes & highlights changed lines
+  // ── HIGHLIGHT: subscribe to CPU store changes & highlight current line ──
   useEffect(() => {
     let prevPc = -1
     let prevStatus = ''
@@ -156,11 +188,12 @@ export default function CodeEditor() {
     return unsub
   }, [])
 
+  // ── Render ──
   return (
-    <div 
-      className="code-editor" 
-      id="code-editor-root" 
-      ref={containerRef} 
+    <div
+      className="code-editor"
+      id="code-editor-root"
+      ref={containerRef}
       style={{ '--font-mono': `'${fontStyle}', monospace` }}
     />
   )

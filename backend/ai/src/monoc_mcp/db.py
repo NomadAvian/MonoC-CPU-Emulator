@@ -25,6 +25,26 @@ def init_db():
                     saved_codes TEXT
                 )
             """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS code_examples(
+                    id TEXT PRIMARY KEY,
+                    category TEXT NOT NULL,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    source TEXT NOT NULL
+                )
+            """)
+            # Seed 1 example
+            cursor.execute("""
+                INSERT OR IGNORE INTO code_examples (id, category, title, description, source)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                "basic/add-two-numbers",
+                "Basic",
+                "Add Two Numbers",
+                "Simple addition of two immediate values into registers",
+                "# Program: Simple Addition Example\n# Goal: Calculate 10 + 25\n\n.global _start\n_start:\n    li a0, 10       # Load immediate value 10 into register a0\n    li a1, 25       # Load immediate value 25 into register a1\n    add t0, a0, a1   # Add values in a0 and a1 into t0\n"
+            ))
             conn.commit()
     except sqlite3.OperationalError as e:
         print("[log] failed to connect with sqlite database:", e)
@@ -110,5 +130,20 @@ def delete_user_code(token, name):
         conn.execute("UPDATE users SET saved_codes = ? WHERE token = ?", (json.dumps(new_codes), token))
         conn.commit()
         return True
+
+
+def get_all_examples():
+    with sqlite3.connect(DB) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("SELECT id, category, title, description FROM code_examples ORDER BY category, title").fetchall()
+        return [dict(r) for r in rows]
+
+
+def get_example_by_id(example_id: str):
+    with sqlite3.connect(DB) as conn:
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT id, category, title, description, source FROM code_examples WHERE id = ?", (example_id,)).fetchone()
+        return dict(row) if row else None
+
 
 

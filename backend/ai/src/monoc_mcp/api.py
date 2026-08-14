@@ -101,3 +101,18 @@ def delete_code(req: DeleteCodeRequest):
     return {"success": True}
 
 
+# ----------- example code library apis ------------
+@app.get("/examples")
+def get_examples():
+    return {"examples": db.get_all_examples()}
+
+
+@app.get("/examples/{example_id:path}")
+def get_example_detail(example_id: str):
+    example = db.get_example_by_id(example_id)
+    if not example:
+        raise HTTPException(status_code=404, detail="Example code not found")
+    return example
+
+
+
