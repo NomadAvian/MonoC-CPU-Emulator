@@ -175,7 +175,7 @@ body {
 }
 
 .tab-btn.active {
-  background: var(--bg-hover);
+  background: transparent;
   color: var(--accent);
   border-bottom: 2px solid var(--accent);
 }
@@ -237,6 +237,9 @@ button:focus-visible {
 .ui-button--ghost {
   border-color: transparent;
   background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  padding: 0 8px;
 }
 
 .ui-button--accent {

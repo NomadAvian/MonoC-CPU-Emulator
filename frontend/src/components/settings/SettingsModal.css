@@ -17,7 +17,7 @@
 }
 
 .settings-modal {
-  width: 280px;
+  width: 350px;
   font-family: var(--font-sans);
   background: var(--bg-elevated);
   border: 1px solid var(--border);

@@ -2,10 +2,11 @@ import { useEffect, useRef } from 'react'
 import { basicSetup } from 'codemirror'
 import { EditorView, keymap, Decoration } from '@codemirror/view'
 import { indentWithTab, defaultKeymap, history, historyKeymap } from '@codemirror/commands'
-import { StateEffect, StateField } from '@codemirror/state'
+import { StateEffect, StateField, EditorState, Compartment } from '@codemirror/state'
 import { riscv } from './riscvLang'
 import { useEditorStore } from '../../store/editorStore'
 import { useCPUStore } from '../../store/cpuStore'
+import { useUIStore } from '../../store/uiStore'
 import './CodeEditor.css'
 
 
@@ -60,7 +61,11 @@ function buildInstructionLineMap(source) {
 export default function CodeEditor() {
   const containerRef = useRef(null)
   const viewRef = useRef(null)
+  const tabSizeCompartment = useRef(new Compartment())
+  
   const setSource = useEditorStore(s => s.setSource)
+  const fontStyle = useUIStore(s => s.fontStyle)
+  const tabSize   = useUIStore(s => s.tabSize)
 
   useEffect(() => {
     const view = new EditorView({
@@ -71,6 +76,7 @@ export default function CodeEditor() {
         riscv,
         history(),
         highlightLineField,
+        tabSizeCompartment.current.of(EditorState.tabSize.of(tabSize)),
         EditorView.updateListener.of((u) => {
           if (u.docChanged) setSource(u.state.doc.toString())
         }),
@@ -86,7 +92,17 @@ export default function CodeEditor() {
       viewRef.current = null
       view.destroy()
     }
-  }, [setSource])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setSource]) // Run once on mount
+
+  // update tab size dynamically
+  useEffect(() => {
+    if (viewRef.current) {
+      viewRef.current.dispatch({
+        effects: tabSizeCompartment.current.reconfigure(EditorState.tabSize.of(tabSize))
+      })
+    }
+  }, [tabSize])
 
   // subscribes to CPU store changes & highlights changed lines
   useEffect(() => {
@@ -140,5 +156,12 @@ export default function CodeEditor() {
     return unsub
   }, [])
 
-  return <div className="code-editor" id="code-editor-root" ref={containerRef} />
+  return (
+    <div 
+      className="code-editor" 
+      id="code-editor-root" 
+      ref={containerRef} 
+      style={{ '--font-mono': `'${fontStyle}', monospace` }}
+    />
+  )
 }

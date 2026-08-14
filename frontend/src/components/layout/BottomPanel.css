@@ -20,5 +20,5 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px;
-  background-color: #252A35
+  background-color: var(--bg-elevated);
 }

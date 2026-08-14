@@ -1,5 +1,3 @@
-// route -> cpu state -> send to Ollama -> return
-
 #include "../emulator/src/assembler/assembler.h"
 #include "../emulator/src/assembler/error.h"
 #include "../emulator/src/core/cpu.h"

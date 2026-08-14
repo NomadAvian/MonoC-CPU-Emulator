@@ -11,7 +11,7 @@ export default function ProfileModal({ onClose }) {
   const logout = useAuthStore(s => s.logout)
   const fetchSavedCodes = useAuthStore(s => s.fetchSavedCodes)
   const deleteCode = useAuthStore(s => s.deleteCode)
-  const setCode = useEditorStore(s => s.setCode)
+  const setSource = useEditorStore(s => s.setSource)
 
   const [codes, setCodes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -24,7 +24,7 @@ export default function ProfileModal({ onClose }) {
   }, [fetchSavedCodes])
 
   const handleLoadCode = (item) => {
-    setCode(item.code)
+    setSource(item.code)
     onClose()
   }
 

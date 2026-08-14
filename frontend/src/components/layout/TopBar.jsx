@@ -17,10 +17,10 @@ export default function TopBar() {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
-  
+
   const isChatOpen = useUIStore(s => s.isChatOpen)
   const toggleChat = useUIStore(s => s.toggleChat)
-  
+
   const user = useAuthStore(s => s.user)
 
   const handleProfileClick = () => {
@@ -39,7 +39,7 @@ export default function TopBar() {
     const name = window.prompt("Enter code name:");
     if (!name) return;
     try {
-      const currentCode = useEditorStore.getState().code;
+      const currentCode = useEditorStore.getState().source;
       await useAuthStore.getState().saveCode(name, currentCode);
       alert("Code saved successfully!");
     } catch (err) {
@@ -96,8 +96,8 @@ export default function TopBar() {
             <img src={docsIcon} alt="Docs" className="topbar__icon" />
           </a>
 
-          <button 
-            className="topbar__nav-btn" 
+          <button
+            className="topbar__nav-btn"
             id="topbar-profile-btn"
             onClick={handleProfileClick}
             title={user ? user.username : 'Log In'}

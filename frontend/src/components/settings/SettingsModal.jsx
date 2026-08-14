@@ -7,22 +7,32 @@ import closeIcon from '../../assets/close.svg'
 
 const FORMAT_OPTIONS = ['Hex', 'Unsigned']
 const MODE_OPTIONS   = ['Dark', 'Light']
-
+const FONT_OPTIONS   = ['Monospace', 'Consolas', 'Courier New']
+const TAB_OPTIONS    = [2, 4, 8]
 
 export default function SettingsModal({ onClose }) {
   const theme     = useUIStore(s => s.theme)
   const format    = useUIStore(s => s.format)
+  const fontStyle = useUIStore(s => s.fontStyle)
+  const tabSize   = useUIStore(s => s.tabSize)
+  
   const setTheme  = useUIStore(s => s.setTheme)
   const setFormat = useUIStore(s => s.setFormat)
+  const setFontStyle = useUIStore(s => s.setFontStyle)
+  const setTabSize   = useUIStore(s => s.setTabSize)
 
   // Local draft state — only commit on Save
   const [draftMode,   setDraftMode]   = useState(theme === 'dark' ? 'Dark' : 'Light')
   const [draftFormat, setDraftFormat] = useState(format)
+  const [draftFont,   setDraftFont]   = useState(fontStyle)
+  const [draftTab,    setDraftTab]    = useState(tabSize)
   const [saved, setSaved] = useState(false)
 
   const handleSave = () => {
     setFormat(draftFormat)
     setTheme(draftMode === 'Light' ? 'light' : 'dark')
+    setFontStyle(draftFont)
+    setTabSize(draftTab)
 
     setSaved(true)
     setTimeout(() => {
@@ -83,6 +93,40 @@ export default function SettingsModal({ onClose }) {
                   onClick={() => setDraftMode(opt)}
                 >
                   {opt === 'Dark' ? 'Dark' : 'Light'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Font Style */}
+          <div className="settings-modal__field">
+            <label className="settings-modal__label">Font Style</label>
+            <div className="settings-modal__options">
+              {FONT_OPTIONS.map(opt => (
+                <button
+                  key={opt}
+                  id={`font-${opt.replace(/\s+/g, '-').toLowerCase()}`}
+                  className={`ui-button settings-modal__opt-btn ${draftFont === opt ? 'active' : ''}`}
+                  onClick={() => setDraftFont(opt)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Tab Size */}
+          <div className="settings-modal__field">
+            <label className="settings-modal__label">Tab Size</label>
+            <div className="settings-modal__options">
+              {TAB_OPTIONS.map(opt => (
+                <button
+                  key={opt}
+                  id={`tab-${opt}`}
+                  className={`ui-button settings-modal__opt-btn ${draftTab === opt ? 'active' : ''}`}
+                  onClick={() => setDraftTab(opt)}
+                >
+                  {opt}
                 </button>
               ))}
             </div>
