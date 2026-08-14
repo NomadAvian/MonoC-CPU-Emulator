@@ -1,9 +1,7 @@
 import sqlite3
 import uuid
 import bcrypt
-
-DB = "../../db/test.db"
-#DB = "../../db/monoc.db"
+from monoc_mcp.config import DB_PATH as DB
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")

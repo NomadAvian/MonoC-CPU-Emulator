@@ -1,20 +1,8 @@
-/* Split Button Styles */
+/* Save Button Menu Styles */
 .save-btn-group {
   position: relative;
   display: flex;
   align-items: center;
-}
-
-.save-btn-main {
-  border-top-right-radius: 0 !important;
-  border-bottom-right-radius: 0 !important;
-  margin-right: 1px !important;
-}
-
-.save-btn-caret {
-  width: 24px !important;
-  border-top-left-radius: 0 !important;
-  border-bottom-left-radius: 0 !important;
 }
 
 .save-btn-menu {

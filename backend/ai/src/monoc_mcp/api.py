@@ -6,19 +6,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import monoc_mcp.db as db
+from monoc_mcp.config import CORS_ORIGINS
 from monoc_mcp.chat_service import chat as ollama_chat
 from monoc_mcp.gemini_chat_service import chat as gemini_chat
 
 # CORS policy management
 app = FastAPI()
-origins = [
-    "http://localhost:6969",  # crow
-    "http://localhost:5173",  # react
-    "http://localhost:8000",  # default
-]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
