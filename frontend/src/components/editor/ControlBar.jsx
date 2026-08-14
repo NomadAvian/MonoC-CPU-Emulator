@@ -15,17 +15,17 @@ const CONTROLS = [
 
 export default function ControlBar() {
   const status = useCPUStore(s => s.status)
-  const setStatus = useCPUStore(s => s.setStatus)
   const step = useCPUStore(s => s.step)
   const reset = useCPUStore(s => s.reset)
   const compile = useCPUStore(s => s.compile)
+  const startRun = useCPUStore(s => s.startRun)
+  const stopRun = useCPUStore(s => s.stopRun)
 
-  {/*TODO: dummy stop play for now, update please */}
   const handleControl = (id) => {
-    if (id === 'ctrl-compile') compile()
-    if (id === 'ctrl-reset') reset()
-    if (id === 'ctrl-stop') setStatus('stopped')
-    if (id === 'ctrl-play') setStatus('running')
+    if (id === 'ctrl-compile') { stopRun(); compile() }
+    if (id === 'ctrl-reset') { stopRun(); reset() }
+    if (id === 'ctrl-stop') stopRun()
+    if (id === 'ctrl-play') startRun()
     if (id === 'ctrl-step-over') step()
   }
 

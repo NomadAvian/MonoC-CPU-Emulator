@@ -430,6 +430,7 @@ size_t Parser::PseudoExpansionWords(const Statement& s, size_t idx) const {
             if (t.type() == TokenType::kInteger) {
                 int64_t val = std::get<int64_t>(t.literal());
                 if (val >= -2048 && val <= 2047) return 1;
+                if ((val & 0xFFF) == 0) return 1; // lui-only
             }
         }
         return 2;
@@ -472,7 +473,9 @@ void Parser::EncodePseudo(const Statement& s, size_t idx, Word pc,
             int64_t lo = imm & 0xFFF;
             int64_t hi = ((imm + 0x800) >> 12) & 0xFFFFF;
             words.push_back(Encode(*Lookup("lui"), rd, 0, 0, hi, 0));
-            words.push_back(Encode(*Lookup("addi"), rd, rd, 0, lo, 0));
+            if (lo != 0) {
+                words.push_back(Encode(*Lookup("addi"), rd, rd, 0, lo, 0));
+            }
         }
         return;
     }

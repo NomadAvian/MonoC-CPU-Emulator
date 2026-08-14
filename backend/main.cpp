@@ -3,7 +3,6 @@
 #include <crow.h>
 #include "../emulator/src/core/cpu.h"
 #include "../emulator/src/assembler/assembler.h"
-#include "../emulator/src/assembler/error.h"
 
 int main()
 {
@@ -65,9 +64,11 @@ int main()
     CROW_ROUTE(app, "/cpu/step").methods(crow::HTTPMethod::POST)
     ([&cpu_instance]() {
         if (!cpu_instance) return crow::response(400, "no cpu loaded");
-        // TODO: is this enough ?
         cpu_instance->Step();
-        return crow::response(200, "stepped");
+        crow::json::wvalue res;
+        res["stepped"] = true;
+        res["halted"] = cpu_instance->IsHalted();
+        return crow::response(200, res);
     });
 
     // GET /cpu/registers
@@ -89,7 +90,7 @@ int main()
     CROW_ROUTE(app, "/cpu/memory/<string>")
     ([&cpu_instance](const std::string& addr_str) {
         if (!cpu_instance) return crow::response(400, "no cpu loaded");
-        // TODO
+        // TODO: convert to number and return mem addr
         return crow::response(200, "memory");
     });
 

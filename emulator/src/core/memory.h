@@ -20,6 +20,8 @@ public:
 
   void LoadFile(const std::string &filename);
 
+  void Reset();
+
   Byte ReadByte(Word addr) const;
   Half ReadHalf(Word addr) const;
   Word ReadWord(Word addr) const;

@@ -14,6 +14,10 @@
 #   sp+8  : s0  (saved n)
 #   sp+4  : s1  (saved fib(n-1) result)
 #   sp+0  : (padding)
+#
+# To test a different fib(n): change only the `li a0, 30` line.
+# Call count grows ~O(phi^n) - fib(40)+ will be slow to emulate.
+# Overflow (signed int32) starts at fib(47).
 # ============================================================
 
     .data
@@ -23,8 +27,9 @@ result: .word   0
     .globl _start
 
 _start:
-    li      a0, 30              # a0 = n = 30
-    jal     ra, fib             # call fib(30)
+    li      sp, 0x10000         # initialize stack pointer - adjust
+    li      a0,  4              # a0 = n = 4
+    jal     ra, fib             # call fib(4)
 
     la      t0, result
     sw      a0, 0(t0)           # store result
@@ -41,7 +46,7 @@ fib:
     sw      s1, 4(sp)           # save s1 (caller's, callee-saved)
 
     li      t0, 1
-    ble     a0, t0, base_case   # if n <= 1, return n directly
+    bge     t0, a0, base_case   # if 1 >= n (i.e. n <= 1), return n directly
 
     mv      s0, a0              # s0 = n  (preserve across calls)
 

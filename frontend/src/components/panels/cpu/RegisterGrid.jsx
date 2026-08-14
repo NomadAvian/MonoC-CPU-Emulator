@@ -5,6 +5,13 @@ import { useCPUStore } from '../../../store/cpuStore'
 import { useUIStore } from '../../../store/uiStore'
 import { formatValue } from '../../../../utils/format'
 
+const ABI_REGISTERS = [
+  'zr ',   'ra ',   'sp ',   'gp ',   'tp ',   't0 ',   't1 ',   't2 ',
+  's0 ',   's1 ',   'a0 ',   'a1 ',   'a2 ',   'a3 ',   'a4 ',   'a5 ',
+  'a6 ',   'a7 ',   's2 ',   's3 ',   's4 ',   's5 ',   's6 ',   's7 ',
+  's8 ',   's9 ',   's10',   's11',   't3 ',   't4 ',   't5 ',   't6 ',
+]
+
 export default function RegisterGrid() {
   const registers = useCPUStore(s => s.registers)
   const programCounter = useCPUStore(s => s.programCounter)
@@ -15,14 +22,14 @@ export default function RegisterGrid() {
     fetchRegisters()
   }, [fetchRegisters])
 
-  const sp = registers[1] ?? 0
+  const sp = registers[2] ?? 0
 
   return (
     <div className="reg-grid">
       <div className="reg-grid__section-label">Pinned Registers</div>
       <div className="reg-grid__pinned">
         <RegisterCell name="PC" value={formatValue(programCounter, format)} />
-        <RegisterCell name="SP" value={formatValue(sp, format)} />
+        <RegisterCell name="SP (R2)" value={formatValue(sp, format)} />
       </div>
 
       <div className="divider-h reg-grid__divider" />
@@ -30,7 +37,7 @@ export default function RegisterGrid() {
       <div className="reg-grid__section-label">Registers</div>
       <div className="reg-grid__list">
         {registers.map((val, i) => (
-          <RegisterCell key={i} name={`R${i}`} value={formatValue(val, format)} />
+          <RegisterCell key={i} name={`${ABI_REGISTERS[i]} (R${i})`} value={formatValue(val, format)} />
         ))}
       </div>
     </div>

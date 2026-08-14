@@ -9,7 +9,7 @@ export async function fetchRegisters() {
 export async function stepCpu() {
   const res = await fetch(`${BASE}/cpu/step`, { method: 'POST' })
   if (!res.ok) throw new Error(`POST /cpu/step failed: ${res.status}`)
-  return res.text()
+  return res.json()
 }
 
 export async function resetCpu() {

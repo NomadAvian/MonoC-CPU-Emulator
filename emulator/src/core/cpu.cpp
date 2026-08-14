@@ -47,10 +47,6 @@ Byte CPU::ReadMemoryByte(Word address) const {
     return ram_.ReadByte(address);
 }
 
-void CPU::set_pc_for_testing(Word value) {
-    pc_.value = value;
-}
-
 int32_t CPU::SignExtend(uint32_t value, uint32_t bits) const {
     uint32_t shift = 32 - bits;
     return static_cast<int32_t>(value << shift) >> shift;
@@ -649,8 +645,11 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
         case isa::Opcode::kFence:
             return false;  // nop for single core
         case isa::Opcode::kEcall:
+            Ecall();
+            return false;
         case isa::Opcode::kEbreak:
-            std::abort();
+            halted_ = true;
+            return false;
         default:
             assert(false); 
             return false;
@@ -676,6 +675,7 @@ bool CPU::ExecuteSType(DecodedInstruction instr) {
     }
     return false;
 }
+
 
 bool CPU::ExecuteJType(DecodedInstruction instr) {
     Word return_address = pc_.value + 4; // address of the next instruction
@@ -752,6 +752,9 @@ void CPU::Reset() {
     }
     // initialize program counter
     pc_.value = 0;
+    ram_.Reset();
+
+    halted_ = false;
 }
 
 void CPU::Step() {
@@ -760,6 +763,37 @@ void CPU::Step() {
     bool pc_changed = Execute(decoded_instr);
     if (!pc_changed) {
         pc_.value += 4;
+    }
+}
+
+void CPU::Ecall() {
+    Word ecall_number = x[17].value;
+    switch (static_cast<ecall>(ecall_number)) {
+        // print functions
+        case ecall::kPrintint:
+            break;
+        case ecall::kPrintstring:
+            break;
+        case ecall::kPrintchar:
+            break;
+            
+        // read functions
+        case ecall::kReadint:
+            break;
+        case ecall::kReadstring:
+            break;
+        case ecall::kReadchar:
+            break;
+
+        // exit calls
+        case ecall::kExit:
+        case ecall::kExit2:
+            halted_ = true; // do not change this pls
+            break;
+
+        default:
+            // std::cerr << "ERROR: Unknown ecall code encountered." << std::endl;
+            break;
     }
 }
 
