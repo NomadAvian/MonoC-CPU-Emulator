@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { SimpleMarkdown } from './SimpleMarkdown'
 import { useChatStore } from '../../../store/chatStore'
 import './ChatPanel.css'
 import sendIcon from '../../../assets/send-horizontal.svg'
@@ -42,7 +43,7 @@ export default function ChatPanel() {
         ) : (
           messages.map((msg, i) => (
             <div key={i} className={`chat-message chat-message--${msg.role}`}>
-              <p>{msg.content}</p>
+              <SimpleMarkdown content={msg.content} />
             </div>
           ))
         )}

@@ -5,11 +5,6 @@ mcp = FastMCP("monoc_mcp")
 
 # testing tool to check the mcp server status
 @mcp.tool()
-def get_crow_greeting() -> str:
-    """Fetch the greeting message currently served by the crow backend"""
-    return get_greeting()
-
-@mcp.tool()
 def read_registers() -> dict:
     """Read all 32 cpu registers and the program counter"""
     return get_registers()

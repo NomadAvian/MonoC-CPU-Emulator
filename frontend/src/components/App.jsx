@@ -11,13 +11,13 @@ import { useUIStore } from '../store/uiStore'
 
 // Size constraints
 const LEFT_MIN  = 160;  const LEFT_MAX  = 480
-const RIGHT_MIN = 180;  const RIGHT_MAX = 500
+const RIGHT_MIN = 180;  const RIGHT_MAX = 700
 const BOTTOM_MIN = 80;  const BOTTOM_MAX = 520
 
 function App() {
   // Panel sizes
   const [leftWidth,    setLeftWidth]    = useState(180)
-  const [rightWidth,   setRightWidth]   = useState(280)
+  const [rightWidth,   setRightWidth]   = useState(340)
   const [bottomHeight, setBottomHeight] = useState(220)
 
   const isChatOpen = useUIStore(s => s.isChatOpen)
