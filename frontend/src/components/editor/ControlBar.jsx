@@ -1,9 +1,10 @@
 import './ControlBar.css'
 import { useCPUStore } from '../../store/cpuStore'
-import playIcon from '../../assets/play.svg'
-import stopIcon from '../../assets/stop.svg'
-import stepIcon from '../../assets/step-once.svg'
-import resetIcon from '../../assets/reset.svg'
+// import playIcon from '../../assets/play.svg'
+// import stopIcon from '../../assets/stop.svg'
+// import stepIcon from '../../assets/step-once.svg'
+// import resetIcon from '../../assets/reset.svg'
+
 
 const CONTROLS = [
   { id: 'ctrl-compile',   label: 'Compile',   /* icon: playIcon, shortcut: 'Ctrl-R',       */ variant: 'success' },
@@ -20,6 +21,8 @@ export default function ControlBar() {
   const compile = useCPUStore(s => s.compile)
   const startRun = useCPUStore(s => s.startRun)
   const stopRun = useCPUStore(s => s.stopRun)
+  const compiling = useCPUStore(s => s.compiling)
+  const halted = useCPUStore(s => s.halted)
 
   const handleControl = (id) => {
     if (id === 'ctrl-compile') { stopRun(); compile() }
@@ -29,28 +32,47 @@ export default function ControlBar() {
     if (id === 'ctrl-step-over') step()
   }
 
+  const getButtonState = (id) => {
+    if (id === 'ctrl-compile') return { disabled: compiling, loading: compiling }
+    if (id === 'ctrl-play') return { disabled: compiling || halted }
+    if (id === 'ctrl-stop') return { disabled: compiling || status !== 'running' }
+    if (id === 'ctrl-step-over') return { disabled: compiling || halted || status === 'stopped' }
+    if (id === 'ctrl-reset') return { disabled: compiling }
+    return { disabled: false }
+  }
+
   return (
     <div className="control-bar">
-      <span className={`control-bar__status control-bar__status--${status}`}>
-        {status[0].toUpperCase() + status.slice(1)}
+      <span className={`control-bar__status control-bar__status--${halted ? 'halted' : status}`}>
+        {halted ? 'Halted' : status[0].toUpperCase() + status.slice(1)}
       </span>
       <div className="control-bar__actions">
-        {CONTROLS.map(({ id, label, icon, shortcut, variant }) => (
-          <button
-            key={id}
-            id={id}
-            className={`ui-button control-bar__btn control-bar__btn--${variant}`}
-            style={{ color: 'var(--accent)' }}
-            title={label}
-            onClick={() => handleControl(id)}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              {icon && <img src={icon} alt="" style={{ width: 14, height: 14, opacity: 0.9 }} />}
-              <span className="control-bar__btn-label">{label}</span>
-            </div>
-            <span className="control-bar__btn-shortcut">{shortcut}</span>
-          </button>
-        ))}
+        {CONTROLS.map(({ id, label, icon, shortcut, variant }) => {
+          const { disabled, loading } = getButtonState(id)
+          return (
+            <button
+              key={id}
+              id={id}
+              className={`ui-button control-bar__btn control-bar__btn--${variant} ${loading ? 'control-bar__btn--loading' : ''}`}
+              style={{ color: 'var(--accent)' }}
+              title={label}
+              disabled={disabled}
+              onClick={() => handleControl(id)}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {loading ? (
+                  <span className="control-bar__spinner" />
+                ) : (
+                  icon && <img src={icon} alt="" style={{ width: 14, height: 14, opacity: 0.9 }} />
+                )}
+                <span className="control-bar__btn-label">
+                  {loading ? 'Compiling...' : label}
+                </span>
+              </div>
+              {shortcut && <span className="control-bar__btn-shortcut">{shortcut}</span>}
+            </button>
+          )
+        })}
       </div>
     </div>
   )

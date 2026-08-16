@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { SimpleMarkdown } from './SimpleMarkdown'
 import { useChatStore } from '../../../store/chatStore'
 import './ChatPanel.css'
 import sendIcon from '../../../assets/send-horizontal.svg'
@@ -12,10 +13,18 @@ export default function ChatPanel() {
 
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
+  }, [input]);
 
   const handleSend = () => {
     const trimmed = input.trim();
@@ -42,9 +51,17 @@ export default function ChatPanel() {
         ) : (
           messages.map((msg, i) => (
             <div key={i} className={`chat-message chat-message--${msg.role}`}>
-              <p>{msg.content}</p>
+              <SimpleMarkdown content={msg.content} />
             </div>
           ))
+        )}
+
+        {isLoading && (
+          <div className="chat-message chat-message--assistant chat-thinking">
+            <span className="chat-thinking__dot" />
+            <span className="chat-thinking__dot" />
+            <span className="chat-thinking__dot" />
+          </div>
         )}
 
         <div ref={messagesEndRef} />
@@ -54,10 +71,11 @@ export default function ChatPanel() {
       {/* Input area */}
       <div className="chat-panel__input-wrap">
         <textarea
+          ref={textareaRef}
           id="chat-input"
           className="ui-input chat-panel__input"
-          placeholder="ask anything…"
-          rows={4}
+          placeholder="Ask anything…"
+          rows={1}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -65,15 +83,10 @@ export default function ChatPanel() {
         <button
           id="chat-send-btn"
           className="icon-btn chat-panel__send-btn"
-          style={{ width: 24, height: 24, background: 'var(--accent)', color: '#fff', borderRadius: 4 }}
           onClick={handleSend}
           disabled={isLoading || !input.trim()}
         >
-          {isLoading ? (
-            <span style={{ fontSize: 10 }}>...</span>
-          ) : (
-            <img src={sendIcon} alt="Send" style={{ width: 14, height: 14, filter: 'brightness(0) invert(1)' }} />
-          )}
+          <img src={sendIcon} alt="Send" className="chat-panel__send-icon" />
         </button>
       </div>
     </div>

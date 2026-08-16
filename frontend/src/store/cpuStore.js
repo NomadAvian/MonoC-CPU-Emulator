@@ -1,93 +1,137 @@
-import {create} from 'zustand'
+import { create } from 'zustand'
 import { fetchRegisters, stepCpu, resetCpu, compile } from '../api/cpu'
 import { useEditorStore } from './editorStore'
+import { useLogStore } from './logStore'
 
 const initialState = {
-    registers: Array(32).fill(0),
-    programCounter: 0,
-    status: 'stopped',
-    halted: false,
-    running: false,
+  registers: Array(32).fill(0),
+  prevRegisters: Array(32).fill(0),
+  programCounter: 0,
+  status: 'stopped',       // 'stopped' | 'compiled' | 'running'
+  changedRegisters: new Set(),
+  romSize: 0,              // for execution completion
+  halted: false,
+  running: false,
+  compiling: false,
 }
 
 export const useCPUStore = create((set, get) => ({
-    ...initialState,
+  ...initialState,
 
-    setRegister: (index, value) =>
-        set((state) => {
-            const registers = [...state.registers]
-            registers[index] = value
+  setRegister: (index, value) =>
+    set((state) => {
+      const registers = [...state.registers]
+      registers[index] = value
 
-            return {registers}
-        }),
-    setProgramCounter: (programCounter) => set({programCounter}),
-    setStatus: (status) => set({status}),
-    resetCPU: () => set(initialState),
+      return { registers }
+    }),
+  setProgramCounter: (programCounter) => set({ programCounter }),
+  setStatus: (status) => set({ status }),
+  resetCPU: () => set(initialState),
 
-    fetchRegisters: async () => {
-      try {
-        const data = await fetchRegisters()
-        set({ registers: data.registers ?? initialState.registers, programCounter: data.pc ?? 0 })
-        return data
-      } catch (error) {
-        console.error('fetchRegisters failed:', error)
-        throw error
+  fetchRegisters: async () => {
+    try {
+      const prev = get().registers
+      const data = await fetchRegisters()
+      const next = data.registers ?? initialState.registers
+
+      // list of changed registers
+      const changed = new Set()
+      for (let i = 0; i < next.length; i++) {
+        if (next[i] !== prev[i]) changed.add(i)
       }
-    },
 
-    compile: async() => {
-      try {
-        const source = useEditorStore.getState().source
-        const result = await compile(source)
-        set({ status: 'stopped', halted: false })
-        await get().fetchRegisters()
-        return result
-      } catch (error) {
-        console.error('compilation failed:', error)
-        return { ok: false, error: error.message };
+      // pc state & halted state
+      const pc = data.pc ?? 0
+      if (pc !== get().programCounter) changed.add('pc')
+      const romSize = get().romSize
+      const halted = romSize > 0 && pc >= romSize * 4
+
+      if (halted && !get().halted) {
+        useLogStore.getState().addLog('Execution completed')
       }
-    },
 
-    step: async () => {
-      if (get().halted === true) {
-        console.log('step failed: program halted')
+      set({
+        registers: next,
+        prevRegisters: prev,
+        programCounter: pc,
+        changedRegisters: changed,
+        halted,
+      })
+      return data
+    } catch (error) {
+      console.error('fetchRegisters failed:', error)
+      throw error
+    }
+  },
+
+  compile: async () => {
+    const log = useLogStore.getState()
+    set({ compiling: true })
+    log.addLog('Compiling...')
+    try {
+      const source = useEditorStore.getState().source
+      const result = await compile(source)
+      set({
+        status: 'compiled',
+        changedRegisters: new Set(),
+        romSize: result.size ?? 0,
+        halted: false,
+        compiling: false,
+      })
+      log.addLog('Compilation successful')
+      await get().fetchRegisters()
+      return result
+    } catch (error) {
+      set({ compiling: false })
+      console.error('compilation failed:', error)
+      log.addLog(`Compilation failed`)
+      return { ok: false, error: error.message };
+    }
+  },
+
+  step: async () => {
+    try {
+      if (get().halted) {
+        useLogStore.getState().addLog('Program terminated')
         return false
-      } 
-      try {
-        const data = await stepCpu()
-        await get().fetchRegisters()
-        set({ halted: data?.halted ?? false })
-        return true
-      } catch (error) {
-        console.error('step failed:', error)
-        return false
       }
-    },
+      await stepCpu()
+      await get().fetchRegisters()
+      return true
+    } catch (error) {
+      console.error('step failed:', error)
+      useLogStore.getState().addLog(`Error: ${error.message}`)
+      return false
+    }
+  },
 
-    reset: async () => {
-      try {
-        await resetCpu()
-        await get().fetchRegisters()
-        set({ halted: false, running: false })
-        return true
-      } catch (error) {
-        console.error('reset failed:', error)
-        return false
-      }
-    },
-
-    startRun: async () => {
-      if (get().running) return
-      set({ running: true, status: 'running' })
-      const tick = async () => {
-        if (!get().running) return
-        const ok = await get().step()
-        if (!ok) { get().stopRun(); return }
-        await get().step()
-        requestAnimationFrame(tick)
-      }
+  startRun: async () => {
+    if (get().running) return
+    set({ running: true, status: 'running' })
+    const tick = async () => {
+      if (!get().running) return
+      const ok = await get().step()
+      if (!ok) { get().stopRun(); return }
+      await get().step()
       requestAnimationFrame(tick)
-    },
+    }
+    requestAnimationFrame(tick)
+  },
 
-    stopRun: () => set({ running: false, status: 'stopped' }),
+  stopRun: () => set({ running: false, status: 'stopped' }),
+
+  reset: async () => {
+    try {
+      await resetCpu()
+      set({ status: 'stopped', changedRegisters: new Set(), halted: false })
+      await get().fetchRegisters()
+      useLogStore.getState().addLog('CPU reset')
+      return true
+    } catch (error) {
+      console.error('reset failed:', error)
+      useLogStore.getState().addLog(`Error: ${error.message}`)
+      return false
+    }
+  },
 }))

@@ -1,0 +1,147 @@
+import sqlite3
+import uuid
+import bcrypt
+from monoc_mcp.config import DB_PATH as DB
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+def verify_password(plain: str, hashed: str) -> bool:
+    return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+
+
+def init_db():
+    try:
+        with sqlite3.connect(DB) as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS users(
+                    username TEXT,
+                    email TEXT UNIQUE,
+                    password TEXT,
+                    token TEXT,
+                    saved_codes TEXT
+                )
+            """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS code_examples(
+                    id TEXT PRIMARY KEY,
+                    category TEXT NOT NULL,
+                    title TEXT NOT NULL,
+                    description TEXT,
+                    source TEXT NOT NULL
+                )
+            """)
+            # Seed 1 example
+            cursor.execute("""
+                INSERT OR IGNORE INTO code_examples (id, category, title, description, source)
+                VALUES (?, ?, ?, ?, ?)
+            """, (
+                "basic/add-two-numbers",
+                "Basic",
+                "Add Two Numbers",
+                "Simple addition of two immediate values into registers",
+                "# Program: Simple Addition Example\n# Goal: Calculate 10 + 25\n\n.global _start\n_start:\n    li a0, 10       # Load immediate value 10 into register a0\n    li a1, 25       # Load immediate value 25 into register a1\n    add t0, a0, a1   # Add values in a0 and a1 into t0\n"
+            ))
+            conn.commit()
+    except sqlite3.OperationalError as e:
+        print("[log] failed to connect with sqlite database:", e)
+
+
+# Run once on import
+init_db()
+
+
+def create_user(username, email, password):
+    with sqlite3.connect(DB) as conn:
+        hashed = hash_password(password)
+        try:
+            conn.execute(
+                "INSERT INTO users (username, email, password, saved_codes) VALUES (?, ?, ?, ?)",
+                (username, email, hashed, "[]"),
+            )
+            conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            return False  # email exists
+
+
+def login_user(email, password):
+    with sqlite3.connect(DB) as conn:
+        user = conn.execute(
+            "SELECT username, password FROM users WHERE email = ?", (email,)
+        ).fetchone()
+        if user and verify_password(password, user[1]):
+            token = str(uuid.uuid4())
+            conn.execute("UPDATE users SET token = ? WHERE email = ?", (token, email))
+            conn.commit()
+            return {"username": user[0], "token": token}
+    return None
+
+
+def verify_token(token):
+    with sqlite3.connect(DB) as conn:
+        return conn.execute(
+            "SELECT username FROM users WHERE token = ?", (token,)
+        ).fetchone()
+
+
+def save_user_code(token, name, code):
+    import json
+    with sqlite3.connect(DB) as conn:
+        row = conn.execute("SELECT saved_codes FROM users WHERE token = ?", (token,)).fetchone()
+        if not row:
+            return False
+        try:
+            codes = json.loads(row[0] or "[]")
+        except Exception:
+            codes = []
+        codes.append({"name": name, "code": code})
+        conn.execute("UPDATE users SET saved_codes = ? WHERE token = ?", (json.dumps(codes), token))
+        conn.commit()
+        return True
+
+
+def get_user_codes(token):
+    import json
+    with sqlite3.connect(DB) as conn:
+        row = conn.execute("SELECT saved_codes FROM users WHERE token = ?", (token,)).fetchone()
+        if not row:
+            return []
+        try:
+            return json.loads(row[0] or "[]")
+        except Exception:
+            return []
+
+
+def delete_user_code(token, name):
+    import json
+    with sqlite3.connect(DB) as conn:
+        row = conn.execute("SELECT saved_codes FROM users WHERE token = ?", (token,)).fetchone()
+        if not row:
+            return False
+        try:
+            codes = json.loads(row[0] or "[]")
+        except Exception:
+            codes = []
+        new_codes = [c for c in codes if c.get("name") != name]
+        conn.execute("UPDATE users SET saved_codes = ? WHERE token = ?", (json.dumps(new_codes), token))
+        conn.commit()
+        return True
+
+
+def get_all_examples():
+    with sqlite3.connect(DB) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("SELECT id, category, title, description FROM code_examples ORDER BY category, title").fetchall()
+        return [dict(r) for r in rows]
+
+
+def get_example_by_id(example_id: str):
+    with sqlite3.connect(DB) as conn:
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT id, category, title, description, source FROM code_examples WHERE id = ?", (example_id,)).fetchone()
+        return dict(row) if row else None
+
+
+

@@ -2,12 +2,7 @@
 # mcp server calls these functions directly from mcp_server.py
 
 import httpx
-
-CROW_BASE = "http://localhost:6969"
-
-def get_greeting() -> str:
-    """greeting test from crow server"""
-    return httpx.get(CROW_BASE + "/ai/test", timeout=5).text
+from monoc_mcp.config import CROW_BASE_URL as CROW_BASE
 
 def get_registers() -> dict:
     return httpx.get(f"{CROW_BASE}/cpu/registers", timeout=5).json()
@@ -17,3 +12,8 @@ def get_memory(addr: str) -> dict:
 
 def step_cpu() -> dict:
     return httpx.post(f"{CROW_BASE}/cpu/step", timeout=5).json()
+
+def get_source() -> dict:
+    return httpx.get(f"{CROW_BASE}/cpu/source", timeout=5).json()
+
+# todo: get instruction

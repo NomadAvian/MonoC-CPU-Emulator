@@ -27,32 +27,33 @@
 .topbar__nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 16px;
 }
 
 .topbar__nav-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 14px;
-  font-size: var(--fs-base); /* Increased from sm to base */
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  background: #252A35;
   text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.topbar__nav-btn:hover {
+  background: #2e3444;
 }
 
 .topbar__icon {
-  width: 14px;
-  height: 14px;
-  opacity: 0.9;
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+  transition: opacity 0.2s, filter 0.2s;
 }
 
-.topbar__nav-btn--accent {
-  border-color: var(--accent-border);
-  color: var(--accent);
-  background: var(--accent-dim);
-}
 
-.topbar__nav-btn--active {
-  color: var(--accent);
-  background: var(--accent-dim);
-  border-color: var(--accent-border);
-}

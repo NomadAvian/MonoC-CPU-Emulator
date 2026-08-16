@@ -1,26 +1,31 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './SettingsModal.css'
-import { useUIStore } from '../../store/uiStore'
-import closeIcon from '../../assets/close.svg'
+import { useUIStore } from '../../../store/uiStore'
+import { useAuthStore } from '../../../store/authStore'
+import { useEditorStore } from '../../../store/editorStore'
+import closeIcon from '../../../assets/close.svg'
 
-const FORMAT_OPTIONS = ['Hex', 'Unsigned', 'Binary']
-const MODE_OPTIONS   = ['Dark', 'Light']
-
+const FORMAT_OPTIONS = ['Hex', 'Unsigned']
+const MODE_OPTIONS = ['Dark', 'Light']
+const FONT_OPTIONS = ['Monospace', 'Consolas', 'Courier New']
+const TAB_OPTIONS = [2, 4, 8]
 
 export default function SettingsModal({ onClose }) {
-  const theme     = useUIStore(s => s.theme)
-  const format    = useUIStore(s => s.format)
-  const setTheme  = useUIStore(s => s.setTheme)
-  const setFormat = useUIStore(s => s.setFormat)
+  const { theme, format, fontStyle, tabSize, setTheme, setFormat, setFontStyle, setTabSize } = useUIStore()
+  const { source, setSource } = useEditorStore()
 
   // Local draft state — only commit on Save
-  const [draftMode,   setDraftMode]   = useState(theme === 'dark' ? 'Dark' : 'Light')
+  const [draftMode, setDraftMode] = useState(theme === 'dark' ? 'Dark' : 'Light')
   const [draftFormat, setDraftFormat] = useState(format)
+  const [draftFont, setDraftFont] = useState(fontStyle)
+  const [draftTab, setDraftTab] = useState(tabSize)
   const [saved, setSaved] = useState(false)
 
   const handleSave = () => {
     setFormat(draftFormat)
     setTheme(draftMode === 'Light' ? 'light' : 'dark')
+    setFontStyle(draftFont)
+    setTabSize(draftTab)
 
     setSaved(true)
     setTimeout(() => {
@@ -28,6 +33,7 @@ export default function SettingsModal({ onClose }) {
       onClose()
     }, 600)
   }
+
 
   return (
     <div className="modal-overlay" id="settings-overlay" onClick={onClose}>
@@ -86,17 +92,41 @@ export default function SettingsModal({ onClose }) {
             </div>
           </div>
 
-          {/* File actions */}
-          <div className="settings-modal__divider" />
+          {/* Font Style */}
+          <div className="settings-modal__field">
+            <label className="settings-modal__label">Font Style</label>
+            <div className="settings-modal__options">
+              {FONT_OPTIONS.map(opt => (
+                <button
+                  key={opt}
+                  id={`font-${opt.replace(/\s+/g, '-').toLowerCase()}`}
+                  className={`ui-button settings-modal__opt-btn ${draftFont === opt ? 'active' : ''}`}
+                  onClick={() => setDraftFont(opt)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          <button id="settings-load-file" className="ui-button settings-modal__action-btn">
-            Load File
-          </button>
-          <button id="settings-export-file" className="ui-button settings-modal__action-btn">
-            Export File
-          </button>
+          {/* Tab Size */}
+          <div className="settings-modal__field">
+            <label className="settings-modal__label">Tab Size</label>
+            <div className="settings-modal__options">
+              {TAB_OPTIONS.map(opt => (
+                <button
+                  key={opt}
+                  id={`tab-${opt}`}
+                  className={`ui-button settings-modal__opt-btn ${draftTab === opt ? 'active' : ''}`}
+                  onClick={() => setDraftTab(opt)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
 
-          <div className="settings-modal__divider" />
+
 
           {/* Save */}
           <button

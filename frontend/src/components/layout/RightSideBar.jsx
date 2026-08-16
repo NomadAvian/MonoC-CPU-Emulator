@@ -9,7 +9,7 @@ export default function RightSideBar({ style }) {
   return (
     <aside className="right-sidebar" style={style}>
       <div className="right-sidebar__header">
-        <span className="right-sidebar__title">AI Chat</span>
+        <span className="right-sidebar__title">MonoC AI</span>
         <button
           id="chat-hide-btn"
           className="icon-btn right-sidebar__hide-btn"

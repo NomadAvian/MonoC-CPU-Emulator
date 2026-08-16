@@ -1,32 +1,21 @@
-# gemini chat loop environment
-import os
-from pathlib import Path
-from dotenv import load_dotenv
-load_dotenv(Path(__file__).parent / ".env")
 import json
 from google import genai
 from google.genai import types
-from monoc_mcp.crow_client import get_greeting, get_registers, get_memory, step_cpu
-
-MODEL = "gemini-2.5-flash"
+from monoc_mcp.config import GEMINI_API_KEY, GEMINI_MODEL as MODEL
+from monoc_mcp.crow_client import get_registers, get_memory, get_source, step_cpu
+from monoc_mcp.prompt import SYSTEM_PROMPT
 
 _client = None
 
 def _get_client():
     global _client
     if _client is None:
-        api_key = os.environ.get("GEMINI_API_KEY")
-        if not api_key:
+        if not GEMINI_API_KEY:
             raise RuntimeError("GEMINI_API_KEY env var is not set")
-        _client = genai.Client(api_key=api_key)
+        _client = genai.Client(api_key=GEMINI_API_KEY)
     return _client
 
 TOOLS = types.Tool(function_declarations=[
-    types.FunctionDeclaration(
-        name="get_crow_greeting",
-        description="Fetch the greeting message currently served by the Crow C++ backend server.",
-        parameters_json_schema={"type": "object", "properties": {}},
-    ),
     types.FunctionDeclaration(
         name="read_registers",
         description="Read all 32 CPU registers and the program counter.",
@@ -51,28 +40,20 @@ TOOLS = types.Tool(function_declarations=[
         description="Execute one instruction on the CPU and return the new program counter (PC) and whether the CPU halted.",
         parameters_json_schema={"type": "object", "properties": {}},
     ),
+    types.FunctionDeclaration(
+        name="get_source",
+        description="Get the assembly source code currently loaded in the emulator.",
+        parameters_json_schema={"type": "object", "properties": {}},
+    ),
 ])
 
 TOOL_DISPATCH = {
-    "get_crow_greeting": get_greeting,
-    "read_registers":    get_registers,
-    "read_memory":       get_memory,
-    "step_cpu_once":     step_cpu,
+    "read_registers": get_registers,
+    "read_memory":    get_memory,
+    "step_cpu_once":  step_cpu,
+    "get_source":     get_source,
+    # todo: get_instructions 
 }
-
-SYSTEM_PROMPT = """\
-You are a helpful CPU emulator tutor built into the MonoC CPU Emulator.
-You help students understand assembly code, CPU architecture, and program execution.
-
-You have access to these tools to inspect the live CPU state:
-- read_registers: Read all 32 CPU registers and the program counter
-- read_memory(addr): Read 64 bytes of RAM starting at an address
-- step_cpu_once: Execute one instruction and see the result
-
-When an user asks about CPU state, USE your tools to get real data
-rather than guessing. Explain things clearly and at a beginner level.
-Keep responses concise — this is a small chat panel, not an essay. Strictly don't use any emojis.
-"""
 
 CONFIG = types.GenerateContentConfig(
     tools=[TOOLS],

@@ -21,7 +21,7 @@
   --text-muted: #6c7086;
 
   /* accent */
-  --accent: #c6a0f6; 
+  --accent: #c6a0f6;
   /*Mauve*/
   --accent-hover: #dcbaf8;
   --accent-dim: rgba(198, 160, 246, 0.12);
@@ -46,11 +46,13 @@
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* reading size */
-  --fs-base: 18px;
-  --fs-sm: 15.5px;
-  --fs-xs: 14px;
-  --fs-lg: 20px;
-  --fs-header: 40px;
+  --fs-xs:  0.75rem;   /* 12px */
+  --fs-sm:  0.875rem;  /* 14px */
+  --fs-base: 1rem;     /* 16px */
+  --fs-md:  1.125rem;  /* 18px */
+  --fs-lg:  1.25rem;   /* 20px */
+  --fs-xl:  1.5rem;    /* 24px */
+  --fs-2xl: 2rem;      /* 32px */
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -175,7 +177,7 @@ body {
 }
 
 .tab-btn.active {
-  background: var(--bg-hover);
+  background: transparent;
   color: var(--accent);
   border-bottom: 2px solid var(--accent);
 }
@@ -237,6 +239,9 @@ button:focus-visible {
 .ui-button--ghost {
   border-color: transparent;
   background: transparent;
+  color: var(--text-primary);
+  font-size: 14px;
+  padding: 0 8px;
 }
 
 .ui-button--accent {
@@ -263,8 +268,7 @@ button:focus-visible {
 }
 
 .ui-input:focus {
-  border-color: var(--accent-border);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--accent);
 }
 
    /* Dividers */

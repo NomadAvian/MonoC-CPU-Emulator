@@ -12,9 +12,6 @@ export function formatValue(value, format) {
     case 'Unsigned':
       return String(u32)
 
-    case 'Binary':
-      return '0b' + u32.toString(2).padStart(32, '0')
-
     case 'Hex':
     default:
       return '0x' + u32.toString(16).padStart(8, '0').toUpperCase()

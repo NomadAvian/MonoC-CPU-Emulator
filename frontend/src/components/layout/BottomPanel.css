@@ -5,14 +5,45 @@
   border-top: 1px solid var(--border);
   flex-shrink: 0;
   overflow: hidden;
+  transition: height 0.15s ease-out;
 }
 
 .bottom-panel__tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   border-radius: 0;
-  padding: 6px 8px;
+  padding: 0 8px;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+}
+
+.bottom-panel__tab-buttons {
+  display: flex;
+  gap: 2px;
+  height: 100%;
+}
+
+.bottom-panel__collapse-btn {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.bottom-panel__collapse-btn:hover {
+  opacity: 1;
+}
+
+.bottom-panel__collapse-btn img {
+  width: 14px;
+  height: 14px;
 }
 
 .bottom-panel__content {
@@ -20,4 +51,5 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 8px;
+  background-color: var(--bg-elevated);
 }

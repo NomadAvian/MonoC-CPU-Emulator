@@ -1,10 +1,11 @@
 .log-panel {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 12px;
   display: flex;
   flex-direction: column;
   gap: 1px;
   min-height: 100%;
+  padding: 8px;
 }
 
 .log-panel__header {
@@ -35,6 +36,11 @@
   font-family: var(--font-sans);
 }
 
+.log-panel__entries {
+  overflow-y: auto;
+  flex: 1;
+}
+
 .log-panel__entry {
   display: flex;
   align-items: baseline;
@@ -48,24 +54,9 @@
   background: var(--bg-hover);
 }
 
-.log-panel__ts {
-  color: var(--text-muted);
-  font-size: 10px;
-  flex-shrink: 0;
-}
-
-.log-panel__level {
-  font-size: 10px;
-  font-weight: 700;
-  min-width: 52px;
-}
-
-.log-panel__entry--info .log-panel__level { color: var(--cyan); }
-.log-panel__entry--warn .log-panel__level { color: var(--yellow); }
-.log-panel__entry--error .log-panel__level { color: var(--red); }
-.log-panel__entry--success .log-panel__level { color: var(--green); }
-
 .log-panel__msg {
   color: var(--text-primary);
   flex: 1;
 }
+
+
