@@ -6,14 +6,8 @@
 
 int main()
 {
-  crow::SimpleApp app;
-  cpu::CPU* cpu_instance = new cpu::CPU("test_program.txt");
-
-    // GET /ai/test
-    CROW_ROUTE(app, "/ai/test").methods(crow::HTTPMethod::GET)
-    ([](){
-        return "Hello World, this is a test for MCP & Backend Server";
-    });
+    crow::SimpleApp app;
+    cpu::CPU* cpu_instance = new cpu::CPU("test_program.txt");
 
     // POST /cpu/load
     // creates/resets the CPU and loads a ROM

@@ -3,6 +3,7 @@
 *.exe
 *.obj
 *.o
+*.txt
 .env
 .zed
 
@@ -16,3 +17,4 @@ venv/
 .python-versionbuild/
 frontend/node_modules/
 frontend/dist/
+build/
