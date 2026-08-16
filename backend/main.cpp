@@ -6,8 +6,8 @@
 
 int main()
 {
-    crow::SimpleApp app;
-    cpu::CPU* cpu_instance = new cpu::CPU("test_program.txt");
+  crow::SimpleApp app;
+  cpu::CPU* cpu_instance = new cpu::CPU("test_program.txt");
 
     // GET /ai/test
     CROW_ROUTE(app, "/ai/test").methods(crow::HTTPMethod::GET)
@@ -101,6 +101,9 @@ int main()
         // TODO send to Ollama/Gemini
         return crow::response(200, "ai is up");
     });
+
+    // connect pc to mcp server for explaining
+    // what a particular line does
 
     app.port(6969).multithreaded().run();
 }
