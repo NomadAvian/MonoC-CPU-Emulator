@@ -1,3 +1,4 @@
+// TODO: linear memory mapping for all memory types
 #include "cpu.h"
 
 #include <cassert>
@@ -29,6 +30,8 @@ void CPU::LoadROM(const std::string& filename) {
     
     Reset();
     rom_.LoadFile(path);
+    MirrorRomToRam();
+    SetPC(rom_.entry());
 }
 
 Word CPU::pc() const {
@@ -638,7 +641,7 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
                 throw std::runtime_error("JALR: misaligned target address");
             }
             WriteReg(static_cast<size_t>(instr.rd), return_address);
-            pc_.value = target_address.result;
+            SetPC(target_address.result);
             return true;
         }
 
@@ -685,7 +688,7 @@ bool CPU::ExecuteJType(DecodedInstruction instr) {
         throw std::runtime_error("JAL: misaligned target address");    
     }
     else {
-        pc_.value = target_address.result;
+        SetPC(target_address.result);
     }
     return true;
 }
@@ -738,23 +741,34 @@ bool CPU::ExecuteBType(DecodedInstruction instr) {
         if (target_address.result & 0x3) {
             throw std::runtime_error("Branch: misaligned target address");
         } else {
-            pc_.value = target_address.result;
+            SetPC(target_address.result);
         }
     }
     return take_branch; // branch taken / not taken
 }
 
 void CPU::Reset() {
-    // TODO: should also reset all of memory space (how to implement efficiently ?)
     // initialize registers
     for (int i = 0; i < 32; i++) {
         x[i].value = 0;
     }
     // initialize program counter
-    pc_.value = 0;
+    SetPC(0);
     ram_.Reset();
+    // required for .string / .ascii support
+    MirrorRomToRam();
 
     halted_ = false;
+}
+
+void CPU::MirrorRomToRam() {
+    // The assembled image (code + data) lives in rom_; loads/stores (lb/lw/sb/sw)
+    // and string syscalls access ram_, so copy the loaded ROM bytes into RAM so
+    // that .string/.word/.byte data is readable through data accesses.
+    size_t bytes = rom_.loaded_bytes();
+    for (size_t i = 0; i < bytes; ++i) {
+        ram_.WriteByte(static_cast<Word>(i), rom_.ReadByte(static_cast<Word>(i)));
+    }
 }
 
 void CPU::Step() {
@@ -762,7 +776,7 @@ void CPU::Step() {
     DecodedInstruction decoded_instr = Decode(instr);
     bool pc_changed = Execute(decoded_instr);
     if (!pc_changed) {
-        pc_.value += 4;
+        IncrementPC();
     }
 }
 

@@ -22,6 +22,12 @@ public:
 
   void Reset();
 
+  // Number of bytes written by the most recent LoadFile (0 if none).
+  size_t loaded_bytes() const { return loaded_bytes_; }
+
+  // Program entry point parsed from the ROM header (0 if the file had none).
+  Word entry() const { return entry_; }
+
   Byte ReadByte(Word addr) const;
   Half ReadHalf(Word addr) const;
   Word ReadWord(Word addr) const;
@@ -37,6 +43,8 @@ public:
 private:
   bool read_only_;
   std::vector<Byte> data_;
+  size_t loaded_bytes_ = 0;
+  Word entry_ = 0;
 
   Word WrapAddr(Word addr) const;
 };
