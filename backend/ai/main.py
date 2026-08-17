@@ -39,9 +39,18 @@ async def chat_endpoint(request: ChatRequest):
     return {"response": result}
 
 
+class ExplainRequest(BaseModel):
+    line_number: int
+    source: str
+
+
+@app.post("/explain")
+async def explain_endpoint(request: ExplainRequest):
+    prompt = f"Please explain what line {request.line_number} does. Keep it short. Here is the source code for reference:\n{request.source}"
+    # TODO: call tool calling loop with this prompt
+    return 
+
 # ----------- auth apis -----------
-
-
 class SignupRequest(BaseModel):
     username: str
     email: str
@@ -101,7 +110,7 @@ def delete_code(req: DeleteCodeRequest):
     return {"success": True}
 
 
-# ----------- example code library apis ------------
+# ----------- code library apis ------------
 @app.get("/examples")
 def get_examples():
     return {"examples": db.get_all_examples()}

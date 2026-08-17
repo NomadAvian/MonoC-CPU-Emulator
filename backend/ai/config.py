@@ -3,14 +3,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 # path resolution relative to this file
-_pkg_dir = Path(__file__).parent               # backend/ai/src/monoc_mcp
-_ai_dir = Path(__file__).parents[2]            # backend/ai
-_backend_dir = Path(__file__).parents[3]       # backend
+_ai_dir = Path(__file__).parent               # backend/ai
+_backend_dir = _ai_dir.parent                 # backend
 
-if (_pkg_dir / ".env").exists():
-    load_dotenv(_pkg_dir / ".env")
-elif (_ai_dir / ".env").exists():
+if (_ai_dir / ".env").exists():
     load_dotenv(_ai_dir / ".env")
+elif (_backend_dir / ".env").exists():
+    load_dotenv(_backend_dir / ".env")
 
 _default_db = str((_backend_dir / "db" / "test.db").resolve())
 

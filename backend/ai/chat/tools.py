@@ -1,5 +1,5 @@
 from google.genai import types
-from emulator.client import get_registers, get_memory, step_cpu
+from emulator.client import get_registers, get_memory
 
 # ----------------- OLLAMA TOOLS -----------------
 OLLAMA_TOOLS = [
@@ -26,14 +26,6 @@ OLLAMA_TOOLS = [
                 },
                 "required": ["addr"],
             },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "step_cpu_once",
-            "description": "Execute one instruction on the CPU and return the new program counter (PC) and whether the CPU halted",
-            "parameters": {"type": "object", "properties": {}},
         },
     },
     {
@@ -68,11 +60,6 @@ GEMINI_TOOLS = types.Tool(function_declarations=[
         },
     ),
     types.FunctionDeclaration(
-        name="step_cpu_once",
-        description="Execute one instruction on the CPU and return the new program counter (PC) and whether the CPU halted.",
-        parameters_json_schema={"type": "object", "properties": {}},
-    ),
-    types.FunctionDeclaration(
         name="get_source",
         description="Get the assembly source code currently loaded in the emulator.",
         parameters_json_schema={"type": "object", "properties": {}},
@@ -83,6 +70,6 @@ GEMINI_TOOLS = types.Tool(function_declarations=[
 TOOL_DISPATCH = {
     "read_registers": get_registers,
     "read_memory":    get_memory,
-    "step_cpu_once":  step_cpu,
+    # get_source is implemented directly into the tool callilng loop
     # todo: get_instructions 
 }

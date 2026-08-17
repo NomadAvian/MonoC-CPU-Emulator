@@ -14,8 +14,4 @@ def get_memory(addr: str) -> dict:
     return httpx.get(f"{CROW_BASE}/cpu/memory/{addr}", timeout=5).json()
 
 
-def step_cpu() -> dict:
-    return httpx.post(f"{CROW_BASE}/cpu/step", timeout=5).json()
-
-
 # todo: get instruction

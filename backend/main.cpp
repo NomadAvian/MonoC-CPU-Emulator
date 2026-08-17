@@ -9,14 +9,6 @@ int main()
     crow::SimpleApp app;
     cpu::CPU* cpu_instance = new cpu::CPU("test_program.txt");
 
-    // POST /cpu/load
-    // creates/resets the CPU and loads a ROM
-    CROW_ROUTE(app, "/cpu/load").methods(crow::HTTPMethod::POST)
-    ([&cpu_instance](const crow::request& req) {
-        // TODO
-        return crow::response(200, "loaded the cpu");
-    });
-
     // POST /cpu/compile
     // assembles the source buffer into a ROM and loads it into the CPU
     CROW_ROUTE(app, "/cpu/compile").methods(crow::HTTPMethod::POST)
@@ -87,17 +79,6 @@ int main()
         // TODO: convert to number and return mem addr
         return crow::response(200, "memory");
     });
-
-    // POST /ai/explain
-    CROW_ROUTE(app, "/ai/explain").methods(crow::HTTPMethod::POST)
-    ([](const crow::request& req) {
-        auto body = crow::json::load(req.body);
-        // TODO send to Ollama/Gemini
-        return crow::response(200, "ai is up");
-    });
-
-    // connect pc to mcp server for explaining
-    // what a particular line does
 
     app.port(6969).multithreaded().run();
 }
