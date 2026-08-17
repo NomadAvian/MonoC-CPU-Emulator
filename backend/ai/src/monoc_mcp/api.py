@@ -7,8 +7,8 @@ from pydantic import BaseModel
 
 import monoc_mcp.db as db
 from monoc_mcp.config import CORS_ORIGINS
-from monoc_mcp.chat_service import chat as ollama_chat
 from monoc_mcp.gemini_chat_service import chat as gemini_chat
+from monoc_mcp.ollama_chat_service import chat as ollama_chat
 
 # CORS policy management
 app = FastAPI()
@@ -20,23 +20,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # ------------- chat apis -------------
 class ChatRequest(BaseModel):
     messages: list[dict]
+    source: str
 
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     try:
-        result = ollama_chat(request.messages)
+        result = ollama_chat(request.messages, request.source)
         print("[api] responded via Ollama")
     except Exception as e:
         print(f"[api] Ollama unavailable , falling back to Gemini")
-        result = gemini_chat(request.messages)
+        result = gemini_chat(request.messages, request.source)
         print("[api] responded via Gemini (fallback)")
     return {"response": result}
 
+
 # ----------- auth apis -----------
+
 
 class SignupRequest(BaseModel):
     username: str
@@ -64,7 +68,7 @@ def login(req: LoginRequest):
     return res
 
 
-# ----------- user apis ------------ 
+# ----------- user apis ------------
 class SaveCodeRequest(BaseModel):
     token: str
     name: str
@@ -109,6 +113,3 @@ def get_example_detail(example_id: str):
     if not example:
         raise HTTPException(status_code=404, detail="Example code not found")
     return example
-
-
-

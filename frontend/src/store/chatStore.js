@@ -1,8 +1,8 @@
 // Zustand store that manages the chat conversation state
 // and communicates with the FastAPI backend.
 import { create } from 'zustand'
-
-const API_URL = 'http://localhost:8000'
+import { sendPrompt } from '../api/ai';
+import { useEditorStore } from './editorStore';
 
 const initialState = {
   messages: [],
@@ -17,12 +17,8 @@ export const useChatStore = create((set, get) => ({
     get().addMessage('user', text);
     set({ isLoading: true });
     try {
-      const response = await fetch(`${API_URL}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: get().messages }),
-      });
-      const data = await response.json();
+      const source = useEditorStore.getState().source;
+      const data = await sendPrompt(get().messages, source)
       get().addMessage('assistant', data.response);
     } catch (error) {
       get().addMessage('assistant', `Error: ${error.message}`);

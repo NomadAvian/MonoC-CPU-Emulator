@@ -2,18 +2,20 @@
 # mcp server calls these functions directly from mcp_server.py
 
 import httpx
+
 from monoc_mcp.config import CROW_BASE_URL as CROW_BASE
+
 
 def get_registers() -> dict:
     return httpx.get(f"{CROW_BASE}/cpu/registers", timeout=5).json()
 
+
 def get_memory(addr: str) -> dict:
     return httpx.get(f"{CROW_BASE}/cpu/memory/{addr}", timeout=5).json()
+
 
 def step_cpu() -> dict:
     return httpx.post(f"{CROW_BASE}/cpu/step", timeout=5).json()
 
-def get_source() -> dict:
-    return httpx.get(f"{CROW_BASE}/cpu/source", timeout=5).json()
 
 # todo: get instruction

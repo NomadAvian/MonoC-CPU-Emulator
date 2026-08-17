@@ -30,7 +30,7 @@ export default function RegisterGrid() {
       <div className="reg-grid__section-label">Pinned Registers</div>
       <div className="reg-grid__pinned">
         <RegisterCell name="PC" value={formatValue(programCounter, format)} highlighted={changedRegisters.has('pc')} />
-        <RegisterCell name="SP (R2)" value={formatValue(sp, format)} highlighted={changedRegisters.has(1)} />
+        <RegisterCell name={<>SP <span className="reg-grid__alias">R2</span></>} value={formatValue(sp, format)} highlighted={changedRegisters.has(2)} />
       </div>
 
       <div className="divider-h reg-grid__divider" />
@@ -38,7 +38,7 @@ export default function RegisterGrid() {
       <div className="reg-grid__section-label">Registers</div>
       <div className="reg-grid__list">
         {registers.map((val, i) => (
-          <RegisterCell key={i} name={`${ABI_REGISTERS[i]} (R${i})`} value={formatValue(val, format)} highlighted={changedRegisters.has(i)} />
+          <RegisterCell key={i} name={<>{ABI_REGISTERS[i].trim()} <span className="reg-grid__alias">R{i}</span></>} value={formatValue(val, format)} highlighted={changedRegisters.has(i)} />
         ))}
       </div>
     </div>

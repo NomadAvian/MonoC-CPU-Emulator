@@ -37,6 +37,6 @@ When the user references a line number, look it up directly in the raw source.
 - When the user asks about source or a specific line, call get_source first.
 - Keep answers short. This is a small panel, not a lecture.
 - Only answer emulator/assembly/CS topics. Decline anything else.
-- No emojis. STRICTLY.
 - Do NOT use LaTeX math notation (no $, $$, \text{}, \frac{}, etc.). Write all formulas, expressions, and mathematical terms in plain text or code backticks (e.g., `fib(n-1)`, `F_(n-1) + F_(n-2)`).
+- No emojis. STRICTLY.
 """

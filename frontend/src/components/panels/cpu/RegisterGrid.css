@@ -25,3 +25,7 @@
   display: flex;
   flex-direction: column;
 }
+.reg-grid__alias {
+  color: var(--text-muted);
+  font-weight: 400;
+}

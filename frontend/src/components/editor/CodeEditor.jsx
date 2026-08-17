@@ -197,7 +197,6 @@ export default function CodeEditor() {
     return unsub
   }, [])
 
-  // ── Render ──
   return (
     <div
       className="code-editor"
