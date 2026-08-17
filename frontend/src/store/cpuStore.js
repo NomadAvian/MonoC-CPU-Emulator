@@ -17,11 +17,11 @@ const initialState = {
   programCounter: 0,
   status: 'stopped',       // 'stopped' | 'compiled' | 'running'
   changedRegisters: new Set(),
-  romSize: 0,              // for execution completion
+  romSize: 0,              // execution completion bound
   halted: false,
   running: false,
   compiling: false,
-  speedIndex: 2, // default: 60 IPS
+  speedIndex: 2, // default to 60 IPS
 }
 
 export const useCPUStore = create((set, get) => ({
@@ -31,7 +31,6 @@ export const useCPUStore = create((set, get) => ({
     set((state) => {
       const registers = [...state.registers]
       registers[index] = value
-
       return { registers }
     }),
   setProgramCounter: (programCounter) => set({ programCounter }),
@@ -45,16 +44,18 @@ export const useCPUStore = create((set, get) => ({
       const data = await fetchRegisters()
       const next = data.registers ?? initialState.registers
 
-      // list of changed registers
+      // Track deltas so the UI can highlight modified registers
       const changed = new Set()
       for (let i = 0; i < next.length; i++) {
         if (next[i] !== prev[i]) changed.add(i)
       }
 
-      // pc state & halted state
       const pc = data.pc ?? 0
       if (pc !== get().programCounter) changed.add('pc')
       const romSize = get().romSize
+      
+      // pc is a byte address; romSize is instruction count.
+      // past the end = program ran off the end of ROM
       const halted = romSize > 0 && pc >= romSize * 4
 
       if (halted && !get().halted) {
@@ -103,11 +104,12 @@ export const useCPUStore = create((set, get) => ({
 
   // -------- STEP --------
   step: async (count = 1) => {
+    if (get().halted) {
+      useLogStore.getState().addLog('Program terminated')
+      return false
+    }
+
     try {
-      if (get().halted) {
-        useLogStore.getState().addLog('Program terminated')
-        return false
-      }
       await stepCpu(count)
       await get().fetchRegisters()
       return true
@@ -122,13 +124,25 @@ export const useCPUStore = create((set, get) => ({
   startRun: async () => {
     if (get().running) return
     set({ running: true, status: 'running' })
+
     const tick = async () => {
       if (!get().running) return
+      
       const { steps, delay } = SPEEDS[get().speedIndex]
       const ok = await get().step(steps)
-      if (!ok) { get().stopRun(); return }
-      delay > 0 ? setTimeout(tick, delay) : requestAnimationFrame(tick)
+      
+      if (!ok) {
+        get().stopRun()
+        return
+      }
+      
+      if (delay > 0) {
+        setTimeout(tick, delay)
+      } else {
+        requestAnimationFrame(tick)
+      }
     }
+    
     requestAnimationFrame(tick)
   },
 

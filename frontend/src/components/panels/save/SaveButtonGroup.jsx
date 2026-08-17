@@ -4,9 +4,24 @@ import saveIcon from '../../../assets/save.svg'
 import './SaveButtonGroup.css'
 
 export default function SaveButtonGroup({ onSaveClick }) {
-  const [fileMenuOpen, setFileMenuOpen] = useState(false)
+  // ── Refs ──
   const fileInputRef = useRef(null)
-  const { source, setSource } = useEditorStore()
+
+  // ── Local State ──
+  const [fileMenuOpen, setFileMenuOpen] = useState(false)
+
+  // ── Store Selectors & Actions ──
+  const source    = useEditorStore(s => s.source)
+  const setSource = useEditorStore(s => s.setSource)
+
+  // ── Handlers ──
+  const handleToggleMenu = () => {
+    setFileMenuOpen(!fileMenuOpen)
+  }
+
+  const handleCloseMenu = () => {
+    setFileMenuOpen(false)
+  }
 
   const handleCloudSave = () => {
     setFileMenuOpen(false)
@@ -46,9 +61,9 @@ export default function SaveButtonGroup({ onSaveClick }) {
   return (
     <div className="save-btn-group">
       <button
-        className="topbar__nav-btn"
         id="topbar-save-btn"
-        onClick={() => setFileMenuOpen(!fileMenuOpen)}
+        className="topbar__nav-btn"
+        onClick={handleToggleMenu}
         title="Save & File Options"
       >
         <img src={saveIcon} alt="Save Code" className="topbar__icon" />
@@ -56,7 +71,10 @@ export default function SaveButtonGroup({ onSaveClick }) {
 
       {fileMenuOpen && (
         <>
-          <div style={{ position: 'fixed', inset: 0, zIndex: 199 }} onClick={() => setFileMenuOpen(false)} />
+          <div 
+            style={{ position: 'fixed', inset: 0, zIndex: 199 }} 
+            onClick={handleCloseMenu} 
+          />
           <div className="save-btn-menu">
             <button className="ui-button" onClick={handleCloudSave}>
               Cloud Save

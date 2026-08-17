@@ -4,14 +4,29 @@ import closeIcon from '../../../assets/close.svg'
 import { useLibraryStore } from '../../../store/libraryStore'
 
 export default function LibraryPanel({ onClose }) {
-  const {
-    examples, loading, error, search, loadingId,
-    setSearch, fetchExamples, selectExample
-  } = useLibraryStore()
+  // ── Store Selectors & Actions ──
+  const examples      = useLibraryStore(s => s.examples)
+  const loading       = useLibraryStore(s => s.loading)
+  const error         = useLibraryStore(s => s.error)
+  const search        = useLibraryStore(s => s.search)
+  const loadingId     = useLibraryStore(s => s.loadingId)
+  
+  const setSearch     = useLibraryStore(s => s.setSearch)
+  const fetchExamples = useLibraryStore(s => s.fetchExamples)
+  const selectExample = useLibraryStore(s => s.selectExample)
 
   useEffect(() => {
     fetchExamples()
   }, [fetchExamples])
+
+  // ── Handlers ──
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value)
+  }
+
+  const handleModalClick = (e) => {
+    e.stopPropagation()
+  }
 
   const q = search.trim().toLowerCase()
   const filtered = q ? examples.filter(i =>
@@ -25,9 +40,9 @@ export default function LibraryPanel({ onClose }) {
   return (
     <div className="modal-overlay" id="library-overlay" onClick={onClose}>
       <div
-        className="library-modal"
         id="library-modal"
-        onClick={e => e.stopPropagation()}
+        className="library-modal"
+        onClick={handleModalClick}
       >
         {/* Header */}
         <div className="library-modal__header">
@@ -38,8 +53,8 @@ export default function LibraryPanel({ onClose }) {
           <button
             id="library-close-btn"
             className="icon-btn library-modal__close-btn"
-            onClick={onClose}
             aria-label="Close library"
+            onClick={onClose}
           >
             <img src={closeIcon} alt="Close" />
           </button>
@@ -52,8 +67,8 @@ export default function LibraryPanel({ onClose }) {
             className="ui-input library-modal__search-input"
             placeholder="Search examples..."
             value={search}
-            onChange={e => setSearch(e.target.value)}
             autoFocus
+            onChange={handleSearchChange}
           />
         </div>
 
@@ -83,8 +98,8 @@ export default function LibraryPanel({ onClose }) {
                     <button
                       key={item.id}
                       className={`library-modal__item ${loadingId === item.id ? 'loading' : ''}`}
-                      onClick={() => selectExample(item.id, onClose)}
                       disabled={loadingId === item.id}
+                      onClick={() => selectExample(item.id, onClose)}
                     >
                       <div className="library-modal__item-title">{item.title}</div>
                       {item.description && (

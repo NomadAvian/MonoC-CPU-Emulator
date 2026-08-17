@@ -15,14 +15,15 @@ const RIGHT_MIN = 280; const RIGHT_MAX = 800
 const BOTTOM_MIN = 80; const BOTTOM_MAX = 520
 
 function App() {
-  // Panel sizes
+  // ── Local State ──
   const [leftWidth, setLeftWidth] = useState(180)
   const [rightWidth, setRightWidth] = useState(420)
   const [bottomHeight, setBottomHeight] = useState(220)
 
+  // ── Store Selectors ──
   const isChatOpen = useUIStore(s => s.isChatOpen)
 
-  // Resize handlers (incremental delta)
+  // ── Handlers ──
   const onLeftResize = useCallback((d) => setLeftWidth(w => Math.max(LEFT_MIN, Math.min(LEFT_MAX, w + d))), [])
   const onRightResize = useCallback((d) => setRightWidth(w => Math.max(RIGHT_MIN, Math.min(RIGHT_MAX, w - d))), [])
   const onBottomResize = useCallback((d) => setBottomHeight(h => Math.max(BOTTOM_MIN, Math.min(BOTTOM_MAX, h - d))), [])
@@ -35,22 +36,29 @@ function App() {
         {/* Left sidebar — width controlled by drag */}
         <LeftSideBar style={{ width: leftWidth }} />
 
-        <ResizeDivider direction="horizontal" onDrag={onLeftResize} />
+        <ResizeDivider
+          direction="horizontal"
+          onDrag={onLeftResize}
+        />
 
         {/* Center: Editor + bottom panel */}
         <div className="center-col">
           <EditorPanel />
-          <ResizeDivider direction="vertical" onDrag={onBottomResize} />
+          <ResizeDivider
+            direction="vertical"
+            onDrag={onBottomResize}
+          />
           <BottomPanel style={{ height: bottomHeight }} />
         </div>
 
         {/* Right sidebar — collapsible */}
         {isChatOpen && (
           <>
-            <ResizeDivider direction="horizontal" onDrag={onRightResize} />
-            <RightSideBar
-              style={{ width: rightWidth }}
+            <ResizeDivider
+              direction="horizontal"
+              onDrag={onRightResize}
             />
+            <RightSideBar style={{ width: rightWidth }} />
           </>
         )}
       </div>

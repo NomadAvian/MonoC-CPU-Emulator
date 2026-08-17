@@ -7,14 +7,16 @@ import deleteIcon from '../../../assets/delete.svg'
 import './ProfileModal.css'
 
 export default function ProfileModal({ onClose }) {
-  const user = useAuthStore(s => s.user)
-  const logout = useAuthStore(s => s.logout)
-  const fetchSavedCodes = useAuthStore(s => s.fetchSavedCodes)
-  const deleteCode = useAuthStore(s => s.deleteCode)
-  const setSource = useEditorStore(s => s.setSource)
-
+  // ── Local State ──
   const [codes, setCodes] = useState([])
   const [loading, setLoading] = useState(true)
+
+  // ── Store Selectors & Actions ──
+  const user            = useAuthStore(s => s.user)
+  const logout          = useAuthStore(s => s.logout)
+  const fetchSavedCodes = useAuthStore(s => s.fetchSavedCodes)
+  const deleteCode      = useAuthStore(s => s.deleteCode)
+  const setSource       = useEditorStore(s => s.setSource)
 
   useEffect(() => {
     fetchSavedCodes()
@@ -23,6 +25,7 @@ export default function ProfileModal({ onClose }) {
       .finally(() => setLoading(false))
   }, [fetchSavedCodes])
 
+  // ── Handlers ──
   const handleLoadCode = (item) => {
     setSource(item.code)
     onClose()
@@ -38,9 +41,18 @@ export default function ProfileModal({ onClose }) {
     }
   }
 
+  const handleModalClick = (e) => {
+    e.stopPropagation()
+  }
+
+  const handleLogout = () => {
+    logout()
+    onClose()
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="profile-modal" onClick={e => e.stopPropagation()}>
+      <div className="profile-modal" onClick={handleModalClick}>
         <div className="profile-modal__header">
           <div>
             <h3 className="profile-modal__username">{user?.username || 'User Profile'}</h3>
@@ -86,10 +98,7 @@ export default function ProfileModal({ onClose }) {
         <div className="profile-modal__footer">
           <button
             className="ui-button profile-modal__logout-btn"
-            onClick={() => {
-              logout()
-              onClose()
-            }}
+            onClick={handleLogout}
           >
             Log Out
           </button>

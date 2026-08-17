@@ -16,31 +16,37 @@ import profileIcon from '../../assets/profile.svg'
 import libraryIcon from '../../assets/library.svg'
 
 export default function TopBar() {
+  // ── Local State ──
   const [libraryOpen, setLibraryOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [saveOpen, setSaveOpen] = useState(false)
 
-  const { isChatOpen, toggleChat } = useUIStore()
+  // ── Store Selectors ──
+  const isChatOpen = useUIStore(s => s.isChatOpen)
+  const toggleChat = useUIStore(s => s.toggleChat)
+  const user       = useAuthStore(s => s.user)
 
-  const user = useAuthStore(s => s.user)
-
+  // ── Handlers ──
   const handleProfileClick = () => {
     if (user) {
-      setProfileOpen(true);
+      setProfileOpen(true)
     } else {
-      setAuthOpen(true);
+      setAuthOpen(true)
     }
   }
 
   const handleSaveClick = () => {
     if (!user) {
-      setAuthOpen(true);
-      return;
+      setAuthOpen(true)
+      return
     }
-    setSaveOpen(true);
+    setSaveOpen(true)
   }
+
+  const handleLibraryClick = () => setLibraryOpen(true)
+  const handleSettingsClick = () => setSettingsOpen(true)
 
   return (
     <>
@@ -54,8 +60,8 @@ export default function TopBar() {
         <nav className="topbar__nav">
 
           <button
-            className={`topbar__nav-btn ${isChatOpen ? 'topbar__nav-btn--active' : ''}`}
             id="topbar-chat-btn"
+            className={`topbar__nav-btn ${isChatOpen ? 'topbar__nav-btn--active' : ''}`}
             aria-pressed={isChatOpen}
             onClick={toggleChat}
             title="MonoC AI"
@@ -64,18 +70,18 @@ export default function TopBar() {
           </button>
 
           <button
-            className="topbar__nav-btn"
             id="topbar-library-btn"
-            onClick={() => setLibraryOpen(true)}
+            className="topbar__nav-btn"
+            onClick={handleLibraryClick}
             title="Code Library"
           >
             <img src={libraryIcon} alt="Code Library" className="topbar__icon" />
           </button>
 
           <button
-            className="topbar__nav-btn"
             id="topbar-settings-btn"
-            onClick={() => setSettingsOpen(true)}
+            className="topbar__nav-btn"
+            onClick={handleSettingsClick}
             title="Settings"
           >
             <img src={settingsIcon} alt="Settings" className="topbar__icon" />
@@ -84,8 +90,8 @@ export default function TopBar() {
           <SaveButtonGroup onSaveClick={handleSaveClick} />
 
           <a
-            className="topbar__nav-btn"
             id="topbar-docs-btn"
+            className="topbar__nav-btn"
             href="https://github.com"
             target="_blank"
             rel="noreferrer"
@@ -95,8 +101,8 @@ export default function TopBar() {
           </a>
 
           <button
-            className="topbar__nav-btn"
             id="topbar-profile-btn"
+            className="topbar__nav-btn"
             onClick={handleProfileClick}
             title={user ? user.username : 'Log In'}
           >

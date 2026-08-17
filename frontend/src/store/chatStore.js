@@ -14,6 +14,8 @@ export const useChatStore = create((set, get) => ({
   addMessage: (role, content) => set((state) => ({ messages: [...state.messages, { role, content }] })),
   clearMessages: () => set(initialState),
   sendMessage: async (text) => {
+    if (!text || !text.trim()) return
+    
     get().addMessage('user', text);
     set({ isLoading: true });
     try {

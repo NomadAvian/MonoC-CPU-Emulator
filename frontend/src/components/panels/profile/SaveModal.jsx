@@ -5,13 +5,26 @@ import closeIcon from '../../../assets/close.svg'
 import './SaveModal.css'
 
 export default function SaveModal({ onClose }) {
+  // ── Local State ──
   const [name, setName] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
+  // ── Store Actions & Selectors ──
   const saveCode = useAuthStore(s => s.saveCode)
-  const source = useEditorStore(s => s.source)
+  const source   = useEditorStore(s => s.source)
+
+  // ── Handlers ──
+  const handleNameChange = (e) => setName(e.target.value)
+
+  const handleBackdropClick = () => {
+    onClose()
+  }
+
+  const handleModalClick = (e) => {
+    e.stopPropagation()
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -34,9 +47,13 @@ export default function SaveModal({ onClose }) {
   }
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="save-modal" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Close">
+    <div className="modal-backdrop" onClick={handleBackdropClick}>
+      <div className="save-modal" onClick={handleModalClick}>
+        <button
+          className="modal-close"
+          onClick={onClose}
+          aria-label="Close"
+        >
           <img src={closeIcon} alt="Close" />
         </button>
         
@@ -52,7 +69,7 @@ export default function SaveModal({ onClose }) {
               className="ui-input" 
               placeholder="Enter code name..." 
               value={name} 
-              onChange={e => setName(e.target.value)} 
+              onChange={handleNameChange} 
               autoFocus
               required 
             />

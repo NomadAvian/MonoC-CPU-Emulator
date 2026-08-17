@@ -4,6 +4,7 @@ import closeIcon from '../../../assets/close.svg'
 import './AuthModal.css'
 
 export default function AuthModal({ onClose }) {
+  // ── Local State ──
   const [isLogin, setIsLogin] = useState(true)
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
@@ -11,7 +12,27 @@ export default function AuthModal({ onClose }) {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const { login, signup } = useAuthStore()
+  // ── Store Actions ──
+  const login  = useAuthStore(s => s.login)
+  const signup = useAuthStore(s => s.signup)
+
+  // ── Handlers ──
+  const handleUsernameChange = (e) => setUsername(e.target.value)
+  const handleEmailChange    = (e) => setEmail(e.target.value)
+  const handlePasswordChange = (e) => setPassword(e.target.value)
+
+  const handleToggleMode = () => {
+    setIsLogin(!isLogin)
+    setError('')
+  }
+
+  const handleBackdropClick = () => {
+    onClose()
+  }
+
+  const handleModalClick = (e) => {
+    e.stopPropagation()
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -33,8 +54,8 @@ export default function AuthModal({ onClose }) {
   }
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="auth-modal" onClick={e => e.stopPropagation()}>
+    <div className="modal-backdrop" onClick={handleBackdropClick}>
+      <div className="auth-modal" onClick={handleModalClick}>
         <h2>{isLogin ? 'Welcome!' : 'Create Account'}</h2>
         
         {error && <div className="auth-error">{error}</div>}
@@ -46,7 +67,7 @@ export default function AuthModal({ onClose }) {
               className="ui-input" 
               placeholder="Username" 
               value={username} 
-              onChange={e => setUsername(e.target.value)} 
+              onChange={handleUsernameChange} 
               required 
             />
           )}
@@ -55,7 +76,7 @@ export default function AuthModal({ onClose }) {
             className="ui-input" 
             placeholder="Email" 
             value={email} 
-            onChange={e => setEmail(e.target.value)} 
+            onChange={handleEmailChange} 
             required 
           />
           <input 
@@ -63,18 +84,22 @@ export default function AuthModal({ onClose }) {
             className="ui-input" 
             placeholder="Password" 
             value={password} 
-            onChange={e => setPassword(e.target.value)} 
+            onChange={handlePasswordChange} 
             required 
           />
           
-          <button type="submit" className="ui-button ui-button--accent auth-submit" disabled={isLoading}>
+          <button
+            type="submit"
+            className="ui-button ui-button--accent auth-submit"
+            disabled={isLoading}
+          >
             {isLoading ? 'Loading...' : (isLogin ? 'Log In' : 'Sign Up')}
           </button>
         </form>
 
         <p className="auth-toggle">
           {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <button className="text-btn" onClick={() => { setIsLogin(!isLogin); setError(''); }}>
+          <button className="text-btn" onClick={handleToggleMode}>
             {isLogin ? 'Sign up' : 'Log in'}
           </button>
         </p>

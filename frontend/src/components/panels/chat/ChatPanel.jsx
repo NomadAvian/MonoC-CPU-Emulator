@@ -6,39 +6,47 @@ import sendIcon from '../../../assets/send-horizontal.svg'
 
 
 export default function ChatPanel() {
+  // ── Refs ──
+  const messagesEndRef = useRef(null)
+  const textareaRef = useRef(null)
 
-  const messages = useChatStore(s => s.messages);
-  const isLoading = useChatStore(s => s.isLoading);
-  const sendMessage = useChatStore(s => s.sendMessage);
+  // ── Local State ──
+  const [input, setInput] = useState('')
 
-  const [input, setInput] = useState('');
-  const messagesEndRef = useRef(null);
-  const textareaRef = useRef(null);
+  // ── Store Selectors ──
+  const messages    = useChatStore(s => s.messages)
+  const isLoading   = useChatStore(s => s.isLoading)
+  const sendMessage = useChatStore(s => s.sendMessage)
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   useEffect(() => {
-    const el = textareaRef.current;
-    if (!el) return;
-    el.style.height = 'auto';
-    el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
-  }, [input]);
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(el.scrollHeight, 140)}px`
+  }, [input])
+
+  // ── Handlers ──
+  const handleInputChange = (e) => {
+    setInput(e.target.value)
+  }
 
   const handleSend = () => {
-    const trimmed = input.trim();
-    if (!trimmed) return;
-    sendMessage(trimmed);
-    setInput('');
-  };
+    const trimmed = input.trim()
+    if (!trimmed) return
+    sendMessage(trimmed)
+    setInput('')
+  }
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+      e.preventDefault()
+      handleSend()
     }
-  };
+  }
 
   return (
     <div className="chat-panel">
@@ -77,7 +85,7 @@ export default function ChatPanel() {
           placeholder="Ask anything…"
           rows={1}
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={handleKeyDown}
         />
         <button
@@ -86,7 +94,11 @@ export default function ChatPanel() {
           onClick={handleSend}
           disabled={isLoading || !input.trim()}
         >
-          <img src={sendIcon} alt="Send" className="chat-panel__send-icon" />
+          <img
+            src={sendIcon}
+            alt="Send"
+            className="chat-panel__send-icon"
+          />
         </button>
       </div>
     </div>

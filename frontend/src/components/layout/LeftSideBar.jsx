@@ -5,9 +5,14 @@ import MemoryBar from '../panels/memory/MemoryBar'
 
 const TABS = ['Reg', 'Mem']
 
-
 export default function LeftSideBar({ style }) {
+  // ── Local State ──
   const [activeTab, setActiveTab] = useState('Reg')
+
+  // ── Handlers ──
+  const handleTabClick = (tab) => {
+    setActiveTab(tab)
+  }
 
   return (
     <aside className="left-sidebar" style={style}>
@@ -18,7 +23,7 @@ export default function LeftSideBar({ style }) {
             key={tab}
             id={`left-tab-${tab.toLowerCase()}`}
             className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabClick(tab)}
           >
             {tab}
           </button>

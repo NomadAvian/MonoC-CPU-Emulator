@@ -1,25 +1,56 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import './SettingsModal.css'
 import { useUIStore } from '../../../store/uiStore'
-import { useAuthStore } from '../../../store/authStore'
-import { useEditorStore } from '../../../store/editorStore'
 import closeIcon from '../../../assets/close.svg'
 
-const FORMAT_OPTIONS = ['Hex', 'Unsigned']
-const MODE_OPTIONS = ['Dark', 'Light']
-const FONT_OPTIONS = ['Monospace', 'Courier New']
-const TAB_OPTIONS = [2, 4, 8]
+export const FORMAT_OPTIONS = ['Hex', 'Unsigned']
+export const MODE_OPTIONS   = ['Dark', 'Light']
+export const FONT_OPTIONS   = ['Monospace', 'Courier New']
+export const TAB_OPTIONS    = [2, 4, 8]
 
 export default function SettingsModal({ onClose }) {
-  const { theme, format, fontStyle, tabSize, setTheme, setFormat, setFontStyle, setTabSize } = useUIStore()
-  const { source, setSource } = useEditorStore()
+  // ── Store Selectors & Actions ──
+  const theme        = useUIStore(s => s.theme)
+  const format       = useUIStore(s => s.format)
+  const fontStyle    = useUIStore(s => s.fontStyle)
+  const tabSize      = useUIStore(s => s.tabSize)
+  
+  const setTheme     = useUIStore(s => s.setTheme)
+  const setFormat    = useUIStore(s => s.setFormat)
+  const setFontStyle = useUIStore(s => s.setFontStyle)
+  const setTabSize   = useUIStore(s => s.setTabSize)
 
-  // Local draft state — only commit on Save
-  const [draftMode, setDraftMode] = useState(theme === 'dark' ? 'Dark' : 'Light')
+  // ── Local State ──
+  const [draftMode, setDraftMode]     = useState(theme === 'dark' ? 'Dark' : 'Light')
   const [draftFormat, setDraftFormat] = useState(format)
-  const [draftFont, setDraftFont] = useState(fontStyle)
-  const [draftTab, setDraftTab] = useState(tabSize)
-  const [saved, setSaved] = useState(false)
+  const [draftFont, setDraftFont]     = useState(fontStyle)
+  const [draftTab, setDraftTab]       = useState(tabSize)
+  const [saved, setSaved]             = useState(false)
+
+  // ── Handlers ──
+  const handleModalClick = (e) => {
+    e.stopPropagation()
+  }
+
+  const handleFormatChange = (opt) => {
+    setDraftFormat(opt)
+  }
+
+  const handleModeChange = (opt) => {
+    if (opt === 'Light') {
+      alert("Nice try... hehe")
+      return
+    }
+    setDraftMode(opt)
+  }
+
+  const handleFontChange = (opt) => {
+    setDraftFont(opt)
+  }
+
+  const handleTabChange = (opt) => {
+    setDraftTab(opt)
+  }
 
   const handleSave = () => {
     setFormat(draftFormat)
@@ -34,13 +65,12 @@ export default function SettingsModal({ onClose }) {
     }, 600)
   }
 
-
   return (
     <div className="modal-overlay" id="settings-overlay" onClick={onClose}>
       <div
-        className="settings-modal"
         id="settings-modal"
-        onClick={e => e.stopPropagation()}
+        className="settings-modal"
+        onClick={handleModalClick}
       >
         {/* Header */}
         <div className="settings-modal__header">
@@ -48,8 +78,8 @@ export default function SettingsModal({ onClose }) {
           <button
             id="settings-close-btn"
             className="icon-btn settings-modal__close-btn"
-            onClick={onClose}
             aria-label="Close settings"
+            onClick={onClose}
           >
             <img src={closeIcon} alt="Close" />
           </button>
@@ -67,7 +97,7 @@ export default function SettingsModal({ onClose }) {
                   key={opt}
                   id={`format-${opt.toLowerCase()}`}
                   className={`ui-button settings-modal__opt-btn ${draftFormat === opt ? 'active' : ''}`}
-                  onClick={() => setDraftFormat(opt)}
+                  onClick={() => handleFormatChange(opt)}
                 >
                   {opt}
                 </button>
@@ -84,13 +114,7 @@ export default function SettingsModal({ onClose }) {
                   key={opt}
                   id={`mode-${opt.toLowerCase()}`}
                   className={`ui-button settings-modal__opt-btn ${draftMode === opt ? 'active' : ''}`}
-                  onClick={() => {
-                    if (opt === 'Light') {
-                      alert("Nice try... hehe");
-                      return;
-                    }
-                    setDraftMode(opt);
-                  }}
+                  onClick={() => handleModeChange(opt)}
                 >
                   {opt === 'Dark' ? 'Dark' : 'Light'}
                 </button>
@@ -107,7 +131,7 @@ export default function SettingsModal({ onClose }) {
                   key={opt}
                   id={`font-${opt.replace(/\s+/g, '-').toLowerCase()}`}
                   className={`ui-button settings-modal__opt-btn ${draftFont === opt ? 'active' : ''}`}
-                  onClick={() => setDraftFont(opt)}
+                  onClick={() => handleFontChange(opt)}
                 >
                   {opt}
                 </button>
@@ -124,15 +148,13 @@ export default function SettingsModal({ onClose }) {
                   key={opt}
                   id={`tab-${opt}`}
                   className={`ui-button settings-modal__opt-btn ${draftTab === opt ? 'active' : ''}`}
-                  onClick={() => setDraftTab(opt)}
+                  onClick={() => handleTabChange(opt)}
                 >
                   {opt}
                 </button>
               ))}
             </div>
           </div>
-
-
 
           {/* Save */}
           <button

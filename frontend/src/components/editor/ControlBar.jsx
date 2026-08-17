@@ -15,24 +15,32 @@ const CONTROLS = [
 ]
 
 export default function ControlBar() {
-  const status = useCPUStore(s => s.status)
-  const step = useCPUStore(s => s.step)
-  const reset = useCPUStore(s => s.reset)
-  const compile = useCPUStore(s => s.compile)
-  const startRun = useCPUStore(s => s.startRun)
-  const stopRun = useCPUStore(s => s.stopRun)
-  const compiling = useCPUStore(s => s.compiling)
-  const halted = useCPUStore(s => s.halted)
-  const romSize = useCPUStore(s => s.romSize)
-  const speedIndex = useCPUStore(s => s.speedIndex)
+  // ── Store Selectors ──
+  const status        = useCPUStore(s => s.status)
+  const compiling     = useCPUStore(s => s.compiling)
+  const halted        = useCPUStore(s => s.halted)
+  const romSize       = useCPUStore(s => s.romSize)
+  const speedIndex    = useCPUStore(s => s.speedIndex)
+
+  // ── Store Actions ──
+  const step          = useCPUStore(s => s.step)
+  const reset         = useCPUStore(s => s.reset)
+  const compile       = useCPUStore(s => s.compile)
+  const startRun      = useCPUStore(s => s.startRun)
+  const stopRun       = useCPUStore(s => s.stopRun)
   const setSpeedIndex = useCPUStore(s => s.setSpeedIndex)
 
+  // ── Handlers ──
   const handleControl = (id) => {
     if (id === 'ctrl-compile') { stopRun(); compile() }
     if (id === 'ctrl-reset') { stopRun(); reset() }
     if (id === 'ctrl-stop') stopRun()
     if (id === 'ctrl-play') startRun()
     if (id === 'ctrl-step-over') step()
+  }
+
+  const handleSpeedChange = (e) => {
+    setSpeedIndex(Number(e.target.value))
   }
 
   const getButtonState = (id) => {
@@ -88,9 +96,9 @@ export default function ControlBar() {
             max={SPEEDS.length - 1}
             step={1}
             value={speedIndex}
-            onChange={e => setSpeedIndex(Number(e.target.value))}
-            className="speed-slider-input"
             title={SPEEDS[speedIndex].label}
+            className="speed-slider-input"
+            onChange={handleSpeedChange}
           />
         </div>
       </div>

@@ -7,14 +7,20 @@ import collapseIcon from '../../assets/collapse.svg'
 const TABS = ['Log', 'Disassembler']
 
 export default function BottomPanel({ style }) {
+  // ── Local State ──
   const [activeTab, setActiveTab] = useState('Log')
   const [isCollapsed, setIsCollapsed] = useState(false)
 
+  // ── Handlers ──
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     if (isCollapsed) {
       setIsCollapsed(false)
     }
+  }
+
+  const handleCollapseClick = () => {
+    setIsCollapsed(!isCollapsed)
   }
 
   const panelStyle = isCollapsed 
@@ -38,13 +44,16 @@ export default function BottomPanel({ style }) {
         </div>
         <button
           className="bottom-panel__collapse-btn"
-          onClick={() => setIsCollapsed(!isCollapsed)}
           title={isCollapsed ? "Expand Panel" : "Collapse Panel"}
+          onClick={handleCollapseClick}
         >
           <img 
             src={collapseIcon} 
             alt="Toggle Collapse" 
-            style={{ transform: isCollapsed ? 'rotate(90deg)' : 'rotate(270deg)', transition: 'transform 0.2s' }}
+            style={{ 
+              transform: isCollapsed ? 'rotate(90deg)' : 'rotate(270deg)', 
+              transition: 'transform 0.2s' 
+            }}
           />
         </button>
       </div>
