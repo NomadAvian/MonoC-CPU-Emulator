@@ -11,6 +11,9 @@ CXXFLAGS = -std=c++20 -Wall -Wextra -O2 -pthread
 ifeq ($(UNAME_S),Darwin)
 HOMEBREW_PREFIX := $(shell if [ -d /opt/homebrew/include ]; then echo /opt/homebrew; elif [ -d /usr/local/include ]; then echo /usr/local; fi)
 CXXFLAGS += -I$(HOMEBREW_PREFIX)/include -L$(HOMEBREW_PREFIX)/lib
+TARGET_SUFFIX = _mac
+else
+TARGET_SUFFIX = _linux
 endif
 
 BACKEND_DIR = backend
@@ -28,7 +31,7 @@ SRC = \
 	$(EMU_ASM)/token_type.cpp
 
 BUILD_DIR = build
-TARGET    = $(BUILD_DIR)/crow_server
+TARGET    = $(BUILD_DIR)/crow_server$(TARGET_SUFFIX)
 
 all: build
 

@@ -15,7 +15,7 @@ export const useUIStore = create((set) => ({
   setFormat: (format) => set({ format }),
   setFontStyle: (fontStyle) => set({ fontStyle }),
   setTabSize: (tabSize) => set({ tabSize }),
-  
+
   toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
 
   resetUI: () => set(initialState),

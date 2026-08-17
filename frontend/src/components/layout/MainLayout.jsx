@@ -10,7 +10,7 @@ export default function MainLayout({ children }) {
   }, [theme])
 
   return (
-    <div className="main-layout" data-theme={theme}>
+    <div className="main-layout">
       {children}
     </div>
   )

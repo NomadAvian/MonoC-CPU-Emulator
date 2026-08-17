@@ -7,7 +7,7 @@ import closeIcon from '../../../assets/close.svg'
 
 const FORMAT_OPTIONS = ['Hex', 'Unsigned']
 const MODE_OPTIONS = ['Dark', 'Light']
-const FONT_OPTIONS = ['Monospace', 'Consolas', 'Courier New']
+const FONT_OPTIONS = ['Monospace', 'Courier New']
 const TAB_OPTIONS = [2, 4, 8]
 
 export default function SettingsModal({ onClose }) {
@@ -84,7 +84,13 @@ export default function SettingsModal({ onClose }) {
                   key={opt}
                   id={`mode-${opt.toLowerCase()}`}
                   className={`ui-button settings-modal__opt-btn ${draftMode === opt ? 'active' : ''}`}
-                  onClick={() => setDraftMode(opt)}
+                  onClick={() => {
+                    if (opt === 'Light') {
+                      alert("Nice try... hehe");
+                      return;
+                    }
+                    setDraftMode(opt);
+                  }}
                 >
                   {opt === 'Dark' ? 'Dark' : 'Light'}
                 </button>

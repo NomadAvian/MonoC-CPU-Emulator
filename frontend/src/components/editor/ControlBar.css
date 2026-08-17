@@ -16,8 +16,10 @@
   min-width: 54px;
 }
 
-.control-bar__status--running { color: var(--green); }
-.control-bar__status--halted { color: var(--red); }
+.control-bar__status--running {
+  color: var(--green);
+}
+
 
 .control-bar__actions {
   display: flex;
@@ -57,8 +59,13 @@
   opacity: 0.8;
 }
 
-.control-bar__status--compiled { color: var(--cyan); }
-.control-bar__status--halted   { color: var(--yellow); }
+.control-bar__status--compiled {
+  color: var(--cyan);
+}
+
+.control-bar__status--halted {
+  color: var(--yellow);
+}
 
 /* Spinner */
 .control-bar__spinner {
@@ -71,6 +78,28 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
+/* Speed Control */
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 16px;
+  color: var(--text);
+  opacity: 0.8;
+}
+
+.speed-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  width: 50px;
+}
+
+.speed-slider-input {
+  width: 100px;
+  cursor: pointer;
+}

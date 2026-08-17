@@ -6,24 +6,6 @@
   position: relative;
 }
 
-.code-editor__placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: var(--text-muted);
-  user-select: none;
-  pointer-events: none;
-}
-
-.code-editor__placeholder p {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
 /* CodeMirror theme */
 
 .cm-editor {
@@ -67,7 +49,6 @@
   border-left-color: #7DCFFF !important;
 }
 
-/* Executing line highlight (current PC) */
 .cm-executing-line {
   background-color: rgba(250, 179, 135, 0.15) !important;
   border-left: 3px solid #FAB387 !important;

@@ -6,8 +6,9 @@ export async function fetchRegisters() {
   return res.json()
 }
 
-export async function stepCpu() {
-  const res = await fetch(`${CROW_BASE}/cpu/step`, { method: 'POST' })
+export async function stepCpu(count = 1) {
+  const url = count > 1 ? `${CROW_BASE}/cpu/step?count=${count}` : `${CROW_BASE}/cpu/step`
+  const res = await fetch(url, { method: 'POST' })
   if (!res.ok) throw new Error(`POST /cpu/step failed: ${res.status}`)
   return res.json()
 }

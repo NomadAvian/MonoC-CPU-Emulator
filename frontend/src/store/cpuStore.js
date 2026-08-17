@@ -3,6 +3,14 @@ import { fetchRegisters, stepCpu, resetCpu, compile } from '../api/cpu'
 import { useEditorStore } from './editorStore'
 import { useLogStore } from './logStore'
 
+export const SPEEDS = [
+  { label: 'Trace',  steps: 1,  delay: 1000 }, 
+  { label: 'Slow',   steps: 1,  delay: 100  }, 
+  { label: 'Normal', steps: 1,  delay: 0    },
+  { label: 'Fast',   steps: 4,  delay: 0    },
+  { label: 'Full',   steps: 32, delay: 0    }, 
+]
+
 const initialState = {
   registers: Array(32).fill(0),
   prevRegisters: Array(32).fill(0),
@@ -13,6 +21,7 @@ const initialState = {
   halted: false,
   running: false,
   compiling: false,
+  speedIndex: 2, // default: 60 IPS
 }
 
 export const useCPUStore = create((set, get) => ({
@@ -29,6 +38,7 @@ export const useCPUStore = create((set, get) => ({
   setStatus: (status) => set({ status }),
   resetCPU: () => set(initialState),
 
+  //  ------ FETCH REGISTERS ------
   fetchRegisters: async () => {
     try {
       const prev = get().registers
@@ -65,6 +75,7 @@ export const useCPUStore = create((set, get) => ({
     }
   },
 
+  //  ------ COMPILE ------
   compile: async () => {
     const log = useLogStore.getState()
     set({ compiling: true })
@@ -90,13 +101,14 @@ export const useCPUStore = create((set, get) => ({
     }
   },
 
-  step: async () => {
+  // -------- STEP --------
+  step: async (count = 1) => {
     try {
       if (get().halted) {
         useLogStore.getState().addLog('Program terminated')
         return false
       }
-      await stepCpu()
+      await stepCpu(count)
       await get().fetchRegisters()
       return true
     } catch (error) {
@@ -106,21 +118,24 @@ export const useCPUStore = create((set, get) => ({
     }
   },
 
+  // --------- RUN ---------
   startRun: async () => {
     if (get().running) return
     set({ running: true, status: 'running' })
     const tick = async () => {
       if (!get().running) return
-      const ok = await get().step()
+      const { steps, delay } = SPEEDS[get().speedIndex]
+      const ok = await get().step(steps)
       if (!ok) { get().stopRun(); return }
-      await get().step()
-      requestAnimationFrame(tick)
+      delay > 0 ? setTimeout(tick, delay) : requestAnimationFrame(tick)
     }
     requestAnimationFrame(tick)
   },
 
   stopRun: () => set({ running: false, status: 'stopped' }),
+  setSpeedIndex: (speedIndex) => set({ speedIndex }),
 
+  // --------- RESET ---------
   reset: async () => {
     try {
       await resetCpu()

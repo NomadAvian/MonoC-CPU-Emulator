@@ -1,4 +1,3 @@
-import { styleTags, tags } from '@lezer/highlight'
 import { LanguageSupport, StreamLanguage, syntaxHighlighting, HighlightStyle } from '@codemirror/language'
 import { tags as t } from '@lezer/highlight'
 

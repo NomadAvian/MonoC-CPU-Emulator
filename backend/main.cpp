@@ -46,11 +46,28 @@ int main()
     });
 
     // POST /cpu/step
-    // runs one instruction, returns new PC and whether the CPU halted
+    // runs one or more instructions, returns whether the CPU halted
     CROW_ROUTE(app, "/cpu/step").methods(crow::HTTPMethod::POST)
-    ([&cpu_instance]() {
+    ([&cpu_instance](const crow::request& req) {
         if (!cpu_instance) return crow::response(400, "no cpu loaded");
-        cpu_instance->Step();
+        
+        int count = 1;
+        // check count = 1 or more & sanitize parameter
+        if (req.url_params.get("count") != nullptr) {
+            try {
+                count = std::stoi(req.url_params.get("count"));
+            } catch (...) {
+                count = 1;
+            }
+            if (count < 1) count = 1;
+        }
+
+        // step batch
+        for (int i = 0; i < count; i++) {
+            cpu_instance->Step();
+            if (cpu_instance->IsHalted()) break;
+        }
+        
         crow::json::wvalue res;
         res["stepped"] = true;
         res["halted"] = cpu_instance->IsHalted();

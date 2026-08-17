@@ -34,7 +34,14 @@ run_with_restart() {
     done
 }
 
-run_with_restart "Crow server" bash -c "cd '$BUILD_DIR' && ./crow_server" &
+UNAME_S=$(uname -s)
+if [ "$UNAME_S" = "Darwin" ]; then
+    SERVER_BIN="crow_server_mac"
+else
+    SERVER_BIN="crow_server_linux"
+fi
+
+run_with_restart "Crow server" bash -c "cd '$BUILD_DIR' && ./$SERVER_BIN" &
 run_with_restart "Frontend" bash -c "cd '$ROOT/frontend' && npm run dev" &
 run_with_restart "MCP server" bash -c "cd '$ROOT/backend/ai' && uv run uvicorn main:app --reload --port 8000" &
 

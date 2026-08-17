@@ -2,12 +2,19 @@ import { create } from 'zustand'
 
 const initialState = {
   source: [
-    '# Example program',
-    '# Sum of two numbers',
+    '# Welcome to MonoC CPU Emulator!',
+    '#',
+    '# This is a simple infinite counting loop.',
+    '# Use the speed control to watch it execute at different rates!',
     '',
-    'addi x1, x0, 5   # x1 = 5',
-    'addi x2, x0, 3   # x2 = 3',
-    'add  x3, x1, x2  # x3 = x1 + x2 = 8',
+    '.global _start',
+    '_start:',
+    'addi x1, x0, 0     # Initialize counter (x1) to 0',
+    'addi x2, x0, 1     # Step value (x2) = 1',
+    '',
+    'loop:',
+    'add x1, x1, x2     # Increment counter by 1',
+    'jal x0, loop       # Jump back to the start of the loop',
   ].join('\n'),
 }
 

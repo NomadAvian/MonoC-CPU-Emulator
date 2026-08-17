@@ -18,18 +18,21 @@
 .reg-cell__name {
   font-family: var(--font-mono);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--accent);
   min-width: 32px;
   text-transform: uppercase;
+  cursor: pointer;
 }
 
 .reg-cell__value {
-  font-family: var(--font-mono);
-  font-size: 12px;
+  font-family: monospace;
+  font-size: 14px;
   font-weight: 200;
   color: var(--text-primary);
   letter-spacing: 0.03em;
+  opacity: 0.8;
+  cursor: pointer;
 }
 
 .reg-cell--highlighted .reg-cell__value {

@@ -1,26 +1,25 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import './LibraryPanel.css'
 import closeIcon from '../../../assets/close.svg'
 import { useLibraryStore } from '../../../store/libraryStore'
 
 export default function LibraryPanel({ onClose }) {
-  const { 
-    examples, loading, error, search, loadingId, 
-    setSearch, fetchExamples, selectExample 
+  const {
+    examples, loading, error, search, loadingId,
+    setSearch, fetchExamples, selectExample
   } = useLibraryStore()
 
   useEffect(() => {
     fetchExamples()
   }, [fetchExamples])
 
-  // Ponytail: Inline filter and reduce for tiny arrays instead of bulky useMemo blocks.
   const q = search.trim().toLowerCase()
-  const filtered = q ? examples.filter(i => 
-    i.title.toLowerCase().includes(q) || 
-    i.description?.toLowerCase().includes(q) || 
+  const filtered = q ? examples.filter(i =>
+    i.title.toLowerCase().includes(q) ||
+    i.description?.toLowerCase().includes(q) ||
     i.category.toLowerCase().includes(q)
   ) : examples
-  
+
   const grouped = filtered.reduce((acc, i) => ((acc[i.category || 'Other'] ??= []).push(i), acc), {})
 
   return (

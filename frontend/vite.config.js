@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/cpu': 'http://localhost:6969',
-      '/ai': 'http://localhost:6969',
+      '/ai': 'http://localhost:8000',
     },
   },
 })
