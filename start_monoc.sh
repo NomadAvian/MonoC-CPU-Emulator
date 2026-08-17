@@ -34,12 +34,8 @@ run_with_restart() {
     done
 }
 
-UNAME_S=$(uname -s)
-if [ "$UNAME_S" = "Darwin" ]; then
-    SERVER_BIN="crow_server_mac"
-else
-    SERVER_BIN="crow_server_linux"
-fi
+UNAME_M=$(uname -m)
+SERVER_BIN="crow_server_$UNAME_M"
 
 run_with_restart "Crow server" bash -c "cd '$BUILD_DIR' && ./$SERVER_BIN" &
 run_with_restart "Frontend" bash -c "cd '$ROOT/frontend' && npm run dev" &

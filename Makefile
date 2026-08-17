@@ -6,15 +6,15 @@
 
 CXX      = g++
 UNAME_S := $(shell uname -s)
+UNAME_M := $(shell uname -m)
 CXXFLAGS = -std=c++20 -Wall -Wextra -O2 -pthread
 
 ifeq ($(UNAME_S),Darwin)
 HOMEBREW_PREFIX := $(shell if [ -d /opt/homebrew/include ]; then echo /opt/homebrew; elif [ -d /usr/local/include ]; then echo /usr/local; fi)
 CXXFLAGS += -I$(HOMEBREW_PREFIX)/include -L$(HOMEBREW_PREFIX)/lib
-TARGET_SUFFIX = _mac
-else
-TARGET_SUFFIX = _linux
 endif
+
+TARGET_SUFFIX = _$(UNAME_M)
 
 BACKEND_DIR = backend
 EMU_CORE    = emulator/src/core
