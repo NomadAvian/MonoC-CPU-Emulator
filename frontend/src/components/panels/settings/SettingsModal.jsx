@@ -14,6 +14,7 @@ export default function SettingsModal({ onClose }) {
   const format       = useUIStore(s => s.format)
   const fontStyle    = useUIStore(s => s.fontStyle)
   const tabSize      = useUIStore(s => s.tabSize)
+  const addToast     = useUIStore(s => s.addToast)
   
   const setTheme     = useUIStore(s => s.setTheme)
   const setFormat    = useUIStore(s => s.setFormat)
@@ -38,7 +39,7 @@ export default function SettingsModal({ onClose }) {
 
   const handleModeChange = (opt) => {
     if (opt === 'Light') {
-      alert("Nice try... hehe")
+      addToast("Nice try... hehe", 'error')
       return
     }
     setDraftMode(opt)

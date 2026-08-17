@@ -43,7 +43,6 @@
 }
 
 .chat-panel__input {
-  width: 100%;
   min-height: 36px;
   max-height: 140px;
   padding: 7px 36px 7px 10px;
@@ -53,31 +52,18 @@
   overflow-y: auto;
 }
 
-.chat-panel__input::placeholder {
-  color: var(--text-muted);
-}
-
 .chat-panel__send-btn {
   position: absolute;
-  right: 16px;
-  bottom: 14px;
-  width: 24px;
-  height: 24px;
-  padding: 4px;
+  right: 14px;
+  bottom: 12px;
   background: var(--accent);
-  color: #fff;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
 }
 
-.chat-panel__send-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.chat-panel__send-btn:hover {
+  background: var(--accent-hover);
 }
+
+
 
 .chat-panel__send-icon {
   width: 14px;

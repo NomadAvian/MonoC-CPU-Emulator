@@ -104,7 +104,7 @@ export default function AuthModal({ onClose }) {
           </button>
         </p>
 
-        <button className="modal-close" onClick={onClose}>
+        <button className="icon-btn modal-close" onClick={onClose}>
           <img src={closeIcon} alt="Close" />
         </button>
       </div>

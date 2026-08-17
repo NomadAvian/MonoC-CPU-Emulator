@@ -26,6 +26,8 @@ export default function TopBar() {
   // ── Store Selectors ──
   const isChatOpen = useUIStore(s => s.isChatOpen)
   const toggleChat = useUIStore(s => s.toggleChat)
+  const isDocsOpen = useUIStore(s => s.isDocsOpen)
+  const toggleDocs = useUIStore(s => s.toggleDocs)
   const user       = useAuthStore(s => s.user)
 
   // ── Handlers ──
@@ -89,16 +91,15 @@ export default function TopBar() {
 
           <SaveButtonGroup onSaveClick={handleSaveClick} />
 
-          <a
+          <button
             id="topbar-docs-btn"
-            className="topbar__nav-btn"
-            href="https://github.com"
-            target="_blank"
-            rel="noreferrer"
+            className={`topbar__nav-btn ${isDocsOpen ? 'topbar__nav-btn--active' : ''}`}
+            aria-pressed={isDocsOpen}
+            onClick={toggleDocs}
             title="Docs"
           >
             <img src={docsIcon} alt="Docs" className="topbar__icon" />
-          </a>
+          </button>
 
           <button
             id="topbar-profile-btn"

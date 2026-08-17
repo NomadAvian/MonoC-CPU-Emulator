@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '../../../store/authStore'
 import { useEditorStore } from '../../../store/editorStore'
+import { useUIStore } from '../../../store/uiStore'
 import closeIcon from '../../../assets/close.svg'
 import loadIcon from '../../../assets/load.svg'
 import deleteIcon from '../../../assets/delete.svg'
@@ -17,6 +18,7 @@ export default function ProfileModal({ onClose }) {
   const fetchSavedCodes = useAuthStore(s => s.fetchSavedCodes)
   const deleteCode      = useAuthStore(s => s.deleteCode)
   const setSource       = useEditorStore(s => s.setSource)
+  const addToast        = useUIStore(s => s.addToast)
 
   useEffect(() => {
     fetchSavedCodes()
@@ -28,6 +30,7 @@ export default function ProfileModal({ onClose }) {
   // ── Handlers ──
   const handleLoadCode = (item) => {
     setSource(item.code)
+    addToast(`Loaded Saved Program: ${item.name}`, 'success')
     onClose()
   }
 
@@ -36,8 +39,9 @@ export default function ProfileModal({ onClose }) {
     try {
       await deleteCode(name)
       setCodes(prev => prev.filter(c => c.name !== name))
+      addToast(`Deleted Program: ${name}`, 'info')
     } catch (err) {
-      alert(err.message)
+      addToast(err.message, 'error')
     }
   }
 
@@ -58,7 +62,7 @@ export default function ProfileModal({ onClose }) {
             <h3 className="profile-modal__username">{user?.username || 'User Profile'}</h3>
             <span className="profile-modal__subtitle">Saved Programs</span>
           </div>
-          <button className="icon-btn profile-modal__close-btn" onClick={onClose}>
+          <button className="icon-btn" onClick={onClose}>
             <img src={closeIcon} alt="Close" />
           </button>
         </div>
@@ -75,14 +79,14 @@ export default function ProfileModal({ onClose }) {
                   <span className="profile-modal__item-name">{item.name}</span>
                   <div className="profile-modal__item-actions">
                     <button
-                      className="icon-btn profile-modal__action-btn"
+                      className="icon-btn"
                       onClick={() => handleLoadCode(item)}
                       title="Load program"
                     >
                       <img src={loadIcon} alt="Load" />
                     </button>
                     <button
-                      className="icon-btn profile-modal__action-btn profile-modal__action-btn--delete"
+                      className="icon-btn profile-modal__action-btn--delete"
                       onClick={(e) => handleDeleteCode(e, item.name)}
                       title="Delete program"
                     >

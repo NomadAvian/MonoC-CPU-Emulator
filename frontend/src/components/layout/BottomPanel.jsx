@@ -29,8 +29,8 @@ export default function BottomPanel({ style }) {
 
   return (
     <div className="bottom-panel" style={panelStyle}>
-      <div className="tab-bar bottom-panel__tabs">
-        <div className="bottom-panel__tab-buttons">
+      <div className="bottom-panel__header">
+        <div className="tab-bar">
           {TABS.map(tab => (
             <button
               key={tab}
@@ -43,7 +43,7 @@ export default function BottomPanel({ style }) {
           ))}
         </div>
         <button
-          className="bottom-panel__collapse-btn"
+          className="icon-btn"
           title={isCollapsed ? "Expand Panel" : "Collapse Panel"}
           onClick={handleCollapseClick}
         >

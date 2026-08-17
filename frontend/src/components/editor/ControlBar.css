@@ -49,11 +49,7 @@
   letter-spacing: .05em;
 }
 
-.control-bar__btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  pointer-events: none;
-}
+
 
 .control-bar__btn--loading {
   opacity: 0.8;

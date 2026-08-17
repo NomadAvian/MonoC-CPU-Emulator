@@ -1,7 +1,7 @@
 .profile-modal {
   position: relative;
   width: 360px;
-  background: #252A35;
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 24px;
@@ -28,28 +28,7 @@
   color: var(--text-muted);
 }
 
-.profile-modal__close-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.profile-modal__close-btn img {
-  width: 100%;
-  height: 100%;
-  opacity: 0.6;
-  transition: opacity 0.2s;
-}
-
-.profile-modal__close-btn:hover img {
-  opacity: 1;
-}
 
 .profile-modal__body {
   max-height: 240px;
@@ -98,33 +77,9 @@
   gap: 4px;
 }
 
-.profile-modal__action-btn {
-  width: 26px;
-  height: 26px;
-  padding: 4px;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  transition: background 0.2s;
-}
-
-.profile-modal__action-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
 .profile-modal__action-btn--delete:hover {
-  background: rgba(239, 68, 68, 0.15);
-  color: #ef4444;
-}
-
-.profile-modal__action-btn img {
-  width: 14px;
-  height: 14px;
-  opacity: 0.8;
-  transition: opacity 0.2s, color 0.2s;
-}
-
-.profile-modal__action-btn:hover img {
-  opacity: 1;
+  background: var(--red-dim);
+  color: var(--red);
 }
 
 .profile-modal__action-btn--delete:hover img {
@@ -139,8 +94,8 @@
 }
 
 .profile-modal__logout-btn {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: var(--red-dim);
+  color: var(--red);
   border: 1px solid rgba(239, 68, 68, 0.2);
   width: 100%;
   justify-content: center;

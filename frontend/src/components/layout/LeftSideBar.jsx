@@ -17,7 +17,7 @@ export default function LeftSideBar({ style }) {
   return (
     <aside className="left-sidebar" style={style}>
       {/* Tab bar */}
-      <div className="tab-bar left-sidebar__tabs">
+      <div className="tab-bar">
         {TABS.map(tab => (
           <button
             key={tab}

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { fetchExamples, fetchExampleDetail } from '../api/library'
 import { useEditorStore } from './editorStore'
+import { useUIStore } from './uiStore'
 
 const initialState = {
   examples: [],
@@ -32,9 +33,10 @@ export const useLibraryStore = create((set) => ({
       if (detail.source) {
         useEditorStore.getState().setSource(detail.source)
         if (onSuccess) onSuccess()
+        useUIStore.getState().addToast(`Loaded Example`, 'success')
       }
     } catch (err) {
-      alert(`Error loading example: ${err.message}`)
+      useUIStore.getState().addToast(`Error loading example: ${err.message}`, 'error')
     } finally {
       set({ loadingId: null })
     }

@@ -2,7 +2,7 @@
 
 # Crow server build/run/clean targets.
 # Crow headers are installed system-wide (default include path).
-# The binary is emitted into build/ because start_dev.sh runs it from there.
+# The binary is emitted into build/ because start_monoc.sh runs it from there.
 
 CXX      = g++
 UNAME_S := $(shell uname -s)

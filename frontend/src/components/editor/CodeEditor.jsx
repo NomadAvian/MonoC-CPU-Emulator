@@ -86,6 +86,7 @@ export default function CodeEditor() {
         riscv,
         history(),
         highlightLineField,
+        EditorView.lineWrapping,
         tabSizeCompartment.current.of([
           EditorState.tabSize.of(tabSize),
           indentUnit.of(' '.repeat(tabSize)),

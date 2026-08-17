@@ -1,5 +1,5 @@
 .save-modal {
-  background: #252A35;
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   padding: 32px;
   border-radius: 12px;
@@ -30,19 +30,19 @@
 }
 
 .save-error {
-  color: #ef4444;
+  color: var(--red);
   font-size: var(--fs-sm);
   text-align: center;
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--red-dim);
   padding: 8px;
   border-radius: 6px;
 }
 
 .save-success {
-  color: #10b981;
+  color: var(--green);
   font-size: var(--fs-sm);
   text-align: center;
-  background: rgba(16, 185, 129, 0.1);
+  background: var(--green-dim);
   padding: 12px;
   border-radius: 6px;
   font-weight: 500;

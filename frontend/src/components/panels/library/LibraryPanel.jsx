@@ -64,7 +64,7 @@ export default function LibraryPanel({ onClose }) {
         <div className="library-modal__search-wrap">
           <input
             type="text"
-            className="ui-input library-modal__search-input"
+            className="ui-input"
             placeholder="Search examples..."
             value={search}
             autoFocus

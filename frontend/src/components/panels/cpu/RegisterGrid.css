@@ -26,6 +26,9 @@
   flex-direction: column;
 }
 .reg-grid__alias {
+  font-size: 11px;
+  padding: 0px 2px;
   color: var(--text-muted);
-  font-weight: 400;
+  opacity: .8;
+  font-weight: 500;
 }
