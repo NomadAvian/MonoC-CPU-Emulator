@@ -1,5 +1,5 @@
 from google.genai import types
-from monoc_mcp.crow_client import get_registers, get_memory, step_cpu
+from emulator.client import get_registers, get_memory, step_cpu
 
 # ----------------- OLLAMA TOOLS -----------------
 OLLAMA_TOOLS = [

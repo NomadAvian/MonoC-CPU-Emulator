@@ -3,7 +3,7 @@
 
 import httpx
 
-from monoc_mcp.config import CROW_BASE_URL as CROW_BASE
+from config import CROW_BASE_URL as CROW_BASE
 
 
 def get_registers() -> dict:

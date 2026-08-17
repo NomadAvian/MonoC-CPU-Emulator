@@ -5,10 +5,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-import monoc_mcp.db as db
-from monoc_mcp.config import CORS_ORIGINS
-from monoc_mcp.gemini_chat_service import chat as gemini_chat
-from monoc_mcp.ollama_chat_service import chat as ollama_chat
+from config import CORS_ORIGINS
+from chat.ollama import chat as ollama_chat
+from chat.gemini import chat as gemini_chat
+import db
 
 # CORS policy management
 app = FastAPI()

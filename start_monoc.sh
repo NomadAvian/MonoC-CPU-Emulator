@@ -36,7 +36,7 @@ run_with_restart() {
 
 run_with_restart "Crow server" bash -c "cd '$BUILD_DIR' && ./crow_server" &
 run_with_restart "Frontend" bash -c "cd '$ROOT/frontend' && npm run dev" &
-run_with_restart "MCP server" bash -c "cd '$ROOT/backend/ai/src' && uv run uvicorn monoc_mcp.api:app --reload --port 8000" &
+run_with_restart "MCP server" bash -c "cd '$ROOT/backend/ai' && uv run uvicorn main:app --reload --port 8000" &
 
 echo "[check] Ollama installation..."
 if command -v ollama &> /dev/null; then

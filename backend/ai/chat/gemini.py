@@ -1,9 +1,9 @@
 import json
 from google import genai
 from google.genai import types
-from monoc_mcp.config import GEMINI_API_KEY, GEMINI_MODEL as MODEL
-from monoc_mcp.prompt import SYSTEM_PROMPT
-from monoc_mcp.mcp_tools import GEMINI_TOOLS as TOOLS, TOOL_DISPATCH
+from config import GEMINI_API_KEY, GEMINI_MODEL as MODEL
+from chat.prompt import SYSTEM_PROMPT
+from chat.tools import GEMINI_TOOLS as TOOLS, TOOL_DISPATCH
 
 _client = None
 

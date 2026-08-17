@@ -3,9 +3,9 @@ import json
 
 import ollama
 
-from monoc_mcp.config import OLLAMA_MODEL as MODEL
-from monoc_mcp.prompt import SYSTEM_PROMPT
-from monoc_mcp.mcp_tools import OLLAMA_TOOLS as TOOLS, TOOL_DISPATCH
+from config import OLLAMA_MODEL as MODEL
+from chat.prompt import SYSTEM_PROMPT
+from chat.tools import OLLAMA_TOOLS as TOOLS, TOOL_DISPATCH
 
 
 def execute_tool(tool_call, source: str):
