@@ -58,5 +58,27 @@ assembler: $(TARGET)
 	echo "  Results: $$pass passed, $$fail failed"; \
 	test "$$fail" -eq 0
 
+EMU_TARGET := ./emu_test
+
+$(EMU_TARGET): emulator_test.cpp $(wildcard $(ROOT_DIR)/core/*.cpp) $(wildcard $(ROOT_DIR)/assembler/*.cpp)
+	$(CXX) $(CXXFLAGS) emulator_test.cpp $(ROOT_DIR)/core/*.cpp $(ROOT_DIR)/assembler/*.cpp -o $(EMU_TARGET)
+
+emulator: $(EMU_TARGET)
+	@pass=0; fail=0; \
+	for name in $(ASM_TEST_NAMES); do \
+		asm="$(ASM_TEST_DIR)/$${name}.asm"; \
+		printf "  %-22s ... " "$${name}"; \
+		if ./$(EMU_TARGET) "$$asm" >/dev/null 2>&1; then \
+			echo "PASS"; \
+			pass=$$((pass + 1)); \
+		else \
+			echo "FAIL"; \
+			fail=$$((fail + 1)); \
+		fi; \
+	done; \
+	echo; \
+	echo "  Results: $$pass passed, $$fail failed"; \
+	test "$$fail" -eq 0
+
 clean:
-	rm -f $(TARGET)
+	rm -f $(TARGET) $(EMU_TARGET)

@@ -2,6 +2,7 @@
 #define CPU_CPU_H_
 
 #include <string>
+#include <vector>
 
 #include "../common.h"
 #include "alu.h"
@@ -76,6 +77,8 @@ public:
 
     Word ReadReg (size_t index) const;
     Word pc() const;
+    void SetPC(Word value) { pc_.value = value; }
+    void IncrementPC() { pc_.value += 4; }
 
     Word ReadMemoryWord(Word address) const;
     Half ReadMemoryHalf(Word address) const;
@@ -85,6 +88,7 @@ public:
 
     void Reset();
     void Step();
+    std::vector<Byte> ReadFramebuffer() const;
 
     bool IsHalted() const { return halted_; }
 
@@ -95,10 +99,10 @@ public:
     // void ClearInput() { input_.clear(); input_pos_ = 0; }
 
 private:
-    Reg        x[32];
-    Reg        pc_;
-    Memory     ram_;
-    Memory     rom_;
+    Reg         x[32];
+    Reg         pc_;
+    Memory      ram_;
+    Memory      rom_;
     alu::Alu    alu_;
     bool        halted_;
     // std::string output_;
@@ -106,6 +110,7 @@ private:
     // size_t      input_pos_ = 0;
 
     int32_t SignExtend(uint32_t value, uint32_t bits) const;
+    void MirrorRomToRam();
 
     // fixed bit-field extractors
     Word ExtractOpcode(Word instruction);
