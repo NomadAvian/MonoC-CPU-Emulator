@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuthStore } from '../../../store/authStore'
+import { useUIStore } from '../../../store/uiStore'
 import closeIcon from '../../../assets/close.svg'
 import './AuthModal.css'
 
@@ -15,6 +16,7 @@ export default function AuthModal({ onClose }) {
   // ── Store Actions ──
   const login  = useAuthStore(s => s.login)
   const signup = useAuthStore(s => s.signup)
+  const addToast = useUIStore(s => s.addToast)
 
   // ── Handlers ──
   const handleUsernameChange = (e) => setUsername(e.target.value)
@@ -42,10 +44,12 @@ export default function AuthModal({ onClose }) {
     try {
       if (isLogin) {
         await login(email, password)
+        addToast('Welcome back!', 'success')
       } else {
         await signup(username, email, password)
+        addToast('Account created successfully!', 'success')
       }
-      onClose() // close modal on success
+      onClose() 
     } catch (err) {
       setError(err.message)
     } finally {

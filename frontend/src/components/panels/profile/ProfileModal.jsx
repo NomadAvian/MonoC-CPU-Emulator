@@ -13,25 +13,25 @@ export default function ProfileModal({ onClose }) {
   const [loading, setLoading] = useState(true)
 
   // ── Store Selectors & Actions ──
-  const user            = useAuthStore(s => s.user)
-  const logout          = useAuthStore(s => s.logout)
+  const user = useAuthStore(s => s.user)
+  const logout = useAuthStore(s => s.logout)
   const fetchSavedCodes = useAuthStore(s => s.fetchSavedCodes)
-  const deleteCode      = useAuthStore(s => s.deleteCode)
-  const setSource       = useEditorStore(s => s.setSource)
-  const addToast        = useUIStore(s => s.addToast)
+  const deleteCode = useAuthStore(s => s.deleteCode)
+  const setSource = useEditorStore(s => s.setSource)
+  const addToast = useUIStore(s => s.addToast)
 
   useEffect(() => {
     // prevent memory leak by checking if component is mounted before saving state
     let isMounted = true;
-    
+
     fetchSavedCodes()
       .then(res => isMounted && setCodes(res))
       .catch(err => isMounted && addToast(err.message || 'Failed to load saved codes', 'error'))
       .finally(() => isMounted && setLoading(false))
 
-      return () => {
-        isMounted = false;
-      }
+    return () => {
+      isMounted = false;
+    }
   }, [fetchSavedCodes])
 
   // ── Handlers ──
@@ -58,6 +58,7 @@ export default function ProfileModal({ onClose }) {
 
   const handleLogout = () => {
     logout()
+    addToast("Logged Out", "info")
     onClose()
   }
 
