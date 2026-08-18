@@ -1,9 +1,9 @@
 #include "memory.h"
 
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <iostream>
-#include <bitset>
 
 #include "../common.h"
 
@@ -13,6 +13,8 @@ Word Memory::WrapAddr(Word addr) const {
 }
 
 void Memory::LoadFile(const std::string& filename) {
+    loaded_bytes_ = 0;
+    entry_ = 0;
     std::ifstream file(filename);
     if (!file)  {
         std::cerr << "Could not open file: " << filename << std::endl;
@@ -21,20 +23,49 @@ void Memory::LoadFile(const std::string& filename) {
 
     std::string line;
     Word addr = 0;
+    size_t bytes = 0;
+    Word word = 0;
+    size_t pending = 0;
+
+    auto FlushWord = [&]() {
+        if (pending == 4) {
+            WriteWord(addr, word);
+            addr += 4;
+            bytes += 4;
+            pending = 0;
+            word = 0;
+        }
+    };
 
     while (std::getline(file, line)) {
         if (line.empty())
             continue;
-        Word instruction = std::bitset<32>(line).to_ulong();
-        WriteWord(addr, instruction);
-        addr += 4;
+        std::istringstream iss(line);
+        std::string tok;
+        if (!(iss >> tok))
+            continue;
+        if (tok == "E" || tok == "e" || tok == "entry" || tok == "ENTRY") {
+            std::string addr_tok;
+            if (iss >> addr_tok)
+                entry_ = static_cast<Word>(std::stoul(addr_tok, nullptr, 16));
+            continue;
+        }
+        do { // re-process first token after read, as it is a byte
+            Word b = static_cast<Word>(std::stoul(tok, nullptr, 16));
+            word |= (b & 0xFF) << (8 * pending);
+            pending++;
+            FlushWord();
+        } while (iss >> tok);
     }
+    loaded_bytes_ = bytes;
 }
 
 void Memory::Reset() {
 	for (size_t i = 0; i < data_.size(); i++) {
 		data_[i] = 0;
 	}
+	loaded_bytes_ = 0;
+	entry_ = 0;
 }
 
 Byte Memory::ReadByte(Word addr) const {

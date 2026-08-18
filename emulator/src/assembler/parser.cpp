@@ -1,6 +1,7 @@
 #include "parser.h"
 
 #include <algorithm>
+#include <cctype>
 #include <stdexcept>
 
 namespace riscv {
@@ -135,6 +136,9 @@ void Parser::FirstPass() {
 
         const Token& t = stmt.tokens[idx];
         if (t.type() == TokenType::kInstruction) {
+            // Align to a word boundary before the first instruction that follows
+            // any byte-granular data (.byte/.half/strings); mirrors FlushBytes.
+            pc = (pc + 3) & ~static_cast<Word>(3);
             if (IsPseudoInstruction(t.lexeme())) {
                 pc += static_cast<Word>(4 * PseudoExpansionWords(stmt, idx));
             } else {
@@ -249,6 +253,18 @@ void Parser::FirstPass() {
                 Error(stmt, ".half requires at least one value");
             }
             pc += static_cast<Word>(2 * count);
+        } else if (d == "ascii" || d == "asciz" || d == "asciiz" || d == "string") {
+            size_t i = idx + 1;
+            if (i >= stmt.tokens.size() ||
+                stmt.tokens[i].type() != TokenType::kString) {
+                Error(stmt, "expected string literal in '" + t.lexeme() + "'");
+            }
+            int64_t n = static_cast<int64_t>(
+                UnescapeString(std::get<std::string>(stmt.tokens[i].literal())).size());
+            ++i;
+            ExpectEnd(stmt, i);
+            if (d != "ascii") ++n;  // NUL terminator for .string/.asciz/.asciiz
+            pc += static_cast<Word>(n);
         } else if (d == "align") {
             size_t i = idx + 1;
             int64_t n = ExpectInteger(stmt, i);
@@ -316,7 +332,6 @@ void Parser::SecondPass(std::vector<Word>& words) {
             // arguments validated in FirstPass, nothing to do here
             continue;
         } else if (d == "word") {
-            FlushBytes(words, pc);
             size_t i = idx + 1;
             bool expect_value = true;
             while (i < stmt.tokens.size()) {
@@ -332,8 +347,12 @@ void Parser::SecondPass(std::vector<Word>& words) {
                     } else {
                         Error(stmt, "expected value in .word");
                     }
-                    words.push_back(static_cast<Word>(val));
-                    pc += 4;
+                    uint32_t uv = static_cast<uint32_t>(val);
+                    EmitByte(static_cast<Byte>(uv & 0xFF), words, pc);
+                    EmitByte(static_cast<Byte>((uv >> 8) & 0xFF), words, pc);
+                    EmitByte(static_cast<Byte>((uv >> 16) & 0xFF), words, pc);
+                    EmitByte(static_cast<Byte>((uv >> 24) & 0xFF), words, pc);
+                    data_bytes_ += 4;
                     expect_value = false;
                 } else if (v.type() == TokenType::kComma) {
                     ++i;
@@ -359,6 +378,7 @@ void Parser::SecondPass(std::vector<Word>& words) {
                         Error(stmt, "expected value in .byte");
                     }
                     EmitByte(static_cast<Byte>(val), words, pc);
+                    ++data_bytes_;
                     expect_value = false;
                 } else if (v.type() == TokenType::kComma) {
                     ++i;
@@ -386,6 +406,7 @@ void Parser::SecondPass(std::vector<Word>& words) {
                     uint16_t hv = static_cast<uint16_t>(val);
                     EmitByte(static_cast<Byte>(hv & 0xFF), words, pc);
                     EmitByte(static_cast<Byte>((hv >> 8) & 0xFF), words, pc);
+                    data_bytes_ += 2;
                     expect_value = false;
                 } else if (v.type() == TokenType::kComma) {
                     ++i;
@@ -393,6 +414,22 @@ void Parser::SecondPass(std::vector<Word>& words) {
                 } else {
                     Error(stmt, "expected ',' in .half");
                 }
+            }
+        } else if (d == "ascii" || d == "asciz" || d == "asciiz" || d == "string") {
+            size_t i = idx + 1;
+            if (i >= stmt.tokens.size() ||
+                stmt.tokens[i].type() != TokenType::kString) {
+                Error(stmt, "expected string literal in '" + t.lexeme() + "'");
+            }
+            std::vector<Byte> bytes =
+                UnescapeString(std::get<std::string>(stmt.tokens[i].literal()));
+            for (Byte b : bytes) {
+                EmitByte(b, words, pc);
+            }
+            data_bytes_ += bytes.size();
+            if (d != "ascii") {
+                EmitByte(0, words, pc);  // NUL terminator
+                ++data_bytes_;
             }
         } else if (d == "align") {
             size_t i = idx + 1;
@@ -602,6 +639,54 @@ void Parser::FlushBytes(std::vector<Word>& words, Word& pc) {
     words.push_back(w);
     pc += padding;
     byte_buffer_.clear();
+}
+
+std::vector<Byte> Parser::UnescapeString(const std::string& raw) const {
+    std::vector<Byte> out;
+    for (size_t i = 0; i < raw.size(); ++i) {
+        char c = raw[i];
+        if (c != '\\' || i + 1 >= raw.size()) {
+            out.push_back(static_cast<Byte>(c));
+            continue;
+        }
+        char e = raw[++i];
+        switch (e) {
+            case 'n':  out.push_back('\n'); break;
+            case 't':  out.push_back('\t'); break;
+            case 'r':  out.push_back('\r'); break;
+            case 'a':  out.push_back('\a'); break;
+            case 'b':  out.push_back('\b'); break;
+            case 'f':  out.push_back('\f'); break;
+            case 'v':  out.push_back('\v'); break;
+            case '0':  out.push_back('\0'); break;
+            case '\\': out.push_back('\\'); break;
+            case '\'': out.push_back('\''); break;
+            case '"':  out.push_back('"');  break;
+            case 'x': {
+                int v = 0, n = 0;
+                while (i + 1 < raw.size() && n < 2 &&
+                       std::isxdigit(static_cast<unsigned char>(raw[i + 1]))) {
+                    char h = raw[++i];
+                    v = v * 16 + (h >= '0' && h <= '9' ? h - '0'
+                               : (h | 0x20) - 'a' + 10);
+                    ++n;
+                }
+                if (n == 0) {
+                    out.push_back('\\');
+                    out.push_back('x');
+                } else {
+                    out.push_back(static_cast<Byte>(v));
+                }
+                break;
+            }
+            default:
+                // Unknown escape: keep it literally
+                out.push_back('\\');
+                out.push_back(static_cast<Byte>(e));
+                break;
+        }
+    }
+    return out;
 }
 
 const Parser::Entry* Parser::Lookup(const std::string& mnemonic) {

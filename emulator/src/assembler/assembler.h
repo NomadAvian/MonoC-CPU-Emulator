@@ -4,6 +4,7 @@
 #include <bitset>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -40,16 +41,31 @@ public:
     }
 
     // assembles `source` and writes the words to the roms directory
+    // as little-endian hex bytes (one word per line), prefixed by an
+    // entry-point header "E 0x...." so the CPU knows where code starts.
     static std::vector<Word> AssembleToRom(const std::string& source, const std::string& name) {
-        std::vector<Word> words = Assemble(source);
+        std::vector<Word> words;
+        riscv::Parser parser;
+        parser.Assemble(source, words);
+
+        // Data directives are emitted first; the first instruction lives at
+        // the word-aligned address immediately after them.
+        size_t data_bytes = parser.data_bytes();
+        Word entry = static_cast<Word>((data_bytes + 3) & ~static_cast<size_t>(3));
 
         const std::string path = RomsDirectory() + "/" + name + ".txt";
         std::ofstream out(path);
         if (!out.is_open())
             throw std::runtime_error("Assembler: unable to open output file: " + path);
 
-        for (Word w : words)
-            out << std::bitset<32>(w) << "\n";
+        out << std::hex << "E 0x" << entry << "\n";
+        for (Word w : words) {
+            out << std::setfill('0')
+                << std::setw(2) << ((w >>  0) & 0xFF) << ' '
+                << std::setw(2) << ((w >>  8) & 0xFF) << ' '
+                << std::setw(2) << ((w >> 16) & 0xFF) << ' '
+                << std::setw(2) << ((w >> 24) & 0xFF) << '\n';
+        }
 
         return words;
     }

@@ -41,7 +41,21 @@ int main(int argc, char* argv[]) {
         std::cerr << "error: could not open '" << output << "' for writing\n";
         return 1;
     }
-    for (Word w : words) {
+
+    // The leading data bytes (.word/.byte/.half/strings) are emitted contiguously
+    // on a single line; instruction words follow, one 32-bit word per line.
+    size_t data_bytes = parser.data_bytes();
+    size_t data_words = (data_bytes + 3) / 4;
+    for (size_t b = 0; b < data_bytes; ++b) {
+        Byte byte = static_cast<Byte>((words[b / 4] >> (8 * (b % 4))) & 0xFF);
+        out << std::hex << std::setfill('0') << std::setw(2)
+            << static_cast<unsigned>(byte);
+        if (b + 1 < data_bytes) out << ' ';
+    }
+    if (data_bytes > 0) out << '\n';
+
+    for (size_t k = data_words; k < words.size(); ++k) {
+        Word w = words[k];
         out << std::hex << std::setfill('0')
             << std::setw(2) << ((w >>  0) & 0xFF) << ' '
             << std::setw(2) << ((w >>  8) & 0xFF) << ' '
