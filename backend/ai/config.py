@@ -16,7 +16,7 @@ _default_db = str((_backend_dir / "db" / "test.db").resolve())
 # environment variables with defaults
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "bjoernb/gemma4-e4b-think:latest")
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
 CROW_BASE_URL = os.environ.get("CROW_BASE_URL", "http://localhost:6969")
 DB_PATH = os.environ.get("DB_PATH", _default_db)
 

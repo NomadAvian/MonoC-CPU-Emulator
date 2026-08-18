@@ -11,8 +11,8 @@
 }
 
 .reg-cell--highlighted {
-  background: var(--accent-dim);
-  border-left: 2px solid var(--accent);
+  background: rgba(250, 179, 135, 0.15);
+  border-left: 2px solid #FAB387;
 }
 
 .reg-cell__name {
@@ -36,5 +36,5 @@
 }
 
 .reg-cell--highlighted .reg-cell__value {
-  color: var(--accent);
+  color: #FAB387;
 }

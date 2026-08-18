@@ -42,11 +42,13 @@
   background: var(--bg-elevated);
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition: background 0.2s;
 }
 
-.topbar__nav-btn:hover {
+.topbar__nav-btn:hover,
+.topbar__nav-btn:active {
   background: var(--bg-hover);
+  transform: none !important;
 }
 
 .topbar__nav-btn--active {

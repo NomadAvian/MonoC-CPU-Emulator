@@ -1,5 +1,5 @@
 import '../App.css'
-import { useState, useCallback, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import MainLayout from './layout/MainLayout'
 import TopBar from './layout/TopBar'
 import LeftSideBar from './layout/LeftSideBar'
@@ -20,11 +20,11 @@ const BOTTOM_MIN = 80; const BOTTOM_MAX = 520
 const DOCS_MIN = 280; const DOCS_MAX = 800 // left panel too small for it
 
 function App() {
-  // ── Local State ──
-  const [leftWidth, setLeftWidth] = useState(180)
-  const [docsWidth, setDocsWidth] = useState(420)
-  const [rightWidth, setRightWidth] = useState(420)
-  const [bottomHeight, setBottomHeight] = useState(180)
+  // ── Store Selectors ──
+  const leftWidth = useUIStore(s => s.leftWidth)
+  const docsWidth = useUIStore(s => s.docsWidth)
+  const rightWidth = useUIStore(s => s.rightWidth)
+  const bottomHeight = useUIStore(s => s.bottomHeight)
 
   // ── Store Selectors ──
   const isChatOpen = useUIStore(s => s.isChatOpen)
@@ -37,11 +37,18 @@ function App() {
     document.documentElement.setAttribute('data-theme', theme)
   }, [theme])
 
-  // ── Handlers ──
-  const onLeftResize = useCallback((d) => setLeftWidth(w => Math.max(LEFT_MIN, Math.min(LEFT_MAX, w + d))), [])
-  const onDocsResize = useCallback((d) => setDocsWidth(w => Math.max(DOCS_MIN, Math.min(DOCS_MAX, w + d))), [])
-  const onRightResize = useCallback((d) => setRightWidth(w => Math.max(RIGHT_MIN, Math.min(RIGHT_MAX, w - d))), [])
-  const onBottomResize = useCallback((d) => setBottomHeight(h => Math.max(BOTTOM_MIN, Math.min(BOTTOM_MAX, h - d))), [])
+  const onLeftResize = useCallback((d) => {
+    useUIStore.setState(s => ({ leftWidth: Math.max(LEFT_MIN, Math.min(LEFT_MAX, s.leftWidth + d)) }))
+  }, [])
+  const onDocsResize = useCallback((d) => {
+    useUIStore.setState(s => ({ docsWidth: Math.max(DOCS_MIN, Math.min(DOCS_MAX, s.docsWidth + d)) }))
+  }, [])
+  const onRightResize = useCallback((d) => {
+    useUIStore.setState(s => ({ rightWidth: Math.max(RIGHT_MIN, Math.min(RIGHT_MAX, s.rightWidth - d)) }))
+  }, [])
+  const onBottomResize = useCallback((d) => {
+    useUIStore.setState(s => ({ bottomHeight: Math.max(BOTTOM_MIN, Math.min(BOTTOM_MAX, s.bottomHeight - d)) }))
+  }, [])
 
   return (
     <MainLayout>

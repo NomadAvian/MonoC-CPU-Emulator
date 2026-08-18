@@ -8,6 +8,10 @@ const initialState = {
   isDocsOpen: false,
   fontStyle: 'Monospace',
   tabSize: 4,
+  leftWidth: 180,
+  docsWidth: 420,
+  rightWidth: 420,
+  bottomHeight: 180,
   toasts: [],
 }
 
@@ -23,6 +27,11 @@ export const useUIStore = create(
       setFormat: (format) => set({ format }),
       setFontStyle: (fontStyle) => set({ fontStyle }),
       setTabSize: (tabSize) => set({ tabSize }),
+
+      setLeftWidth: (leftWidth) => set({ leftWidth }),
+      setDocsWidth: (docsWidth) => set({ docsWidth }),
+      setRightWidth: (rightWidth) => set({ rightWidth }),
+      setBottomHeight: (bottomHeight) => set({ bottomHeight }),
 
       toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
       toggleDocs: () => set((state) => ({ isDocsOpen: !state.isDocsOpen })),

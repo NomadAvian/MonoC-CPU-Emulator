@@ -18,7 +18,7 @@
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 32px;
+  padding: 16px;
   box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;

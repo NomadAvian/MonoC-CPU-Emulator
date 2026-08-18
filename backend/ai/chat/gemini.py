@@ -1,10 +1,17 @@
 import json
+import os
+import sys
+
 from google import genai
 from google.genai import types
+
 from config import GEMINI_API_KEY, GEMINI_MODEL as MODEL
 from chat.prompt import SYSTEM_PROMPT
-from chat.tools import GEMINI_TOOLS as TOOLS, TOOL_DISPATCH
 
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
+
+_mcp_server_path = os.path.join(os.path.dirname(__file__), "..", "mcp_server.py")
 _client = None
 
 def _get_client():
@@ -15,12 +22,6 @@ def _get_client():
         _client = genai.Client(api_key=GEMINI_API_KEY)
     return _client
 
-CONFIG = types.GenerateContentConfig(
-    tools=[TOOLS],
-    system_instruction=SYSTEM_PROMPT,
-)
-
-# helper functions
 def _to_gemini_contents(messages: list[dict]) -> list[types.Content]:
     contents = []
     for msg in messages:
@@ -32,47 +33,70 @@ def _to_gemini_contents(messages: list[dict]) -> list[types.Content]:
         )
     return contents
 
-
-def _execute_tool_calls(function_calls, source: str) -> list[types.Part]:
-    parts = []
-    for call in function_calls:
-        try:
-            if call.name == "get_source":
-                result = {"source": source}
-            else:
-                fn = TOOL_DISPATCH[call.name]
-                result = fn(**call.args) if call.args else fn()
-        except Exception as e:
-            result = f"Error calling {call.name}: {e}"
-        print(f"[tool: {call.name}] → {json.dumps(result)[:80]}…")
-        parts.append(
-            types.Part(function_response=types.FunctionResponse(
-                name=call.name,
-                response={"result": result},
-            ))
-        )
-    return parts
-
-def chat(messages: list[dict], source: str) -> tuple[str, list[dict]]:
+async def chat(messages: list[dict], source: str) -> tuple[str, list[dict]]:
     contents = _to_gemini_contents(messages)
     tools_used = []
 
-    while True:
-        response = _get_client().models.generate_content(
-            model=MODEL,
-            contents=contents,
-            config=CONFIG,
-        )
+    server_params = StdioServerParameters(
+        command=sys.executable,
+        args=[_mcp_server_path],
+        env=None
+    )
 
-        if not response.function_calls:
-            return response.text, tools_used
+    async with stdio_client(server_params) as (read, write):
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            
+            tools_response = await session.list_tools()
+            
+            gemini_funcs = []
+            for t in tools_response.tools:
+                gemini_funcs.append(types.FunctionDeclaration(
+                    name=t.name,
+                    description=t.description,
+                    parameters_json_schema=t.inputSchema
+                ))
+            
+            gemini_funcs.append(types.FunctionDeclaration(
+                name="get_source",
+                description="Get the assembly source code currently loaded in the emulator.",
+                parameters_json_schema={"type": "object", "properties": {}},
+            ))
 
-        # preserve the model's response (including thought_signature)
-        contents.append(response.candidates[0].content)
+            config = types.GenerateContentConfig(
+                tools=[types.Tool(function_declarations=gemini_funcs)],
+                system_instruction=SYSTEM_PROMPT,
+            )
 
-        # execute tools and feed results back
-        for call in response.function_calls:
-            tools_used.append(call.name)
+            client = _get_client()
+            while True:
+                response = await client.aio.models.generate_content(
+                    model=MODEL,
+                    contents=contents,
+                    config=config,
+                )
 
-        fn_parts = _execute_tool_calls(response.function_calls, source)
-        contents.append(types.Content(role="user", parts=fn_parts))
+                if not response.function_calls:
+                    return response.text, tools_used
+
+                contents.append(response.candidates[0].content)
+
+                parts = []
+                for call in response.function_calls:
+                    print(f"[tool called: {call.name}]")
+                    tools_used.append(call.name)
+
+                    if call.name == "get_source":
+                        result_str = json.dumps({"source": source})
+                    else:
+                        # call.args is typically a dict
+                        mcp_result = await session.call_tool(call.name, call.args)
+                        result_str = mcp_result.content[0].text if mcp_result.content else "{}"
+
+                    parts.append(
+                        types.Part(function_response=types.FunctionResponse(
+                            name=call.name,
+                            response={"result": result_str},
+                        ))
+                    )
+                contents.append(types.Content(role="user", parts=parts))

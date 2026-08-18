@@ -44,7 +44,7 @@
 }
 
 .cm-editor .cm-activeLineGutter {
-  color: #CBA6F7 !important;
+  color: var(--accent) !important;
   background-color: var(--active-line) !important;
 }
 

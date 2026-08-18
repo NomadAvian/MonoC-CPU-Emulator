@@ -20,15 +20,16 @@
 
 .bottom-panel__content {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   padding: 8px;
   background-color: var(--bg-elevated);
 }
 
 [data-theme="gruvbox"] .bottom-panel__content {
-  background-color: rgba(0, 0, 0, 0.25);
-  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
 .bottom-panel__collapse-icon {

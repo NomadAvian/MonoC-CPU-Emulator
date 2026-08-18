@@ -29,12 +29,19 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     try:
-        result, tools_used = ollama_chat(request.messages, request.source)
+        result, tools_used = await ollama_chat(request.messages, request.source)
         print("[api] responded via Ollama")
     except Exception as e:
-        print(f"[api] Ollama unavailable , falling back to Gemini")
-        result, tools_used = gemini_chat(request.messages, request.source)
-        print("[api] responded via Gemini (fallback)")
+        print(f"[api] Ollama unavailable, falling back to Gemini. Error: {e}")
+        try:
+            result, tools_used = await gemini_chat(request.messages, request.source)
+            print("[api] responded via Gemini (fallback)")
+        except Exception as gemini_e:
+            msg = str(gemini_e)
+            if "429" in msg or "quota" in msg.lower() or "exhausted" in msg.lower():
+                msg = "API usage limit reached. Please wait a bit or check your API quota."
+            from fastapi import HTTPException
+            raise HTTPException(status_code=500, detail=f"AI unavailable: {msg}")
     return {"response": result, "tools_used": tools_used}
 
 

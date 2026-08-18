@@ -13,11 +13,16 @@ export default function ResizeDivider({ direction = 'horizontal', onDrag }) {
       onDrag(delta)
     }
 
+    const styleEl = document.createElement('style')
+    styleEl.innerHTML = '* { pointer-events: none !important; }'
+    document.head.appendChild(styleEl)
+
     const onMouseUp = () => {
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('mouseup', onMouseUp)
       document.body.style.cursor = ''
       document.body.style.userSelect = ''
+      document.head.removeChild(styleEl)
     }
 
     document.body.style.cursor   = direction === 'horizontal' ? 'col-resize' : 'row-resize'

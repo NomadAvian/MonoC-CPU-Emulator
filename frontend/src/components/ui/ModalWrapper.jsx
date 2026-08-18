@@ -1,5 +1,5 @@
 import './ModalWrapper.css'
-import closeIcon from '../../../assets/close.svg'
+import closeIcon from '../../assets/close.svg'
 
 export default function ModalWrapper({ title, onClose, children }) {
   const handleBackdropClick = () => {
