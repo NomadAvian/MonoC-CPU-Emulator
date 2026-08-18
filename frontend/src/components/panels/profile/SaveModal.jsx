@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuthStore } from '../../../store/authStore'
 import { useEditorStore } from '../../../store/editorStore'
-import closeIcon from '../../../assets/close.svg'
+import ModalWrapper from '../../ui/ModalWrapper'
 import './SaveModal.css'
 
 export default function SaveModal({ onClose }) {
@@ -17,14 +17,6 @@ export default function SaveModal({ onClose }) {
 
   // ── Handlers ──
   const handleNameChange = (e) => setName(e.target.value)
-
-  const handleBackdropClick = () => {
-    onClose()
-  }
-
-  const handleModalClick = (e) => {
-    e.stopPropagation()
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -47,42 +39,30 @@ export default function SaveModal({ onClose }) {
   }
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="save-modal" onClick={handleModalClick}>
-        <button
-          className="modal-close"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          <img src={closeIcon} alt="Close" />
-        </button>
-        
-        <h2>Save Code</h2>
-        
-        {error && <div className="save-error">{error}</div>}
-        {isSuccess && <div className="save-success">Code saved successfully!</div>}
+    <ModalWrapper title="Save Code" onClose={onClose}>
+      {error && <div className="save-error">{error}</div>}
+      {isSuccess && <div className="save-success">Code saved successfully!</div>}
 
-        {!isSuccess && (
-          <form onSubmit={handleSubmit} className="save-form">
-            <input 
-              type="text" 
-              className="ui-input" 
-              placeholder="Enter code name..." 
-              value={name} 
-              onChange={handleNameChange} 
-              autoFocus
-              required 
-            />
-            <button 
-              type="submit" 
-              className="ui-button save-submit"
-              disabled={isLoading || !name.trim()}
-            >
-              {isLoading ? 'Saving...' : 'Save'}
-            </button>
-          </form>
-        )}
-      </div>
-    </div>
+      {!isSuccess && (
+        <form onSubmit={handleSubmit} className="save-form">
+          <input 
+            type="text" 
+            className="ui-input" 
+            placeholder="Enter code name..." 
+            value={name} 
+            onChange={handleNameChange} 
+            autoFocus
+            required 
+          />
+          <button 
+            type="submit" 
+            className="ui-button save-submit"
+            disabled={isLoading || !name.trim()}
+          >
+            {isLoading ? 'Saving...' : 'Save'}
+          </button>
+        </form>
+      )}
+    </ModalWrapper>
   )
 }

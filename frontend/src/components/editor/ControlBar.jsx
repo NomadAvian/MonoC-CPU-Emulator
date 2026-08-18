@@ -66,7 +66,6 @@ export default function ControlBar() {
               key={id}
               id={id}
               className={`ui-button control-bar__btn ${loading ? 'control-bar__btn--loading' : ''}`}
-              style={{ color: 'var(--accent)' }}
               title={label}
               disabled={disabled}
               onClick={() => handleControl(id)}
@@ -74,7 +73,7 @@ export default function ControlBar() {
               {loading ? (
                 <span className="control-bar__spinner" />
               ) : (
-                <img src={icon} alt={label} style={{ width: 18, height: 18, opacity: 0.9 }} />
+                <img src={icon} alt={label} className="control-bar__icon" />
               )}
             </button>
           )

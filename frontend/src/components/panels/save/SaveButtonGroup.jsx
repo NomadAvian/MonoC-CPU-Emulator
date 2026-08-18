@@ -72,7 +72,7 @@ export default function SaveButtonGroup({ onSaveClick }) {
       {fileMenuOpen && (
         <>
           <div 
-            style={{ position: 'fixed', inset: 0, zIndex: 199 }} 
+            className="save-btn-menu__overlay"
             onClick={handleCloseMenu} 
           />
           <div className="save-btn-menu">
@@ -92,7 +92,7 @@ export default function SaveButtonGroup({ onSaveClick }) {
       <input
         type="file"
         ref={fileInputRef}
-        style={{ display: 'none' }}
+        className="save-btn-menu__hidden-input"
         accept=".s,.asm,.txt"
         onChange={handleFileChange}
       />

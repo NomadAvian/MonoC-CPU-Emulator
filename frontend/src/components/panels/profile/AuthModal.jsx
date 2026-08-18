@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuthStore } from '../../../store/authStore'
 import { useUIStore } from '../../../store/uiStore'
-import closeIcon from '../../../assets/close.svg'
+import ModalWrapper from '../../ui/ModalWrapper'
 import './AuthModal.css'
 
 export default function AuthModal({ onClose }) {
@@ -28,14 +28,6 @@ export default function AuthModal({ onClose }) {
     setError('')
   }
 
-  const handleBackdropClick = () => {
-    onClose()
-  }
-
-  const handleModalClick = (e) => {
-    e.stopPropagation()
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -47,7 +39,7 @@ export default function AuthModal({ onClose }) {
         addToast('Welcome back!', 'success')
       } else {
         await signup(username, email, password)
-        addToast('Account created successfully!', 'success')
+        addToast('Signed up successfully!', 'success')
       }
       onClose() 
     } catch (err) {
@@ -58,60 +50,52 @@ export default function AuthModal({ onClose }) {
   }
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick}>
-      <div className="auth-modal" onClick={handleModalClick}>
-        <h2>{isLogin ? 'Welcome!' : 'Create Account'}</h2>
+    <ModalWrapper title={isLogin ? 'Welcome!' : 'Create Account'} onClose={onClose}>
+      {error && <div className="auth-error">{error}</div>}
+
+      <form onSubmit={handleSubmit} className="auth-form">
+        {!isLogin && (
+          <input 
+            type="text" 
+            className="ui-input" 
+            placeholder="Username" 
+            value={username} 
+            onChange={handleUsernameChange} 
+            required 
+          />
+        )}
+        <input 
+          type="email" 
+          className="ui-input" 
+          placeholder="Email" 
+          value={email} 
+          onChange={handleEmailChange} 
+          required 
+        />
+        <input 
+          type="password" 
+          className="ui-input" 
+          placeholder="Password" 
+          value={password} 
+          onChange={handlePasswordChange} 
+          required 
+        />
         
-        {error && <div className="auth-error">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          {!isLogin && (
-            <input 
-              type="text" 
-              className="ui-input" 
-              placeholder="Username" 
-              value={username} 
-              onChange={handleUsernameChange} 
-              required 
-            />
-          )}
-          <input 
-            type="email" 
-            className="ui-input" 
-            placeholder="Email" 
-            value={email} 
-            onChange={handleEmailChange} 
-            required 
-          />
-          <input 
-            type="password" 
-            className="ui-input" 
-            placeholder="Password" 
-            value={password} 
-            onChange={handlePasswordChange} 
-            required 
-          />
-          
-          <button
-            type="submit"
-            className="ui-button ui-button--accent auth-submit"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Loading...' : (isLogin ? 'Log In' : 'Sign Up')}
-          </button>
-        </form>
-
-        <p className="auth-toggle">
-          {isLogin ? "Don't have an account? " : "Already have an account? "}
-          <button className="text-btn" onClick={handleToggleMode}>
-            {isLogin ? 'Sign up' : 'Log in'}
-          </button>
-        </p>
-
-        <button className="icon-btn modal-close" onClick={onClose}>
-          <img src={closeIcon} alt="Close" />
+        <button
+          type="submit"
+          className="ui-button ui-button--accent auth-submit"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Loading...' : (isLogin ? 'Log In' : 'Sign Up')}
         </button>
-      </div>
-    </div>
+      </form>
+
+      <p className="auth-toggle">
+        {isLogin ? "Don't have an account? " : "Already have an account? "}
+        <button type="button" className="text-btn" onClick={handleToggleMode}>
+          {isLogin ? 'Sign up' : 'Log in'}
+        </button>
+      </p>
+    </ModalWrapper>
   )
 }

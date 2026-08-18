@@ -50,10 +50,7 @@ export default function BottomPanel({ style }) {
           <img 
             src={collapseIcon} 
             alt="Toggle Collapse" 
-            style={{ 
-              transform: isCollapsed ? 'rotate(90deg)' : 'rotate(270deg)', 
-              transition: 'transform 0.2s' 
-            }}
+            className={`bottom-panel__collapse-icon ${isCollapsed ? 'bottom-panel__collapse-icon--collapsed' : ''}`}
           />
         </button>
       </div>

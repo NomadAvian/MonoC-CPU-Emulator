@@ -25,3 +25,17 @@
   padding: 8px;
   background-color: var(--bg-elevated);
 }
+
+[data-theme="gruvbox"] .bottom-panel__content {
+  background-color: rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.bottom-panel__collapse-icon {
+  transform: rotate(270deg);
+  transition: transform 0.2s;
+}
+
+.bottom-panel__collapse-icon--collapsed {
+  transform: rotate(90deg);
+}

@@ -15,7 +15,7 @@ export default function LogPanel() {
   return (
     <div className="log-panel" id="log-panel">
       <div className="log-panel__header">
-        <p style={{ fontSize: 12, fontWeight: 500 }}>Console Output</p>
+        <p>Console Output</p>
         <button className="ui-button ui-button--ghost log-panel__clear" onClick={clearLog}>
           Clear
         </button>

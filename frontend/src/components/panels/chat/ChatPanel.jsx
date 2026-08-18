@@ -4,6 +4,7 @@ import { useChatStore } from '../../../store/chatStore'
 import './ChatPanel.css'
 import sendIcon from '../../../assets/send-horizontal.svg'
 
+const MAX_TEXTAREA_HEIGHT = 140;
 
 export default function ChatPanel() {
   // ── Refs ──
@@ -26,7 +27,7 @@ export default function ChatPanel() {
     const el = textareaRef.current
     if (!el) return
     el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, 140)}px`
+    el.style.height = `${Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT)}px`
   }, [input])
 
   // ── Handlers ──
@@ -54,7 +55,7 @@ export default function ChatPanel() {
 
         {messages.length === 0 ? (
           <div className="chat-panel__welcome">
-            <p style={{ fontWeight: 400, fontSize: 14 }}>I can read and interact with the emulator. Try asking me questions about your code and I'll try to help! </p>
+            <p>I can read and interact with the emulator. Try asking me questions about your code and I'll try to help! </p>
           </div>
         ) : (
           messages.map((msg, i) => (

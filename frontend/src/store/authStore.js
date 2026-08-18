@@ -31,7 +31,9 @@ export const useAuthStore = create((set) => ({
       try {
         const errorData = await res.json();
         msg = errorData.detail || msg;
-      } catch (e) {}
+      } catch (e) {
+        console.warn('Failed to parse error response as JSON:', e)
+      }
       throw new Error(msg);
     }
     
