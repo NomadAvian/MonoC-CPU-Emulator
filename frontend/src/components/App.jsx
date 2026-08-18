@@ -4,10 +4,12 @@ import MainLayout from './layout/MainLayout'
 import TopBar from './layout/TopBar'
 import LeftSideBar from './layout/LeftSideBar'
 import RightSideBar from './layout/RightSideBar'
+import ScreenPanel from './panels/screen/ScreenPanel'
 import EditorPanel from './layout/EditorPanel'
 import BottomPanel from './layout/BottomPanel'
 import ResizeDivider from './ui/ResizeDivider'
 import { useUIStore } from '../store/uiStore'
+import { useScreenStore } from '../store/screenStore'
 
 // Size constraints
 const LEFT_MIN  = 160;  const LEFT_MAX  = 480
@@ -21,6 +23,7 @@ function App() {
   const [bottomHeight, setBottomHeight] = useState(220)
 
   const isChatOpen = useUIStore(s => s.isChatOpen)
+  const isScreenOpen = useScreenStore(s => s.isScreenOpen)
 
   // Resize handlers (incremental delta)
   const onLeftResize   = useCallback((d) => setLeftWidth  (w => Math.max(LEFT_MIN,   Math.min(LEFT_MAX,   w + d))), [])
@@ -39,7 +42,16 @@ function App() {
 
         {/* Center: Editor + bottom panel */}
         <div className="center-col">
-          <EditorPanel />
+          <div className="center-top-row">
+            <EditorPanel />
+            {/* Screen aligns to the editor's height, not the whole right side */}
+            {isScreenOpen && (
+              <>
+                <ResizeDivider direction="horizontal" onDrag={onRightResize} />
+                <ScreenPanel style={{ width: rightWidth }} />
+              </>
+            )}
+          </div>
           <ResizeDivider direction="vertical" onDrag={onBottomResize} />
           <BottomPanel style={{ height: bottomHeight }} />
         </div>

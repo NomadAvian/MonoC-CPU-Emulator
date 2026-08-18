@@ -2,6 +2,7 @@
 
 #include <crow.h>
 #include "../emulator/src/core/cpu.h"
+#include "../emulator/src/core/framebuffer.h"
 #include "../emulator/src/assembler/assembler.h"
 
 int main()
@@ -65,6 +66,19 @@ int main()
         return crow::response(200, res);
     });
 
+    // POST /cpu/run
+    // runs all the instruction. for optimization, ui updates
+    // after a 'batch' of instructions execute
+    CROW_ROUTE(app, "/cpu/run").methods(crow::HTTPMethod::POST)
+    ([&cpu_instance]() {
+        if (!cpu_instance) return crow::response(400, "no cpu loaded");
+        cpu_instance->BatchRun();
+        crow::json::wvalue res;
+        res["stepped"] = true;
+        res["halted"] = cpu_instance->IsHalted();
+        return crow::response(200, res);
+    });
+
     // GET /cpu/registers
     // returns all 32 registers + PC
     CROW_ROUTE(app, "/cpu/registers")
@@ -77,6 +91,24 @@ int main()
             regs[i] = cpu_instance->ReadReg(i);
         }
         return crow::response(200, res);
+    });
+
+    // GET /cpu/screen
+    // returns the values of the memory addr that
+    // correspond to the screen's mapping
+    CROW_ROUTE(app, "/cpu/screen")
+    ([&cpu_instance]() {
+        if (!cpu_instance) return crow::response(400, "no cpu loaded");
+
+        const auto fb = cpu_instance->ReadFramebuffer();
+        std::string body(reinterpret_cast<const char*>(fb.data()), fb.size());
+
+        crow::response res(200);
+        res.add_header("X-Fb-Width",  std::to_string(kFramebufferWidth));
+        res.add_header("X-Fb-Height", std::to_string(kFramebufferHeight));
+        res.add_header("Content-Type", "application/octet-stream");
+        res.body = body;
+        return res;
     });
 
     // GET /cpu/memory/:addr

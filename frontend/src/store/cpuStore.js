@@ -1,7 +1,24 @@
 import { create } from 'zustand'
-import { fetchRegisters, stepCpu, resetCpu, compile } from '../api/cpu'
+import { fetchRegisters, stepCpu, runCpu, resetCpu, compile } from '../api/cpu'
 import { useEditorStore } from './editorStore'
 import { useLogStore } from './logStore'
+import { useScreenStore } from './screenStore'
+
+// throttle framebuffer
+const SCREEN_REFRESH_MS = 50
+let lastScreenRefresh = 0
+
+// controls how fast run mode executes. Each tick runs a batch on the server
+// (fixed at 100 instructions/request), so instructions/sec ≈ 100 * 1000 / this.
+// lower = faster
+const RUN_TICK_MS = 0.2
+
+async function maybeRefreshScreen() {
+  const now = Date.now()
+  if (now - lastScreenRefresh < SCREEN_REFRESH_MS) return
+  lastScreenRefresh = now
+  await useScreenStore.getState().refreshScreen()
+}
 
 const initialState = {
   registers: Array(32).fill(0),
@@ -81,6 +98,7 @@ export const useCPUStore = create((set, get) => ({
       })
       log.addLog('Compilation successful')
       await get().fetchRegisters()
+      maybeRefreshScreen()
       return result
     } catch (error) {
       set({ compiling: false })
@@ -98,6 +116,7 @@ export const useCPUStore = create((set, get) => ({
       }
       await stepCpu()
       await get().fetchRegisters()
+      maybeRefreshScreen()
       return true
     } catch (error) {
       console.error('step failed:', error)
@@ -111,12 +130,24 @@ export const useCPUStore = create((set, get) => ({
     set({ running: true, status: 'running' })
     const tick = async () => {
       if (!get().running) return
-      const ok = await get().step()
-      if (!ok) { get().stopRun(); return }
-      await get().step()
-      requestAnimationFrame(tick)
+      try {
+        const r = await runCpu()
+        await get().fetchRegisters()
+        maybeRefreshScreen()
+        if (r.halted) {
+          useLogStore.getState().addLog('Execution completed')
+          set({ halted: true })
+          get().stopRun()
+          return
+        }
+        setTimeout(tick, RUN_TICK_MS)
+      } catch (error) {
+        console.error('run failed:', error)
+        useLogStore.getState().addLog(`Error: ${error.message}`)
+        get().stopRun()
+      }
     }
-    requestAnimationFrame(tick)
+    setTimeout(tick, RUN_TICK_MS)
   },
 
   stopRun: () => set({ running: false, status: 'stopped' }),
@@ -126,6 +157,7 @@ export const useCPUStore = create((set, get) => ({
       await resetCpu()
       set({ status: 'stopped', changedRegisters: new Set(), halted: false })
       await get().fetchRegisters()
+      maybeRefreshScreen()
       useLogStore.getState().addLog('CPU reset')
       return true
     } catch (error) {

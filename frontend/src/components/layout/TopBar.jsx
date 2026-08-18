@@ -7,9 +7,11 @@ import LibraryPanel from '../panels/library/LibraryPanel'
 import SaveModal from '../panels/profile/SaveModal'
 import SaveButtonGroup from '../panels/save/SaveButtonGroup'
 import { useUIStore } from '../../store/uiStore'
+import { useScreenStore } from '../../store/screenStore'
 import { useAuthStore } from '../../store/authStore'
 
 import aiIcon from '../../assets/ai.svg'
+import screenIcon from '../../assets/screen.svg'
 import docsIcon from '../../assets/docs.svg'
 import settingsIcon from '../../assets/settings.svg'
 import profileIcon from '../../assets/profile.svg'
@@ -23,6 +25,8 @@ export default function TopBar() {
   const [saveOpen, setSaveOpen] = useState(false)
 
   const { isChatOpen, toggleChat } = useUIStore()
+  const isScreenOpen = useScreenStore(s => s.isScreenOpen)
+  const toggleScreen = useScreenStore(s => s.toggleScreen)
 
   const user = useAuthStore(s => s.user)
 
@@ -61,6 +65,16 @@ export default function TopBar() {
             title="MonoC AI"
           >
             <img src={aiIcon} alt="MonoC AI" className="topbar__icon" />
+          </button>
+
+          <button
+            className={`topbar__nav-btn ${isScreenOpen ? 'topbar__nav-btn--active' : ''}`}
+            id="topbar-screen-btn"
+            aria-pressed={isScreenOpen}
+            onClick={toggleScreen}
+            title="Screen"
+          >
+            <img src={screenIcon} alt="Screen" className="topbar__icon" />
           </button>
 
           <button
