@@ -75,19 +75,6 @@ int main()
         return crow::response(200, res);
     });
 
-    // POST /cpu/run
-    // runs all the instruction. for optimization, ui updates
-    // after a 'batch' of instructions execute
-    CROW_ROUTE(app, "/cpu/run").methods(crow::HTTPMethod::POST)
-    ([&cpu_instance]() {
-        if (!cpu_instance) return crow::response(400, "no cpu loaded");
-        cpu_instance->BatchRun();
-        crow::json::wvalue res;
-        res["stepped"] = true;
-        res["halted"] = cpu_instance->IsHalted();
-        return crow::response(200, res);
-    });
-
     // GET /cpu/registers
     // returns all 32 registers + PC
     CROW_ROUTE(app, "/cpu/registers")

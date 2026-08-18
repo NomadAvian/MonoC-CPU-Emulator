@@ -791,12 +791,6 @@ void CPU::Step() {
     }
 }
 
-void CPU::BatchRun(int batch_size) {
-    for (int i = 0; i < batch_size && !IsHalted(); i++) {
-        Step();
-    }
-}
-
 void CPU::Ecall() {
     Word ecall_number = x[17].value;
     switch (static_cast<ecall>(ecall_number)) {

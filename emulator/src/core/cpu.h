@@ -88,7 +88,6 @@ public:
 
     void Reset();
     void Step();
-    void BatchRun(int batch_size = 100);
     std::vector<Byte> ReadFramebuffer() const;
 
     bool IsHalted() const { return halted_; }

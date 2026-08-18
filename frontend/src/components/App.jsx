@@ -62,11 +62,6 @@ function App() {
 
         {/* Center: Editor + bottom panel */}
         <div className="center-col">
-          <EditorPanel />
-          <ResizeDivider
-            direction="vertical"
-            onDrag={onBottomResize}
-          />
           <div className="center-top-row">
             <EditorPanel />
             {/* Screen aligns to the width */}
