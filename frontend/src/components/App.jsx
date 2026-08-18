@@ -1,5 +1,5 @@
 import '../App.css'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import MainLayout from './layout/MainLayout'
 import TopBar from './layout/TopBar'
 import LeftSideBar from './layout/LeftSideBar'
@@ -22,11 +22,17 @@ function App() {
   const [leftWidth, setLeftWidth] = useState(180)
   const [docsWidth, setDocsWidth] = useState(420)
   const [rightWidth, setRightWidth] = useState(420)
-  const [bottomHeight, setBottomHeight] = useState(220)
+  const [bottomHeight, setBottomHeight] = useState(180)
 
   // ── Store Selectors ──
   const isChatOpen = useUIStore(s => s.isChatOpen)
   const isDocsOpen = useUIStore(s => s.isDocsOpen)
+  const theme = useUIStore(s => s.theme)
+
+  // ── Effects ──
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+  }, [theme])
 
   // ── Handlers ──
   const onLeftResize = useCallback((d) => setLeftWidth(w => Math.max(LEFT_MIN, Math.min(LEFT_MAX, w + d))), [])
@@ -39,7 +45,7 @@ function App() {
       <TopBar />
 
       <div className="workspace">
-        {/* Left sidebar — width controlled by drag */}
+        {/* Left sidebar */}
         {isDocsOpen ? (
           <DocsPanel style={{ width: docsWidth }} />
         ) : (
@@ -61,7 +67,7 @@ function App() {
           <BottomPanel style={{ height: bottomHeight }} />
         </div>
 
-        {/* Right sidebar — collapsible */}
+        {/* Right sidebar */}
         {isChatOpen && (
           <>
             <ResizeDivider

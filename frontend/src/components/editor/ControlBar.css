@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 42px;
+  height: 32px;
   padding: 0 12px;
   background: var(--bg-surface);
   border-top: 1px solid var(--border);
@@ -27,29 +27,17 @@
   gap: 12px;
 }
 
-.control-bar__btn {
-  flex-direction: column;
-  gap: 6px;
-  height: 36px;
-  padding: 0 12px;
+/* increased specificity */
+button.ui-button.control-bar__btn {
+  min-height: 24px;
+  height: 24px;
+  padding: 0 8px;
+  font-size: var(--fs-xs);
 }
 
-
-.control-bar__btn-label {
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1;
+button.ui-button.control-bar__btn:hover:not(:disabled) {
+  border-color: var(--border); 
 }
-
-.control-bar__btn-shortcut {
-  color: var(--text-muted);
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: .05em;
-}
-
-
 
 .control-bar__btn--loading {
   opacity: 0.8;
@@ -90,7 +78,7 @@
 }
 
 .speed-label {
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   font-weight: 600;
   width: 50px;
 }

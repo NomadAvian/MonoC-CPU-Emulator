@@ -1,33 +1,34 @@
 import './ControlBar.css'
 import { useCPUStore, SPEEDS } from '../../store/cpuStore'
-// import playIcon from '../../assets/play.svg'
-// import stopIcon from '../../assets/stop.svg'
-// import stepIcon from '../../assets/step-once.svg'
-// import resetIcon from '../../assets/reset.svg'
+import buildIcon from '../../assets/build.svg'
+import playIcon from '../../assets/play.svg'
+import stopIcon from '../../assets/stop.svg'
+import stepIcon from '../../assets/step-once.svg'
+import resetIcon from '../../assets/reset.svg'
 
 
 const CONTROLS = [
-  { id: 'ctrl-compile', label: 'Compile',   /* icon: playIcon, shortcut: 'Ctrl-R',       */ },
-  { id: 'ctrl-play', label: 'Run',       /* icon: playIcon, shortcut: 'Ctrl-R',       */ },
-  { id: 'ctrl-stop', label: 'Stop',      /* icon: stopIcon, shortcut: 'Ctrl-S',       */ },
-  { id: 'ctrl-step-over', label: 'Step', /* icon: stepIcon, shortcut: 'Ctrl-Shift-S', */ },
-  { id: 'ctrl-reset', label: 'Reset',     /* icon: resetIcon, shortcut: 'Ctrl-Shift-R',*/ },
+  { id: 'ctrl-compile', label: 'Compile',   icon: buildIcon, /* shortcut: 'Ctrl-R',       */ },
+  { id: 'ctrl-play', label: 'Run',          icon: playIcon, /* shortcut: 'Ctrl-R',       */ },
+  { id: 'ctrl-stop', label: 'Stop',         icon: stopIcon, /* shortcut: 'Ctrl-S',       */ },
+  { id: 'ctrl-step-over', label: 'Step',    icon: stepIcon, /* shortcut: 'Ctrl-Shift-S', */ },
+  { id: 'ctrl-reset', label: 'Reset',       icon: resetIcon, /* shortcut: 'Ctrl-Shift-R',*/ },
 ]
 
 export default function ControlBar() {
   // ── Store Selectors ──
-  const status        = useCPUStore(s => s.status)
-  const compiling     = useCPUStore(s => s.compiling)
-  const halted        = useCPUStore(s => s.halted)
-  const romSize       = useCPUStore(s => s.romSize)
-  const speedIndex    = useCPUStore(s => s.speedIndex)
+  const status = useCPUStore(s => s.status)
+  const compiling = useCPUStore(s => s.compiling)
+  const halted = useCPUStore(s => s.halted)
+  const romSize = useCPUStore(s => s.romSize)
+  const speedIndex = useCPUStore(s => s.speedIndex)
 
   // ── Store Actions ──
-  const step          = useCPUStore(s => s.step)
-  const reset         = useCPUStore(s => s.reset)
-  const compile       = useCPUStore(s => s.compile)
-  const startRun      = useCPUStore(s => s.startRun)
-  const stopRun       = useCPUStore(s => s.stopRun)
+  const step = useCPUStore(s => s.step)
+  const reset = useCPUStore(s => s.reset)
+  const compile = useCPUStore(s => s.compile)
+  const startRun = useCPUStore(s => s.startRun)
+  const stopRun = useCPUStore(s => s.stopRun)
   const setSpeedIndex = useCPUStore(s => s.setSpeedIndex)
 
   // ── Handlers ──
@@ -70,17 +71,11 @@ export default function ControlBar() {
               disabled={disabled}
               onClick={() => handleControl(id)}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                {loading ? (
-                  <span className="control-bar__spinner" />
-                ) : (
-                  icon && <img src={icon} alt="" style={{ width: 14, height: 14, opacity: 0.9 }} />
-                )}
-                <span className="control-bar__btn-label">
-                  {loading ? 'Compiling...' : label}
-                </span>
-              </div>
-              {shortcut && <span className="control-bar__btn-shortcut">{shortcut}</span>}
+              {loading ? (
+                <span className="control-bar__spinner" />
+              ) : (
+                <img src={icon} alt={label} style={{ width: 18, height: 18, opacity: 0.9 }} />
+              )}
             </button>
           )
         })}

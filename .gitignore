@@ -3,7 +3,6 @@
 *.exe
 *.obj
 *.o
-*.txt
 .env
 .zed
 .gram

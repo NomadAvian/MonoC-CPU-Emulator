@@ -1,5 +1,5 @@
 .log-panel {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 12px;
   display: flex;
   flex-direction: column;
@@ -58,5 +58,3 @@
   color: var(--text-primary);
   flex: 1;
 }
-
-
