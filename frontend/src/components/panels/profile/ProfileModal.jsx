@@ -21,10 +21,17 @@ export default function ProfileModal({ onClose }) {
   const addToast        = useUIStore(s => s.addToast)
 
   useEffect(() => {
+    // prevent memory leak by checking if component is mounted before saving state
+    let isMounted = true;
+    
     fetchSavedCodes()
-      .then(res => setCodes(res))
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false))
+      .then(res => isMounted && setCodes(res))
+      .catch(err => isMounted && addToast(err.message || 'Failed to load saved codes', 'error'))
+      .finally(() => isMounted && setLoading(false))
+
+      return () => {
+        isMounted = false;
+      }
   }, [fetchSavedCodes])
 
   // ── Handlers ──
@@ -34,11 +41,11 @@ export default function ProfileModal({ onClose }) {
     onClose()
   }
 
-  const handleDeleteCode = async (e, name) => {
+  const handleDeleteCode = async (e, id, name) => {
     e.stopPropagation()
     try {
-      await deleteCode(name)
-      setCodes(prev => prev.filter(c => c.name !== name))
+      await deleteCode(id)
+      setCodes(prev => prev.filter(c => c.id !== id))
       addToast(`Deleted Program: ${name}`, 'info')
     } catch (err) {
       addToast(err.message, 'error')
@@ -74,8 +81,8 @@ export default function ProfileModal({ onClose }) {
             <p className="profile-modal__empty">No saved codes yet.</p>
           ) : (
             <div className="profile-modal__list">
-              {codes.map((item, index) => (
-                <div key={index} className="profile-modal__item">
+              {codes.map((item) => (
+                <div key={item.id} className="profile-modal__item">
                   <span className="profile-modal__item-name">{item.name}</span>
                   <div className="profile-modal__item-actions">
                     <button
@@ -87,7 +94,7 @@ export default function ProfileModal({ onClose }) {
                     </button>
                     <button
                       className="icon-btn profile-modal__action-btn--delete"
-                      onClick={(e) => handleDeleteCode(e, item.name)}
+                      onClick={(e) => handleDeleteCode(e, item.id, item.name)}
                       title="Delete program"
                     >
                       <img src={deleteIcon} alt="Delete" />

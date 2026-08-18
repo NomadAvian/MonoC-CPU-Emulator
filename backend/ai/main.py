@@ -99,12 +99,12 @@ def get_codes(token: str):
 
 class DeleteCodeRequest(BaseModel):
     token: str
-    name: str
+    id: str
 
 
 @app.post("/user/codes/delete")
 def delete_code(req: DeleteCodeRequest):
-    success = db.delete_user_code(req.token, req.name)
+    success = db.delete_user_code(req.token, req.id)
     if not success:
         raise HTTPException(status_code=400, detail="Failed to delete code")
     return {"success": True}

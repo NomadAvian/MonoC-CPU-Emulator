@@ -73,13 +73,13 @@ export const useAuthStore = create((set) => ({
     return data.codes || [];
   },
 
-  deleteCode: async (name) => {
+  deleteCode: async (id) => {
     const token = localStorage.getItem('auth_token');
     if (!token) throw new Error("Must be logged in to delete code");
     const res = await fetch(`${API_URL}/user/codes/delete`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, name })
+      body: JSON.stringify({ token, id })
     });
     if (res.status === 401) {
       useAuthStore.getState().logout();

@@ -24,6 +24,15 @@ def init_db():
                 )
             """)
             cursor.execute("""
+                CREATE TABLE IF NOT EXISTS user_saved_codes(
+                    id TEXT PRIMARY KEY,
+                    email TEXT NOT NULL,
+                    name TEXT NOT NULL,
+                    code TEXT NOT NULL,
+                    FOREIGN KEY(email) REFERENCES users(email)
+                )
+            """)
+            cursor.execute("""
                 CREATE TABLE IF NOT EXISTS code_examples(
                     id TEXT PRIMARY KEY,
                     category TEXT NOT NULL,
@@ -87,47 +96,36 @@ def verify_token(token):
 
 
 def save_user_code(token, name, code):
-    import json
     with sqlite3.connect(DB) as conn:
-        row = conn.execute("SELECT saved_codes FROM users WHERE token = ?", (token,)).fetchone()
-        if not row:
+        user = conn.execute("SELECT email FROM users WHERE token = ?", (token,)).fetchone()
+        if not user:
             return False
-        try:
-            codes = json.loads(row[0] or "[]")
-        except Exception:
-            codes = []
-        codes.append({"name": name, "code": code})
-        conn.execute("UPDATE users SET saved_codes = ? WHERE token = ?", (json.dumps(codes), token))
+        email = user[0]
+        code_id = str(uuid.uuid4())
+        conn.execute("INSERT INTO user_saved_codes (id, email, name, code) VALUES (?, ?, ?, ?)", (code_id, email, name, code))
         conn.commit()
         return True
 
 
 def get_user_codes(token):
-    import json
     with sqlite3.connect(DB) as conn:
-        row = conn.execute("SELECT saved_codes FROM users WHERE token = ?", (token,)).fetchone()
-        if not row:
+        user = conn.execute("SELECT email FROM users WHERE token = ?", (token,)).fetchone()
+        if not user:
             return []
-        try:
-            return json.loads(row[0] or "[]")
-        except Exception:
-            return []
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("SELECT id, name, code FROM user_saved_codes WHERE email = ?", (user[0],)).fetchall()
+        return [dict(r) for r in rows]
 
 
-def delete_user_code(token, name):
-    import json
+def delete_user_code(token, code_id):
     with sqlite3.connect(DB) as conn:
-        row = conn.execute("SELECT saved_codes FROM users WHERE token = ?", (token,)).fetchone()
-        if not row:
+        user = conn.execute("SELECT email FROM users WHERE token = ?", (token,)).fetchone()
+        if not user:
             return False
-        try:
-            codes = json.loads(row[0] or "[]")
-        except Exception:
-            codes = []
-        new_codes = [c for c in codes if c.get("name") != name]
-        conn.execute("UPDATE users SET saved_codes = ? WHERE token = ?", (json.dumps(new_codes), token))
+        email = user[0]
+        cursor = conn.execute("DELETE FROM user_saved_codes WHERE id = ? AND email = ?", (code_id, email))
         conn.commit()
-        return True
+        return cursor.rowcount > 0
 
 
 def get_all_examples():
