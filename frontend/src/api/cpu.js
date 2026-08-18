@@ -13,6 +13,12 @@ export async function stepCpu(count = 1) {
   return res.json()
 }
 
+export async function runCpu() {
+  const res = await fetch(`${BASE}/cpu/run`, { method: 'POST' })
+  if (!res.ok) throw new Error(`POST /cpu/run failed: ${res.status}`)
+  return res.json()
+}
+
 export async function resetCpu() {
   const res = await fetch(`${CROW_BASE}/cpu/reset`, { method: `POST` })
   if (!res.ok) throw new Error(`POST /cpu/reset failed: ${res.status}`)
@@ -27,4 +33,14 @@ export async function compile(source) {
   })
   if (!res.ok) throw new Error(`POST /cpu/compile failed: ${res.status}`)
   return res.json()
+}
+
+// Fetches the framebuffer (tail end of RAM, 768 words)
+export async function fetchScreen() {
+  const res = await fetch(`${BASE}/cpu/screen`)
+  if (!res.ok) throw new Error(`GET /cpu/screen failed: ${res.status}`)
+  const width = Number(res.headers.get('X-Fb-Width') ?? 0)
+  const height = Number(res.headers.get('X-Fb-Height') ?? 0)
+  const buffer = await res.arrayBuffer()
+  return { width, height, data: new Uint8Array(buffer) }
 }

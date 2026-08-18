@@ -2,6 +2,7 @@
 #define CPU_CPU_H_
 
 #include <string>
+#include <vector>
 
 #include "../common.h"
 #include "alu.h"
@@ -87,6 +88,8 @@ public:
 
     void Reset();
     void Step();
+    void BatchRun(int batch_size = 100);
+    std::vector<Byte> ReadFramebuffer() const;
 
     bool IsHalted() const { return halted_; }
 

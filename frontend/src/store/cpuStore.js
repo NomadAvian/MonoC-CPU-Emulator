@@ -1,7 +1,24 @@
 import { create } from 'zustand'
-import { fetchRegisters, stepCpu, resetCpu, compile } from '../api/cpu'
+import { fetchRegisters, stepCpu, runCpu, resetCpu, compile } from '../api/cpu'
 import { useEditorStore } from './editorStore'
 import { useLogStore } from './logStore'
+import { useScreenStore } from './screenStore'
+
+// throttle framebuffer
+const SCREEN_REFRESH_MS = 50
+let lastScreenRefresh = 0
+
+// controls how fast run mode executes. Each tick runs a batch on the server
+// (fixed at 100 instructions/request), so instructions/sec ≈ 100 * 1000 / this.
+// lower = faster
+const RUN_TICK_MS = 0.2
+
+async function maybeRefreshScreen() {
+  const now = Date.now()
+  if (now - lastScreenRefresh < SCREEN_REFRESH_MS) return
+  lastScreenRefresh = now
+  await useScreenStore.getState().refreshScreen()
+}
 
 export const SPEEDS = [
   { label: 'Trace',  steps: 1,  delay: 1000 }, 
@@ -93,6 +110,7 @@ export const useCPUStore = create((set, get) => ({
       })
       log.addLog('Compilation successful')
       await get().fetchRegisters()
+      maybeRefreshScreen()
       return result
     } catch (error) {
       set({ compiling: false })
@@ -112,6 +130,7 @@ export const useCPUStore = create((set, get) => ({
     try {
       await stepCpu(count)
       await get().fetchRegisters()
+      maybeRefreshScreen()
       return true
     } catch (error) {
       console.error('step failed:', error)
@@ -155,6 +174,7 @@ export const useCPUStore = create((set, get) => ({
       await resetCpu()
       set({ status: 'stopped', changedRegisters: new Set(), halted: false })
       await get().fetchRegisters()
+      maybeRefreshScreen()
       useLogStore.getState().addLog('CPU reset')
       return true
     } catch (error) {

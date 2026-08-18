@@ -5,6 +5,8 @@
 #include <fstream>
 #include <stdexcept>
 
+#include "framebuffer.h"
+
 namespace cpu {
 
 void CPU::LoadROM(const std::string& filename) {
@@ -48,6 +50,15 @@ Half CPU::ReadMemoryHalf(Word address) const {
 
 Byte CPU::ReadMemoryByte(Word address) const {
     return ram_.ReadByte(address);
+}
+
+std::vector<Byte> CPU::ReadFramebuffer() const {
+    std::vector<Byte> buf;
+    buf.reserve(kFramebufferBytes);
+    for (size_t i = 0; i < kFramebufferBytes; ++i) {
+        buf.push_back(ram_.ReadByte(kFramebufferBase + static_cast<Word>(i)));
+    }
+    return buf;
 }
 
 int32_t CPU::SignExtend(uint32_t value, uint32_t bits) const {
@@ -777,6 +788,12 @@ void CPU::Step() {
     bool pc_changed = Execute(decoded_instr);
     if (!pc_changed) {
         IncrementPC();
+    }
+}
+
+void CPU::BatchRun(int batch_size) {
+    for (int i = 0; i < batch_size && !IsHalted(); i++) {
+        Step();
     }
 }
 

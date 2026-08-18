@@ -5,11 +5,13 @@ import TopBar from './layout/TopBar'
 import LeftSideBar from './layout/LeftSideBar'
 import RightSideBar from './layout/RightSideBar'
 import DocsPanel from './panels/docs/DocsPanel'
+import ScreenPanel from './panels/screen/ScreenPanel'
 import EditorPanel from './layout/EditorPanel'
 import BottomPanel from './layout/BottomPanel'
 import ResizeDivider from './ui/ResizeDivider'
 import ToastContainer from './ui/ToastContainer'
 import { useUIStore } from '../store/uiStore'
+import { useScreenStore } from '../store/screenStore'
 
 // Size constraints
 const LEFT_MIN = 160; const LEFT_MAX = 480
@@ -28,6 +30,7 @@ function App() {
   const isChatOpen = useUIStore(s => s.isChatOpen)
   const isDocsOpen = useUIStore(s => s.isDocsOpen)
   const theme = useUIStore(s => s.theme)
+  const isScreenOpen = useScreenStore(s => s.isScreenOpen)
 
   // ── Effects ──
   useEffect(() => {
@@ -64,6 +67,17 @@ function App() {
             direction="vertical"
             onDrag={onBottomResize}
           />
+          <div className="center-top-row">
+            <EditorPanel />
+            {/* Screen aligns to the width */}
+            {isScreenOpen && (
+              <>
+                <ResizeDivider direction="horizontal" onDrag={onRightResize} />
+                <ScreenPanel style={{ width: rightWidth }} />
+              </>
+            )}
+          </div>
+          <ResizeDivider direction="vertical" onDrag={onBottomResize} />
           <BottomPanel style={{ height: bottomHeight }} />
         </div>
 

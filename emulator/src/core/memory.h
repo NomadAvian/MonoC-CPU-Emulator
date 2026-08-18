@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "framebuffer.h"
 #include "../common.h"
 
 // Memory accesses wrap around the address space as per the specs
@@ -13,7 +14,7 @@
 // should always be a power of 2
 class Memory {
 public:
-  Memory(size_t size = 128 * 1024 * 1024, bool read_only = false)
+  Memory(size_t size = kRamSize, bool read_only = false)
       : read_only_(read_only), data_(size) {
     assert(std::has_single_bit(size));
   }
@@ -22,9 +23,9 @@ public:
 
   void Reset();
 
+  // needed for later .elf parsing
   // Number of bytes written by the most recent LoadFile (0 if none).
   size_t loaded_bytes() const { return loaded_bytes_; }
-
   // Program entry point parsed from the ROM header (0 if the file had none).
   Word entry() const { return entry_; }
 
