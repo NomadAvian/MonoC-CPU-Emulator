@@ -4,7 +4,7 @@ import { useUIStore } from '../../../store/uiStore'
 import closeIcon from '../../../assets/close.svg'
 
 export const FORMAT_OPTIONS = ['Hex', 'Unsigned']
-export const MODE_OPTIONS   = ['Dark', 'Light']
+export const THEME_OPTIONS  = ['Catppuccin', 'Gruvbox']
 export const FONT_OPTIONS   = ['Monospace', 'Courier New']
 export const TAB_OPTIONS    = [2, 4, 8]
 
@@ -22,7 +22,7 @@ export default function SettingsModal({ onClose }) {
   const setTabSize   = useUIStore(s => s.setTabSize)
 
   // ── Local State ──
-  const [draftMode, setDraftMode]     = useState(theme === 'dark' ? 'Dark' : 'Light')
+  const [draftTheme, setDraftTheme]   = useState(theme === 'gruvbox' ? 'Gruvbox' : 'Catppuccin')
   const [draftFormat, setDraftFormat] = useState(format)
   const [draftFont, setDraftFont]     = useState(fontStyle)
   const [draftTab, setDraftTab]       = useState(tabSize)
@@ -37,12 +37,8 @@ export default function SettingsModal({ onClose }) {
     setDraftFormat(opt)
   }
 
-  const handleModeChange = (opt) => {
-    if (opt === 'Light') {
-      addToast("Nice try... hehe", 'error')
-      return
-    }
-    setDraftMode(opt)
+  const handleThemeChange = (opt) => {
+    setDraftTheme(opt)
   }
 
   const handleFontChange = (opt) => {
@@ -55,7 +51,7 @@ export default function SettingsModal({ onClose }) {
 
   const handleSave = () => {
     setFormat(draftFormat)
-    setTheme(draftMode === 'Light' ? 'light' : 'dark')
+    setTheme(draftTheme.toLowerCase())
     setFontStyle(draftFont)
     setTabSize(draftTab)
 
@@ -106,18 +102,18 @@ export default function SettingsModal({ onClose }) {
             </div>
           </div>
 
-          {/* Mode */}
+          {/* Theme */}
           <div className="settings-modal__field">
             <label className="settings-modal__label">Theme</label>
             <div className="settings-modal__options">
-              {MODE_OPTIONS.map(opt => (
+              {THEME_OPTIONS.map(opt => (
                 <button
                   key={opt}
-                  id={`mode-${opt.toLowerCase()}`}
-                  className={`ui-button settings-modal__opt-btn ${draftMode === opt ? 'active' : ''}`}
-                  onClick={() => handleModeChange(opt)}
+                  id={`theme-${opt.toLowerCase()}`}
+                  className={`ui-button settings-modal__opt-btn ${draftTheme === opt ? 'active' : ''}`}
+                  onClick={() => handleThemeChange(opt)}
                 >
-                  {opt === 'Dark' ? 'Dark' : 'Light'}
+                  {opt}
                 </button>
               ))}
             </div>
