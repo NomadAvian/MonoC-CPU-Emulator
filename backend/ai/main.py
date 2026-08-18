@@ -1,4 +1,3 @@
-# frontend POST messages here and receive the AI response
 # Ollama is the primary model; Gemini is the fallback when Ollama is unavailable
 
 from fastapi import FastAPI, HTTPException
@@ -30,13 +29,13 @@ class ChatRequest(BaseModel):
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     try:
-        result = ollama_chat(request.messages, request.source)
+        result, tools_used = ollama_chat(request.messages, request.source)
         print("[api] responded via Ollama")
     except Exception as e:
         print(f"[api] Ollama unavailable , falling back to Gemini")
-        result = gemini_chat(request.messages, request.source)
+        result, tools_used = gemini_chat(request.messages, request.source)
         print("[api] responded via Gemini (fallback)")
-    return {"response": result}
+    return {"response": result, "tools_used": tools_used}
 
 
 class ExplainRequest(BaseModel):

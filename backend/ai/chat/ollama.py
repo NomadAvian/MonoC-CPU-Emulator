@@ -22,6 +22,8 @@ def chat(messages: list[dict], source: str):
     if not messages or messages[0].get("role") != "system":
         messages = [{"role": "system", "content": SYSTEM_PROMPT}] + messages
 
+    tools_used = []
+
     while True:
         response = ollama.chat(
             model=MODEL,
@@ -30,10 +32,11 @@ def chat(messages: list[dict], source: str):
         )
 
         if not response.message.tool_calls:
-            return response.message.content
+            return response.message.content, tools_used
 
+        messages.append(response.message)
         for call in response.message.tool_calls:
             result = execute_tool(call, source)
             print(f"[tool called: {call.function.name}] returned: {result[:80]}...")
-            messages.append(response.message)
+            tools_used.append(call.function.name)
             messages.append({"role": "tool", "content": result})

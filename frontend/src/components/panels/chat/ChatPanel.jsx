@@ -59,6 +59,11 @@ export default function ChatPanel() {
         ) : (
           messages.map((msg, i) => (
             <div key={i} className={`chat-message chat-message--${msg.role}`}>
+              {msg.toolsUsed?.length > 0 && (
+                <span className="chat-message__tool-badge">
+                  [{msg.toolsUsed.length > 1 ? 'Tools Used' : 'Tool Used'}: {msg.toolsUsed.join(', ')}]
+                </span>
+              )}
               <SimpleMarkdown content={msg.content} />
             </div>
           ))

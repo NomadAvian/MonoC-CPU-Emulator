@@ -9,7 +9,7 @@ def hash_password(password: str) -> str:
 def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
 
-
+# sqlite database setup
 def init_db():
     try:
         with sqlite3.connect(DB) as conn:
@@ -72,7 +72,7 @@ def create_user(username, email, password):
             conn.commit()
             return True
         except sqlite3.IntegrityError:
-            return False  # email exists
+            return False  
 
 
 def login_user(email, password):

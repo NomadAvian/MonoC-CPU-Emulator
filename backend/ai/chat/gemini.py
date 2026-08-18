@@ -53,8 +53,9 @@ def _execute_tool_calls(function_calls, source: str) -> list[types.Part]:
         )
     return parts
 
-def chat(messages: list[dict], source: str) -> str:
+def chat(messages: list[dict], source: str) -> tuple[str, list[dict]]:
     contents = _to_gemini_contents(messages)
+    tools_used = []
 
     while True:
         response = _get_client().models.generate_content(
@@ -64,11 +65,14 @@ def chat(messages: list[dict], source: str) -> str:
         )
 
         if not response.function_calls:
-            return response.text
+            return response.text, tools_used
 
         # preserve the model's response (including thought_signature)
         contents.append(response.candidates[0].content)
 
         # execute tools and feed results back
+        for call in response.function_calls:
+            tools_used.append(call.name)
+
         fn_parts = _execute_tool_calls(response.function_calls, source)
         contents.append(types.Content(role="user", parts=fn_parts))

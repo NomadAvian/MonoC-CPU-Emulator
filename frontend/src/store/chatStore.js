@@ -11,7 +11,7 @@ const initialState = {
 
 export const useChatStore = create((set, get) => ({
   ...initialState,
-  addMessage: (role, content) => set((state) => ({ messages: [...state.messages, { role, content }] })),
+  addMessage: (role, content, toolsUsed = []) => set((state) => ({ messages: [...state.messages, { role, content, toolsUsed }] })),
   clearMessages: () => set(initialState),
   sendMessage: async (text) => {
     if (!text || !text.trim()) return
@@ -21,7 +21,7 @@ export const useChatStore = create((set, get) => ({
     try {
       const source = useEditorStore.getState().source;
       const data = await sendPrompt(get().messages, source)
-      get().addMessage('assistant', data.response);
+      get().addMessage('assistant', data.response, data.tools_used);
     } catch (error) {
       get().addMessage('assistant', `Error: ${error.message}`);
     } finally {

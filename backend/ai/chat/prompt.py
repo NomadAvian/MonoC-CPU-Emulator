@@ -51,6 +51,7 @@ Branch:  beq bne blt bge bltu bgeu
 Jump:    jal jalr
 Upper:   lui auipc
 Env:     ecall ebreak fence
+Pseudo:  li la mv j nop call ble bgt bleu bgtu
 
 x0(zero) x1(ra) x2(sp) x3(gp) x4(tp)
 x5-x7(t0-t2) x8(s0/fp) x9(s1) x10-x11(a0-a1)

@@ -250,3 +250,17 @@
     transform: scale(1);
   }
 }
+
+.chat-message__tool-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+}
