@@ -1,0 +1,23 @@
+.left-sidebar {
+  min-width: 220px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.left-sidebar__tabs {
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+  padding: 0 12px;
+}
+
+.left-sidebar__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}

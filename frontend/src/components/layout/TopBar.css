@@ -1,0 +1,58 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 16px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.topbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar__logo-text {
+  font-family: var(--font-sans);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+
+.topbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.topbar__nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  font-size: var(--fs-base); /* Increased from sm to base */
+  text-decoration: none;
+}
+
+.topbar__icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.9;
+}
+
+.topbar__nav-btn--accent {
+  border-color: var(--accent-border);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.topbar__nav-btn--active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: var(--accent-border);
+}

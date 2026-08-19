@@ -1,0 +1,281 @@
+:root {
+  --bg-base: #171A21;
+  /* page / editor canvas */
+  --bg-panel: #1d212a;
+  /* sidebars, panels     */
+  --bg-surface: #1d212a;
+  /* bars, headers        */
+  --bg-elevated: #252a35;
+  /* cards, inputs        */
+  --bg-hover: #2e3341;
+  /* hover state          */
+  --active-line: rgba(255, 255, 255, 0.06);
+  --selection: rgba(180, 180, 180, 0.20);
+
+  --border: #2e3341;
+  --border-bright: rgba(255, 255, 255, 0.499);
+
+  /* text */
+  --text-primary: #dbdbdb;
+  --text-secondary: #a6adc8;
+  --text-muted: #6c7086;
+
+  /* accent */
+  --accent: #c6a0f6; 
+  /*Mauve*/
+  --accent-hover: #dcbaf8;
+  --accent-dim: rgba(198, 160, 246, 0.12);
+  --accent-border: rgba(198, 160, 246, 0.35);
+  --accent-glow: rgba(198, 160, 246, 0.08);
+
+  --accent2: #3b5364;
+  /* secondary accent     */
+
+  /* ── Semantic ─────────────────────────────────────────────────── */
+  --green: #a6e3a1;
+  --green-dim: rgba(166, 227, 161, 0.12);
+  --red: #f38ba8;
+  --red-dim: rgba(243, 139, 168, 0.12);
+  --yellow: #f9e2af;
+  --yellow-dim: rgba(249, 226, 175, 0.12);
+  --cyan: #89dceb;
+  --cyan-dim: rgba(137, 220, 235, 0.12);
+
+  /* fonts */
+  --font-sans: 'Rubik', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* reading size */
+  --fs-base: 18px;
+  --fs-sm: 15.5px;
+  --fs-xs: 14px;
+  --fs-lg: 20px;
+  --fs-header: 40px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --control-height: 36px;
+
+  --transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* light theme */
+[data-theme="light"] {
+  --bg-base: #eff1f5;
+  --bg-panel: #e6e9ef;
+  --bg-surface: #dce0e8;
+  --bg-elevated: #ffffff;
+  --bg-hover: #ccd0da;
+  --active-line: rgba(0, 0, 0, 0.06);
+  --selection: rgba(180, 180, 180, 0.20);
+
+  --border: #ccd0da;
+  --border-bright: #9ca0b0;
+
+  --text-primary: #181818;
+  --text-secondary: #5c5f77;
+  --text-muted: #8c8fa1;
+
+  --accent: #1e66f5;
+  --accent-hover: #04a5e5;
+  --accent-dim: rgba(30, 102, 245, 0.1);
+  --accent-border: rgba(30, 102, 245, 0.35);
+
+  --green: #40a02b;
+  --red: #d20f39;
+  --yellow: #df8e1d;
+  --cyan: #04a5e5;
+}
+
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbars */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-bright);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+   /* Common panel shell */
+.panel {
+  background: var(--bg-panel);
+}
+
+   /* Tab bar */
+.tab-bar {
+  display: flex;
+  gap: 2px;
+  height: 32px;
+  padding: 0 12px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  height: 32px;
+  padding: 0 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+
+.tab-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background: var(--bg-hover);
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+}
+
+   /* Icon button */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: var(--fs-base);
+}
+
+.icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.icon-btn img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.9;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+   /* UI Button */
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--control-height);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font: 500 var(--fs-sm) var(--font-sans);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.ui-button:hover {
+  border-color: var(--border-bright);
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.ui-button--ghost {
+  border-color: transparent;
+  background: transparent;
+}
+
+.ui-button--accent {
+  border-color: var(--accent-border);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.ui-button--accent:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent-hover);
+}
+
+   /* UI Input */
+.ui-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font: var(--fs-sm) var(--font-sans);
+  outline: none;
+}
+
+.ui-input:focus {
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+   /* Dividers */
+.divider-v {
+  width: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.divider-h {
+  height: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}

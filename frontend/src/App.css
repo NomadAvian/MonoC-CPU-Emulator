@@ -1,0 +1,8 @@
+/* App-level layout shell */
+#root {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}

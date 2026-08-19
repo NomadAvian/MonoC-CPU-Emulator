@@ -1,0 +1,63 @@
+.code-editor {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-base);
+  overflow: auto;
+  position: relative;
+}
+
+.code-editor__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--text-muted);
+  user-select: none;
+  pointer-events: none;
+}
+
+.code-editor__placeholder p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* CodeMirror theme */
+
+.cm-editor {
+  height: 100%;
+  font-size: 15px !important;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Source Code Pro', 'Cascadia Code', 'Consolas', monospace !important;
+  background: var(--bg-base) !important;
+}
+
+.cm-scroller {
+  font-family: inherit !important;
+}
+
+.cm-editor .cm-content {
+  padding: 8px 0 !important;
+  line-height: 27px !important;
+}
+
+.cm-editor .cm-gutters {
+  background-color: var(--bg-base) !important;
+  border: none !important;
+  line-height: 27px !important;
+}
+
+.cm-editor .cm-activeLine {
+  background-color: var(--active-line) !important;
+}
+
+.cm-editor .cm-selectionBackground,
+.cm-editor.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground {
+  background-color: var(--selection) !important;
+}
+
+.cm-editor .cm-cursor,
+.cm-editor .cm-dropCursor {
+  border-left-color: #7DCFFF !important;
+}
