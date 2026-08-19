@@ -33,8 +33,10 @@ export async function compile(source) {
 export async function fetchScreen() {
   const res = await fetch(`${CROW_BASE}/cpu/screen`)
   if (!res.ok) throw new Error(`GET /cpu/screen failed: ${res.status}`)
-  const width = Number(res.headers.get('X-Fb-Width') ?? 0)
-  const height = Number(res.headers.get('X-Fb-Height') ?? 0)
+  const widthStr = res.headers.get('X-Fb-Width')
+  const heightStr = res.headers.get('X-Fb-Height')
+  const width = widthStr ? Number(widthStr) : 128
+  const height = heightStr ? Number(heightStr) : 96
   const buffer = await res.arrayBuffer()
   return { width, height, data: new Uint8Array(buffer) }
 }

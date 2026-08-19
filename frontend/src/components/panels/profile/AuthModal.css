@@ -27,7 +27,7 @@
 
 .auth-modal h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--fs-md);
   color: var(--text);
   text-align: center;
 }
@@ -46,7 +46,7 @@
 
 .auth-error {
   color: var(--red);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   text-align: center;
   background: var(--red-dim);
   padding: 8px;
@@ -55,7 +55,7 @@
 
 .auth-toggle {
   text-align: center;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--text-muted);
   margin: 0;
 }

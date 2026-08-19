@@ -1,15 +1,15 @@
 .reg-grid {
-  padding: 4px 0;
+  padding: 6px 0;
 }
 
 .reg-grid__section-label {
-  font-size: 10px;
+  font-size: var(--fs-xs);
   font-weight: 600;
   font-family: var(--font-sans);
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 4px 10px 2px;
+  padding: 6px 12px 3px;
 }
 
 .reg-grid__pinned {
@@ -18,16 +18,17 @@
 }
 
 .reg-grid__divider {
-  margin: 4px 10px;
+  margin: 6px 12px;
 }
 
 .reg-grid__list {
   display: flex;
   flex-direction: column;
 }
+
 .reg-grid__alias {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 0.7rem; /* intentionally sub-xs — decorative hint, not content */
   font-weight: 500;
   color: var(--text-muted);
   opacity: 0.45;

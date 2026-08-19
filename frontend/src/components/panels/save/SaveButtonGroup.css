@@ -27,7 +27,7 @@
 .save-btn-menu .ui-button {
   width: 100%;
   padding: 8px 12px;
-  font-size: 13px;
+  font-size: var(--fs-sm);
   justify-content: flex-start;
   white-space: nowrap;
 }

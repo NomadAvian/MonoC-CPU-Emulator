@@ -3,7 +3,7 @@ import { create } from 'zustand'
 const initialState = {
   isChatOpen: false,
   isDocsOpen: false,
-  leftWidth: 235,
+  leftWidth: 260,
   docsWidth: 420,
   rightWidth: 420,
   bottomHeight: 180,

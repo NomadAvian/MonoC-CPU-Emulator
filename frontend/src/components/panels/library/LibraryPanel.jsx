@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import './LibraryPanel.css'
 import closeIcon from '../../../assets/close.svg'
 import { useLibraryStore } from '../../../store/libraryStore'
@@ -6,18 +6,19 @@ import { useLibraryStore } from '../../../store/libraryStore'
 export default function LibraryPanel({ onClose }) {
   // ── Store Selectors & Actions ──
   const examples      = useLibraryStore(s => s.examples)
-  const loading       = useLibraryStore(s => s.loading)
-  const error         = useLibraryStore(s => s.error)
   const search        = useLibraryStore(s => s.search)
-  const loadingId     = useLibraryStore(s => s.loadingId)
   
   const setSearch     = useLibraryStore(s => s.setSearch)
-  const fetchExamples = useLibraryStore(s => s.fetchExamples)
   const selectExample = useLibraryStore(s => s.selectExample)
 
+  const [expanded, setExpanded] = useState(new Set())
+
+  // Expand all when examples are loaded for the first time
   useEffect(() => {
-    fetchExamples()
-  }, [fetchExamples])
+    if (examples.length > 0 && expanded.size === 0) {
+      setExpanded(new Set(examples.map(i => i.category || 'Other')))
+    }
+  }, [examples])
 
   // ── Handlers ──
   const handleSearchChange = (e) => {
@@ -28,14 +29,35 @@ export default function LibraryPanel({ onClose }) {
     e.stopPropagation()
   }
 
-  const q = search.trim().toLowerCase()
-  const filtered = q ? examples.filter(i =>
-    i.title.toLowerCase().includes(q) ||
-    i.description?.toLowerCase().includes(q) ||
-    i.category.toLowerCase().includes(q)
-  ) : examples
+  const grouped = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    const filtered = q ? examples.filter(i =>
+      i.title.toLowerCase().includes(q) ||
+      i.description?.toLowerCase().includes(q) ||
+      i.category.toLowerCase().includes(q)
+    ) : examples
+    return filtered.reduce((acc, i) => ((acc[i.category || 'Other'] ??= []).push(i), acc), {})
+  }, [search, examples])
 
-  const grouped = filtered.reduce((acc, i) => ((acc[i.category || 'Other'] ??= []).push(i), acc), {})
+  const numCategories = Object.keys(grouped).length
+  const isAllExpanded = numCategories > 0 && expanded.size >= numCategories
+
+  const handleToggleAll = () => {
+    if (isAllExpanded) {
+      setExpanded(new Set())
+    } else {
+      setExpanded(new Set(Object.keys(grouped)))
+    }
+  }
+
+  const handleToggle = (category, isOpen) => {
+    setExpanded(prev => {
+      const next = new Set(prev)
+      if (isOpen) next.add(category)
+      else next.delete(category)
+      return next
+    })
+  }
 
   return (
     <div className="modal-overlay" id="library-overlay" onClick={onClose}>
@@ -64,41 +86,43 @@ export default function LibraryPanel({ onClose }) {
         <div className="library-modal__search-wrap">
           <input
             type="text"
-            className="ui-input"
+            className="ui-input library-modal__search-input"
             placeholder="Search examples..."
             value={search}
             autoFocus
             onChange={handleSearchChange}
           />
+          <button
+            className="icon-btn library-modal__action-btn"
+            onClick={handleToggleAll}
+            title={isAllExpanded ? "Collapse All" : "Expand All"}
+          >
+            {isAllExpanded ? "▼" : "▲"}
+          </button>
         </div>
 
         {/* Content Body */}
         <div className="library-modal__body">
-          {loading && (
-            <div className="library-modal__status">Loading example library...</div>
-          )}
-
-          {error && (
-            <div className="library-modal__status library-modal__status--error">
-              {error}
-            </div>
-          )}
-
-          {!loading && !error && Object.keys(grouped).length === 0 && (
+          {Object.keys(grouped).length === 0 && (
             <div className="library-modal__status">No matching code examples found.</div>
           )}
 
-          {!loading &&
-            !error &&
-            Object.entries(grouped).map(([category, items]) => (
-              <div key={category} className="library-modal__group">
-                <div className="library-modal__category">{category}</div>
+          {Object.entries(grouped).sort(([a], [b]) => {
+              const order = { 'Basic': 1, 'Intermediate': 2, 'Graphics': 3 }
+              return (order[a] || 99) - (order[b] || 99)
+            }).map(([category, items]) => (
+              <details 
+                key={category} 
+                className="library-category"
+                open={expanded.has(category)}
+                onToggle={(e) => handleToggle(category, e.currentTarget.open)}
+              >
+                <summary className="library-category__summary">{category}</summary>
                 <div className="library-modal__items">
                   {items.map(item => (
                     <button
                       key={item.id}
-                      className={`library-modal__item ${loadingId === item.id ? 'loading' : ''}`}
-                      disabled={loadingId === item.id}
+                      className="library-modal__item"
                       onClick={() => selectExample(item.id, onClose)}
                     >
                       <div className="library-modal__item-title">{item.title}</div>
@@ -110,7 +134,7 @@ export default function LibraryPanel({ onClose }) {
                     </button>
                   ))}
                 </div>
-              </div>
+              </details>
             ))}
         </div>
       </div>

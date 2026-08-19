@@ -2,10 +2,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 44px;
+  height: 50px;
   padding: 0 16px;
   background: var(--bg-panel);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 4px 24px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 24px rgba(0, 0, 0, 0.3);
   border: none;
   flex-shrink: 0;
   z-index: 100;

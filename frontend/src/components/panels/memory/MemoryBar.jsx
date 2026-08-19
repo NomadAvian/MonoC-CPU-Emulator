@@ -9,7 +9,6 @@ export default function MemoryBar() {
     <div className="memory-bar">
       <div className="memory-bar__header">
         <span className="memory-bar__label">Changed Memory Cells</span>
-        <span className="memory-bar__count">{deltas.length} Entries</span>
       </div>
 
       {deltas.length === 0 ? (

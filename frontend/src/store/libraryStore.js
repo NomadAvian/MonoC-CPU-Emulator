@@ -1,14 +1,11 @@
 import { create } from 'zustand'
-import { fetchExamples, fetchExampleDetail } from '../api/library'
+import { EXAMPLES_DATA } from '../data/examplesData'
 import { useEditorStore } from './editorStore'
 import { useUIStore } from './uiStore'
 
 const initialState = {
-  examples: [],
-  loading: false,
-  error: null,
+  examples: EXAMPLES_DATA,
   search: '',
-  loadingId: null,
 }
 
 export const useLibraryStore = create((set) => ({
@@ -16,29 +13,14 @@ export const useLibraryStore = create((set) => ({
 
   setSearch: (search) => set({ search }),
 
-  fetchExamples: async () => {
-    set({ loading: true, error: null })
-    try {
-      const data = await fetchExamples()
-      set({ examples: data.examples || [], loading: false })
-    } catch (err) {
-      set({ error: err.message, loading: false })
-    }
-  },
-
-  selectExample: async (id, onSuccess) => {
-    set({ loadingId: id })
-    try {
-      const detail = await fetchExampleDetail(id)
-      if (detail.source) {
-        useEditorStore.getState().setSource(detail.source)
-        if (onSuccess) onSuccess()
-        useUIStore.getState().addToast(`Loaded Example`, 'success')
-      }
-    } catch (err) {
-      useUIStore.getState().addToast(`Error loading example: ${err.message}`, 'error')
-    } finally {
-      set({ loadingId: null })
+  selectExample: (id, onSuccess) => {
+    const example = EXAMPLES_DATA.find(ex => ex.id === id)
+    if (example && example.source) {
+      useEditorStore.getState().setSource(example.source)
+      if (onSuccess) onSuccess()
+      useUIStore.getState().addToast(`Loaded Example`, 'success')
+    } else {
+      useUIStore.getState().addToast(`Error loading example: Not found`, 'error')
     }
   },
 }))

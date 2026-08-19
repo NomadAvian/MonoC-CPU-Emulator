@@ -22,6 +22,7 @@
   flex: 1;
   overflow: hidden;
   min-width: 0;
+  border-right: 1px solid var(--border);
 }
 
 /* Top row: editor + any right-of-editor panels (e.g. the screen).

@@ -2,9 +2,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 3px 8px;
+  padding: 5px 10px;
   border-radius: 4px;
-  margin: 1px 4px;
+  margin: 0px 6px;
   transition: background var(--transition);
 }
 
@@ -20,17 +20,15 @@
 .reg-cell__name {
   display: inline-flex;
   align-items: center;
+  flex: 1;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   font-weight: 700;
   color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.02em;
   cursor: pointer;
   min-width: 52px;
-  border-right: 1px solid var(--border);
-  padding-right: 6px;
-  margin-right: 6px;
 }
 
 .reg-cell__value {
@@ -42,6 +40,8 @@
   cursor: pointer;
   white-space: nowrap;
   transition: color var(--transition);
+  border-left: 1px solid var(--border);
+  padding-left: 12px;
 }
 
 .reg-cell:hover .reg-cell__value {

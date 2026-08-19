@@ -27,7 +27,7 @@
 }
 
 .modal-wrapper h2 {
-  font-size: 1.25rem;
+  font-size: var(--fs-lg);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;

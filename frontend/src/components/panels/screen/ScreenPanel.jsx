@@ -25,8 +25,8 @@ export default function ScreenPanel({ style }) {
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    const w = width || 0
-    const h = height || 0
+    const w = width || 128
+    const h = height || 96
     if (w <= 0 || h <= 0) return
     ctx.clearRect(0, 0, w, h)
     const img = ctx.createImageData(w, h)

@@ -1,11 +1,12 @@
-examples = [
-    ("basic/integer-input-output", 
-     "Basic", 
-     "integer input and output", 
-     "Simple integer input and output with prompt message", 
-     """.data 
-     prompt: .asciiz "Please enter an integer.\n"
-     res: .asciiz "The value you have entered is:\n"
+export const EXAMPLES_DATA = [
+  {
+    id: "basic/integer-input-output",
+    category: "Basic",
+    title: "integer input and output",
+    description: "Simple integer input and output with prompt message",
+    source: `.data 
+     prompt: .asciiz "Please enter an integer.\\n"
+     res: .asciiz "The value you have entered is:\\n"
      
     .text
         main: 
@@ -26,17 +27,17 @@ examples = [
             ecall
             
             li a7,10
-            ecall"""
-),
-
-(   "basic/integer-even/odd",
-    "Basic",
-    "Integer even or odd",
-    "Code for checking whether an input integer is even or odd",
-    """.data 
-     prompt: .asciiz "Please enter an integer.\n"
-     oddm: .asciiz "\nThe given number is odd."
-     evenm: .asciiz "\nThe given number is even."
+            ecall`
+  },
+  {
+    id: "basic/integer-even/odd",
+    category: "Basic",
+    title: "Integer even or odd",
+    description: "Code for checking whether an input integer is even or odd",
+    source: `.data 
+     prompt: .asciiz "Please enter an integer.\\n"
+     oddm: .asciiz "\\nThe given number is odd."
+     evenm: .asciiz "\\nThe given number is even."
 
 
     .text
@@ -71,22 +72,25 @@ examples = [
             
             ecall
             li a7,10
-            ecall"""     
-),
+            ecall`
+  },
+  {
+    id: "intermediate/array-initialization-traversal",
+    category: "Intermediate",
+    title: "Array initialization and traversal",
+    description: "Array initialization and traversal loop",
+    source: `# An array save[4] = {2,2,2,3} is initialized and the values are traveled and printed in the terminal.
+# While check with array value performed by the below logic:
+# int save[4] = {2,2,2,3};
+# i = 0, k = 2;
+# while (save[i] == k){
+#     i++;
+# }
 
-(   "intermediate/array-initialization-traversal",
-    "Intermediate",
-    "Array initialization and traversal",
-    """An array save[4] = {2,2,2,3} is initialized and the values are traveled and printed in the terminal. While check with array value performed by the below logic:
-    int save[4] = {2,2,2,3};
-    i=0, k = 2;
-    while (save[i] == k){
-    i++;
-    } """,
-    """.data 
+.data 
         save: .word 2,2,2,3
-        msg: .asciiz "The array is: \n"
-        msg2: .asciiz "\nWhile check save[i]=2 begins:\n"
+        msg: .asciiz "The array is: \\n"
+        msg2: .asciiz "\\nWhile check save[i]=2 begins:\\n"
         
     .text
         main:
@@ -139,22 +143,23 @@ examples = [
         
     exit: 
         li a7,10
-        ecall"""   
-),
+        ecall`
+  },
+  {
+    id: "basic/while-loop",
+    category: "Basic",
+    title: "While loop",
+    description: "Simple while loop example",
+    source: `# Problem : 
+# int i = 0;
+# while (i <= 5){
+#     i++;
+# }
 
-(   "basic/while-loop",
-    "Basic",
-    "While loop",
-    """Code for "While loop" with message 
-    Problem : 
-        int i = 0
-        while (i<=5){
-            i++;
-        }""",
-    """.data
+.data
     msg1: .asciiz "While loop begins"
     msg2: .asciiz "While loop ends"
-    nl: .asciiz "\n"
+    nl: .asciiz "\\n"
 
 
         .text
@@ -191,14 +196,14 @@ examples = [
             la a0,msg2
             ecall
             li a7,10
-            ecall """ 
-),
-
-(   "basic/32-bit multiplication",
-    "Basic",
-    "32-bit multiplication",
-    """32 bit multiplication of integer number 4 and 5 using "mul" instruction""",
-    """.data 
+            ecall `
+  },
+  {
+    id: "basic/32-bit multiplication",
+    category: "Basic",
+    title: "32-bit multiplication",
+    description: "32 bit multiplication of integer number 4 and 5 using \"mul\" instruction",
+    source: `.data 
     msg: .asciiz "The product is: "
         
     .text
@@ -223,16 +228,16 @@ examples = [
             
     multiplication: 
                     mul a7,a0,a1
-                    jalr zero, ra, 0"""    
-)
-,
-(   "intermediate/signed-addition-with-overflow",
-    "Intermediate",
-    "Safe signed addition with overflow detection",
-    """Safe signed add: returns result or prints "OVERFLOW""",
-    """.data
-        overflow_msg: .asciiz "OVERFLOW\n"
-        ok_msg:       .asciiz "OK\n"
+                    jalr zero, ra, 0`
+  },
+  {
+    id: "intermediate/signed-addition-with-overflow",
+    category: "Intermediate",
+    title: "Safe signed addition with overflow detection",
+    description: "Safe signed add: returns result or prints \"OVERFLOW\"",
+    source: `.data
+        overflow_msg: .asciiz "OVERFLOW\\n"
+        ok_msg:       .asciiz "OK\\n"
 
 
         .text
@@ -270,28 +275,31 @@ examples = [
 
         done:
             li a7, 10
-            ecall"""  
-) ,
+            ecall`
+  },
+  {
+    id: "basic/sum-of-array",
+    category: "Basic",
+    title: "Sum of Array values",
+    description: "Calculate the sum of an array using a loop",
+    source: `# Question: Conversion of the below C code to assembly
+# 
+# #include <stdio.h>
+# int sumArray(int *arr, int n) {
+#     int sum = 0;
+#     for (int i = 0; i < n; i++) {
+#         sum = sum + arr[i];
+#     }
+#     return sum;
+# }
+# int main() {
+#     int array[5] = {1, 2, 3, 4, 5};
+#     int result = sumArray(array, 5);
+#     printf("The sum is: %d", result);
+#     return 0;
+# }
 
-(   "basic/sum-of-array",
-    "Basic",
-    "Sum of Array values",
-    """Question is the conversion of the below C code to assembly
-    #include <stdio.h>
-    int sumArray(int *arr, int n) {
-    int sum = 0;
-    for (int i = 0; i < n; i++) {
-    sum = sum + arr[i];
-    }
-    return sum;
-    }
-    int main() {
-    int array[5] = {1, 2, 3, 4, 5};
-    int result = sumArray(array, 5);
-    printf("The sum is: %d", result);
-    return 0;
-    }""",
-    """.data 
+.data 
         array: .word 1,2,3,4,5
         msg: .asciiz "The sum is: "
         
@@ -336,7 +344,94 @@ examples = [
         exit:
             
             li a7,10     # code for exiting the program 
-            ecall      # ecall to perform the operation""" 
-)
+            ecall      # ecall to perform the operation`
+  },
+  {
+    id: "basic/add-two-numbers",
+    category: "Basic",
+    title: "Add Two Numbers",
+    description: "Simple addition of two immediate values into registers",
+    source: `# Program: Simple Addition Example
+# Goal: Calculate 10 + 25
 
-]
+.global _start
+_start:
+    li a0, 10       # Load immediate value 10 into register a0
+    li a1, 25       # Load immediate value 25 into register a1
+    add t0, a0, a1  # Add values in a0 and a1 into t0`
+  },
+  {
+    id: "graphics/monoc-screen",
+    category: "Graphics",
+    title: "Print 'MonoC' to Screen",
+    description: "Draws the word 'MonoC' on the emulator screen",
+    source: `# MonoC screen
+
+.global _start
+
+.data
+font_data:
+    # 'M' (5x7), 1 bit per pixel, bit c = column c (LSB = col 0)
+    .byte 0x11, 0x1B, 0x15, 0x11, 0x11, 0x11, 0x11
+    # 'o'
+    .byte 0x0E, 0x11, 0x11, 0x11, 0x11, 0x11, 0x0E
+    # 'n'
+    .byte 0x11, 0x13, 0x15, 0x19, 0x11, 0x11, 0x11
+    # 'o'
+    .byte 0x0E, 0x11, 0x11, 0x11, 0x11, 0x11, 0x0E
+    # 'C'
+    .byte 0x1E, 0x01, 0x01, 0x01, 0x01, 0x01, 0x1E
+
+.text
+_start:
+    li   s0, 0x07FFD000     # framebuffer base address
+    li   t1, 4366           # y=34 -> 34*128=4352, x=14 -> +14
+    add  s0, s0, t1         # s0 = top-left of "MonoC"
+
+    la   t0, font_data      # t0 = pointer into the font table
+
+    li   s1, 0              # letter index 0..4
+letter_loop:
+    li   s2, 0              # row index 0..6
+row_loop:
+    lbu  s3, 0(t0)          # load this row's 5-bit pixel pattern
+    li   s5, 0              # vertical scale repeat 0..3
+yloop:
+    # rowbase = s0 + (row*4 + yrep) * 128
+    slli t1, s2, 2          # row*4
+    add  t1, t1, s5         # row*4 + yrep
+    slli t1, t1, 7          # *128
+    add  t1, t1, s0         # rowbase
+
+    li   s4, 0              # column index 0..4
+cloop:
+    srl  t2, s3, s4         # shift bit into LSB
+    andi t2, t2, 1
+    beq  t2, zero, skip
+    li   t3, -1             # 0xFFFFFFFF -> four white pixels
+    slli t4, s4, 2          # col*4
+    add  t4, t1, t4
+    sw   t3, 0(t4)          # write 4 white bytes
+skip:
+    addi s4, s4, 1
+    li   t5, 5
+    blt  s4, t5, cloop
+
+    addi s5, s5, 1
+    li   t5, 4
+    blt  s5, t5, yloop
+
+    addi t0, t0, 1          # advance to the next font byte
+    addi s2, s2, 1
+    li   t5, 7
+    blt  s2, t5, row_loop
+
+    addi s0, s0, 21         # next letter: 5 columns * scale 4
+    addi s1, s1, 1
+    li   t5, 5
+    blt  s1, t5, letter_loop
+
+    li   a7, 10             # exit
+    ecall`
+  }
+];

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './LeftSideBar.css'
-import RegisterGrid from '../panels/cpu/RegisterGrid'
+import RegisterGrid from '../panels/registers/RegisterGrid'
 import MemoryBar from '../panels/memory/MemoryBar'
 import { motion } from 'motion/react'
 

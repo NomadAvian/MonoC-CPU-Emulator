@@ -26,9 +26,9 @@
 
 .control-bar__status {
   color: var(--text-muted);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-sm);
   font-weight: 600;
-  min-width: 54px;
+  min-width: 65px;
 }
 
 .control-bar__status--running {
@@ -118,7 +118,7 @@ button.ui-button.control-bar__btn:hover:not(:disabled) {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: var(--fs-xs);
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-muted);
 }
@@ -126,9 +126,10 @@ button.ui-button.control-bar__btn:hover:not(:disabled) {
 /* Custom slider */
 .toolbar__slider {
   -webkit-appearance: none;
-  width: 100px;
-  height: 3px;
+  width: 120px;
+  height: 4px;
   border-radius: 99px;
+  cursor: pointer;
   background: linear-gradient(to right,
       var(--accent) 0%,
       var(--accent) var(--fill, 50%),
@@ -138,8 +139,8 @@ button.ui-button.control-bar__btn:hover:not(:disabled) {
 
 .toolbar__slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: var(--text-primary);
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);

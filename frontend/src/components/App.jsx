@@ -16,7 +16,7 @@ import { useSettingsStore } from '../store/settingsStore'
 import { useScreenStore } from '../store/screenStore'
 
 // Size constraints
-const LEFT_MIN = 225; const LEFT_MAX = 480
+const LEFT_MIN = 260; const LEFT_MAX = 480
 const RIGHT_MIN = 280; const RIGHT_MAX = 800
 const BOTTOM_MIN = 80; const BOTTOM_MAX = 520
 const DOCS_MIN = 280; const DOCS_MAX = 800 // left panel too small for it

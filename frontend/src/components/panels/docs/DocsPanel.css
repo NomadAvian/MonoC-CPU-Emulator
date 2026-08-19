@@ -22,20 +22,20 @@
 
 .docs-panel__title {
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: var(--fs-md);
   color: var(--text-primary);
 }
 
 .docs-panel__search {
   flex: 1;
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   padding: 6px 12px;
   min-width: 0;
 }
 
 .docs-panel__empty {
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   text-align: center;
   margin-top: 24px;
 }
@@ -49,7 +49,7 @@
 .docs-panel__action-btn {
   width: 20px;
   height: 16px;
-  font-size: 0.6rem;
+  font-size: var(--fs-xs);
   border-radius: 2px;
 }
 
@@ -69,7 +69,7 @@
 
 .docs-category summary {
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   color: var(--text-primary);
   cursor: pointer;
   padding: 4px 0;
@@ -85,7 +85,7 @@
 
 .docs-category summary::after {
   content: '▼';
-  font-size: 0.7rem;
+  font-size: var(--fs-xs);
   margin-left: 8px;
   color: var(--text-secondary);
   transition: transform 0.2s;
@@ -107,13 +107,13 @@
 .docs-item h4 {
   margin: 0 0 4px 0;
   font-family: var(--font-mono);
-  font-size: 0.95rem;
+  font-size: var(--fs-base);
   color: var(--accent);
 }
 
 .docs-item p {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   color: var(--text-secondary);
   line-height: 1.4;
 }
@@ -125,7 +125,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   color: var(--text-primary);
   overflow-x: auto;
   white-space: pre-wrap;

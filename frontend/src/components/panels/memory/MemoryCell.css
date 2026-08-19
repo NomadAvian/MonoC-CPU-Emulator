@@ -12,18 +12,18 @@
 
 .mem-cell__addr {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--fs-sm);
   color: var(--cyan);
   min-width: 68px;
 }
 
 .mem-cell__sep {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: var(--fs-xs);
 }
 
 .mem-cell__value {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--fs-base);
   color: var(--text-primary);
 }

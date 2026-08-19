@@ -10,7 +10,7 @@
 }
 
 .memory-bar__label {
-  font-size: 12px;
+  font-size: var(--fs-sm);
   font-weight: 600;
   font-family: var(--font-sans);
   color: var(--text-muted);
@@ -19,7 +19,7 @@
 }
 
 .memory-bar__count {
-  font-size: 10px;
+  font-size: var(--fs-xs);
   color: var(--text-muted);
   font-family: var(--font-sans);
 }
@@ -31,7 +31,7 @@
   padding: 32px 16px;
   color: var(--text-muted);
   font-family: var(--font-sans);
-  font-size: 14px;
+  font-size: var(--fs-base);
   text-align: center;
 }
 

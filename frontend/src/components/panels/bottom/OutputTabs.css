@@ -2,12 +2,12 @@
   flex: 1;
   overflow-y: auto;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-sm);
 }
 
 .disassembler__empty {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--fs-sm);
   padding: 16px 4px;
   font-family: var(--font-sans);
 }
@@ -18,7 +18,7 @@
 }
 
 .disassembler__table th {
-  font-size: 10px;
+  font-size: var(--fs-xs);
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
