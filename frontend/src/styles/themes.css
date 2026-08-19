@@ -43,6 +43,10 @@
   --btn-active-hover: var(--accent-hover);
   --btn-active-fg: #111318;
 
+  /* Execution / CPU Register Highlight Tokens */
+  --highlight-bg: rgba(250, 179, 135, 0.18);
+  --highlight-border: #fab387;
+
   /* Semantics */
   --green: #a6e3a1;
   --green-dim: rgba(166, 227, 161, 0.12);
@@ -106,6 +110,10 @@
   --btn-active-bg: #C6613F;
   --btn-active-hover: #d86d49;
   --btn-active-fg: #ffffff;
+
+  /* Execution / CPU Register Highlight Tokens */
+  --highlight-bg: rgba(254, 128, 25, 0.20);
+  --highlight-border: #fe8019;
 
   /* Semantics */
   --green: #b8bb26;

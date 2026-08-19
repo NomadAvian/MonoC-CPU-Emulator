@@ -8,7 +8,7 @@ import { indentUnit } from '@codemirror/language'
 import { riscv } from './riscvLang'
 import { useEditorStore } from '../../store/editorStore'
 import { useCPUStore } from '../../store/cpuStore'
-import { useUIStore } from '../../store/uiStore'
+import { useSettingsStore } from '../../store/settingsStore'
 import './CodeEditor.css'
 
 
@@ -73,8 +73,9 @@ export default function CodeEditor() {
 
   // ── Store selectors ──
   const setSource = useEditorStore(s => s.setSource)
-  const fontStyle = useUIStore(s => s.fontStyle)
-  const tabSize   = useUIStore(s => s.tabSize)
+  const fontStyle = useSettingsStore(s => s.fontStyle)
+  const editorFontSize = useSettingsStore(s => s.editorFontSize)
+  const tabSize   = useSettingsStore(s => s.tabSize)
 
   // ── INIT: create the CodeMirror editor instance ──
   useEffect(() => {
@@ -203,7 +204,7 @@ export default function CodeEditor() {
       className="code-editor"
       id="code-editor-root"
       ref={containerRef}
-      style={{ '--font-mono': `'${fontStyle}', monospace` }}
+      style={{ '--font-mono': `'${fontStyle}', monospace`, '--editor-font-size': `${editorFontSize}px` }}
     />
   )
 }

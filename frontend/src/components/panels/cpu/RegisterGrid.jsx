@@ -2,7 +2,7 @@ import './RegisterGrid.css'
 import RegisterCell from './RegisterCell'
 import { useEffect } from 'react'
 import { useCPUStore } from '../../../store/cpuStore'
-import { useUIStore } from '../../../store/uiStore'
+import { useSettingsStore } from '../../../store/settingsStore'
 import { formatValue } from '../../../../utils/format'
 
 const ABI_REGISTERS = [
@@ -16,7 +16,7 @@ export default function RegisterGrid() {
   const registers = useCPUStore(s => s.registers)
   const programCounter = useCPUStore(s => s.programCounter)
   const changedRegisters = useCPUStore(s => s.changedRegisters)
-  const format = useUIStore(s => s.format)
+  const format = useSettingsStore(s => s.format)
   const fetchRegisters = useCPUStore(s => s.fetchRegisters)
 
   useEffect(() => {

@@ -3,6 +3,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from fastapi import HTTPException
 
 from config import CORS_ORIGINS
 from chat.ollama import chat as ollama_chat
@@ -38,9 +39,9 @@ async def chat_endpoint(request: ChatRequest):
             print("[api] responded via Gemini (fallback)")
         except Exception as gemini_e:
             msg = str(gemini_e)
-            if "429" in msg or "quota" in msg.lower() or "exhausted" in msg.lower():
-                msg = "API usage limit reached. Please wait a bit or check your API quota."
-            from fastapi import HTTPException
+            lw_msg = msg.lower()
+            if "429" in msg or "quota" in lw_msg or "exhausted" in lw_msg:
+                msg = "API usage limit reached. Please try again later."
             raise HTTPException(status_code=500, detail=f"AI unavailable: {msg}")
     return {"response": result, "tools_used": tools_used}
 

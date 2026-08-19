@@ -1,32 +1,36 @@
 import { useState } from 'react'
 import './SettingsModal.css'
 import { useUIStore } from '../../../store/uiStore'
+import { useSettingsStore } from '../../../store/settingsStore'
 import ModalWrapper from '../../ui/ModalWrapper'
 
 export const FORMAT_OPTIONS = ['Hex', 'Unsigned']
-export const THEME_OPTIONS  = ['Catppuccin', 'Gruvbox']
-export const FONT_OPTIONS   = ['Monospace', 'Courier New']
-export const TAB_OPTIONS    = [2, 4, 8]
+export const THEME_OPTIONS = ['Catppuccin', 'Gruvbox']
+export const FONT_OPTIONS = ['Monospace', 'Courier New']
+export const TAB_OPTIONS = [2, 4, 8]
 
 export default function SettingsModal({ onClose }) {
   // ── Store Selectors & Actions ──
-  const theme        = useUIStore(s => s.theme)
-  const format       = useUIStore(s => s.format)
-  const fontStyle    = useUIStore(s => s.fontStyle)
-  const tabSize      = useUIStore(s => s.tabSize)
-  const addToast     = useUIStore(s => s.addToast)
-  
-  const setTheme     = useUIStore(s => s.setTheme)
-  const setFormat    = useUIStore(s => s.setFormat)
-  const setFontStyle = useUIStore(s => s.setFontStyle)
-  const setTabSize   = useUIStore(s => s.setTabSize)
+  const theme = useSettingsStore(s => s.theme)
+  const format = useSettingsStore(s => s.format)
+  const fontStyle = useSettingsStore(s => s.fontStyle)
+  const editorFontSize = useSettingsStore(s => s.editorFontSize)
+  const tabSize = useSettingsStore(s => s.tabSize)
+  const addToast = useUIStore(s => s.addToast)
+
+  const setTheme = useSettingsStore(s => s.setTheme)
+  const setFormat = useSettingsStore(s => s.setFormat)
+  const setFontStyle = useSettingsStore(s => s.setFontStyle)
+  const setEditorFontSize = useSettingsStore(s => s.setEditorFontSize)
+  const setTabSize = useSettingsStore(s => s.setTabSize)
 
   // ── Local State ──
-  const [draftTheme, setDraftTheme]   = useState(theme === 'gruvbox' ? 'Gruvbox' : 'Catppuccin')
+  const [draftTheme, setDraftTheme] = useState(theme === 'gruvbox' ? 'Gruvbox' : 'Catppuccin')
   const [draftFormat, setDraftFormat] = useState(format)
-  const [draftFont, setDraftFont]     = useState(fontStyle)
-  const [draftTab, setDraftTab]       = useState(tabSize)
-  const [saved, setSaved]             = useState(false)
+  const [draftFont, setDraftFont] = useState(fontStyle)
+  const [draftFontSize, setDraftFontSize] = useState(editorFontSize)
+  const [draftTab, setDraftTab] = useState(tabSize)
+  const [saved, setSaved] = useState(false)
 
   // ── Handlers ──
 
@@ -42,6 +46,14 @@ export default function SettingsModal({ onClose }) {
     setDraftFont(opt)
   }
 
+  const handleFontSizeChange = (e) => {
+    let val = parseInt(e.target.value, 10)
+    if (isNaN(val)) val = 16
+    if (val < 16) val = 16
+    if (val > 32) val = 32
+    setDraftFontSize(val)
+  }
+
   const handleTabChange = (opt) => {
     setDraftTab(opt)
   }
@@ -50,6 +62,7 @@ export default function SettingsModal({ onClose }) {
     setFormat(draftFormat)
     setTheme(draftTheme.toLowerCase())
     setFontStyle(draftFont)
+    setEditorFontSize(draftFontSize)
     setTabSize(draftTab)
 
     setSaved(true)
@@ -110,6 +123,22 @@ export default function SettingsModal({ onClose }) {
                 {opt}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Font Size */}
+        <div className="settings-modal__field">
+          <label className="settings-modal__label">Font Size (px)</label>
+          <div className="settings-modal__options">
+            <input
+              type="number"
+              className="ui-input"
+              value={draftFontSize}
+              onChange={handleFontSizeChange}
+              min="16"
+              max="32"
+              style={{ width: '80px' }}
+            />
           </div>
         </div>
 

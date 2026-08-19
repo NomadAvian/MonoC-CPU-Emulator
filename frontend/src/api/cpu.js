@@ -1,4 +1,4 @@
-const CROW_BASE = '' // same origin; /cpu and /ai are proxied to the crow server by vite
+const CROW_BASE = 'http://localhost:6969'
 
 export async function fetchRegisters() {
   const res = await fetch(`${CROW_BASE}/cpu/registers`)

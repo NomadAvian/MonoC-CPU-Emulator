@@ -1,9 +1,10 @@
 import './MainLayout.css'
 import { useEffect } from 'react'
-import { useUIStore } from '../../store/uiStore'
+import TopBar from './TopBar'
+import { useSettingsStore } from '../../store/settingsStore'
 
 export default function MainLayout({ children }) {
-  const theme = useUIStore(s => s.theme)
+  const theme = useSettingsStore(s => s.theme)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme

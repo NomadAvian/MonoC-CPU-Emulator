@@ -1,60 +1,35 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
 const initialState = {
-  theme: 'catppuccin',
-  format: 'Unsigned',
   isChatOpen: false,
   isDocsOpen: false,
-  fontStyle: 'Monospace',
-  tabSize: 4,
-  leftWidth: 210,
+  leftWidth: 235,
   docsWidth: 420,
   rightWidth: 420,
   bottomHeight: 180,
   toasts: [],
 }
 
-export const useUIStore = create(
-  persist(
-    (set) => ({
-      ...initialState,
+export const useUIStore = create((set) => ({
+  ...initialState,
 
-      setTheme: (theme) => {
-        document.documentElement.setAttribute('data-theme', theme)
-        set({ theme })
-      },
-      setFormat: (format) => set({ format }),
-      setFontStyle: (fontStyle) => set({ fontStyle }),
-      setTabSize: (tabSize) => set({ tabSize }),
+  setLeftWidth: (leftWidth) => set({ leftWidth }),
+  setDocsWidth: (docsWidth) => set({ docsWidth }),
+  setRightWidth: (rightWidth) => set({ rightWidth }),
+  setBottomHeight: (bottomHeight) => set({ bottomHeight }),
 
-      setLeftWidth: (leftWidth) => set({ leftWidth }),
-      setDocsWidth: (docsWidth) => set({ docsWidth }),
-      setRightWidth: (rightWidth) => set({ rightWidth }),
-      setBottomHeight: (bottomHeight) => set({ bottomHeight }),
+  toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
+  toggleDocs: () => set((state) => ({ isDocsOpen: !state.isDocsOpen })),
 
-      toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
-      toggleDocs: () => set((state) => ({ isDocsOpen: !state.isDocsOpen })),
+  addToast: (message, type = 'info', duration = 3000) => {
+    const id = Date.now().toString() + Math.random().toString()
+    set((state) => ({ toasts: [...state.toasts, { id, message, type }] }))
+    setTimeout(() => {
+      set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) }))
+    }, duration)
+  },
 
-      addToast: (message, type = 'info', duration = 3000) => {
-        const id = Date.now().toString() + Math.random().toString()
-        set((state) => ({ toasts: [...state.toasts, { id, message, type }] }))
-        setTimeout(() => {
-          set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) }))
-        }, duration)
-      },
+  removeToast: (id) => set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) })),
 
-      removeToast: (id) => set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) })),
-
-      resetUI: () => set(initialState),
-    }),
-    {
-      name: 'monoc-ui-store',
-      partialize: (state) => Object.fromEntries(
-        Object.entries(state).filter(([key]) => 
-          !['toasts', 'leftWidth', 'docsWidth', 'rightWidth', 'bottomHeight'].includes(key)
-        )
-      ),
-    }
-  )
-)
+  resetUI: () => set(initialState),
+}))

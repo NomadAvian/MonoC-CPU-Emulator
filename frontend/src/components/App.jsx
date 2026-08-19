@@ -12,10 +12,11 @@ import BottomPanel from './layout/BottomPanel'
 import ResizeDivider from './ui/ResizeDivider'
 import ToastContainer from './ui/ToastContainer'
 import { useUIStore } from '../store/uiStore'
+import { useSettingsStore } from '../store/settingsStore'
 import { useScreenStore } from '../store/screenStore'
 
 // Size constraints
-const LEFT_MIN = 200; const LEFT_MAX = 480
+const LEFT_MIN = 225; const LEFT_MAX = 480
 const RIGHT_MIN = 280; const RIGHT_MAX = 800
 const BOTTOM_MIN = 80; const BOTTOM_MAX = 520
 const DOCS_MIN = 280; const DOCS_MAX = 800 // left panel too small for it
@@ -30,7 +31,7 @@ function App() {
   // ── Store Selectors ──
   const isChatOpen = useUIStore(s => s.isChatOpen)
   const isDocsOpen = useUIStore(s => s.isDocsOpen)
-  const theme = useUIStore(s => s.theme)
+  const theme = useSettingsStore(s => s.theme)
   const isScreenOpen = useScreenStore(s => s.isScreenOpen)
 
   // ── Effects ──

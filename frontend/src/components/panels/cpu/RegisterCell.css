@@ -13,8 +13,8 @@
 }
 
 .reg-cell--highlighted {
-  background: var(--yellow-dim);
-  border-left: 3px solid var(--yellow);
+  background: var(--highlight-bg);
+  border-left: 3px solid var(--highlight-border);
 }
 
 .reg-cell__name {
@@ -27,10 +27,10 @@
   text-transform: uppercase;
   letter-spacing: 0.02em;
   cursor: pointer;
-  min-width: 56px;
+  min-width: 52px;
   border-right: 1px solid var(--border);
-  padding-right: 8px;
-  margin-right: 8px;
+  padding-right: 6px;
+  margin-right: 6px;
 }
 
 .reg-cell__value {
@@ -40,6 +40,7 @@
   color: var(--text-secondary);
   letter-spacing: 0.04em;
   cursor: pointer;
+  white-space: nowrap;
   transition: color var(--transition);
 }
 
@@ -48,6 +49,6 @@
 }
 
 .reg-cell--highlighted .reg-cell__value {
-  color: var(--yellow);
+  color: var(--highlight-border);
   font-weight: 600;
 }
