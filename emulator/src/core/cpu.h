@@ -41,15 +41,16 @@ enum class Opcode {
 
 namespace cpu {
 
-enum class Type {
-    kR,
-    kI,
-    kS,
-    kU,
-    kJ,
-    kB,
-    kUnknown
 
+enum class ecall : Word {
+    kPrintint    = 1,
+    kPrintstring = 4,
+    kPrintchar   = 11,
+    kReadint     = 5,
+    kReadstring  = 8,
+    kReadchar    = 12,
+    kExit        = 10,
+    kExit2       = 93
 };
 
 struct Reg {
@@ -62,24 +63,65 @@ struct DecodedInstruction {
     Word rs2;
     Word rd;
     int32_t imm;
-    Type type;
 };
 
 class CPU {
 public:
     CPU(std::string filename = "") : ram_(), rom_() {
-        // initialize registers
-        for (int i = 0; i < 32; i++) {
-            x[i].value = 0;
-        }
-        // initialize program counter
-        pc_.value = 0;
+        Reset();
         LoadROM(filename);
     }
 
-    void LoadROM(const std::string& filename);
+    void LoadROM(const std::string& filename);	
 
-	Word Fetch() const {
+    Word ReadReg (size_t index) const;
+    Word pc() const;
+
+    Word ReadMemoryWord(Word address) const;
+    Half ReadMemoryHalf(Word address) const;
+    Byte ReadMemoryByte(Word address) const;
+
+    void WriteMemoryByte(Word address, Byte value);
+
+    // accessors for frontend
+
+    void Reset();
+    void Step();
+
+    bool IsHalted() const { return halted_; }
+
+    // program I/O: print syscalls append to output_, read syscalls consume input_
+    // const std::string& Output() const { return output_; }
+    // void ClearOutput() { output_.clear(); }
+    // void WriteInput(const std::string& data) { input_ += data; }
+    // void ClearInput() { input_.clear(); input_pos_ = 0; }
+
+private:
+    Reg        x[32];
+    Reg        pc_;
+    Memory     ram_;
+    Memory     rom_;
+    alu::Alu    alu_;
+    bool        halted_;
+    // std::string output_;
+    // std::string input_;
+    // size_t      input_pos_ = 0;
+
+    int32_t SignExtend(uint32_t value, uint32_t bits) const;
+
+    // fixed bit-field extractors
+    Word ExtractOpcode(Word instruction);
+    Word ExtractRd    (Word instruction);
+    Word ExtractFunct3(Word instruction);
+    Word ExtractFunct7(Word instruction);
+    Word ExtractRs1   (Word instruction);
+    Word ExtractRs2   (Word instruction);
+    alu::AluOp MapToAluOp(isa::Opcode opcode) const;
+    alu::AluOutput EffectiveAddress(Word base, int32_t offset) const;
+
+    void WriteReg(size_t index, Word value);
+
+    Word Fetch() const {
         return rom_.ReadWord(pc_.value);
     }
 
@@ -91,7 +133,8 @@ public:
     DecodedInstruction DecodeJType(Word instruction);
     DecodedInstruction DecodeBType(Word instruction);
 
-    bool Execute(DecodedInstruction instr);
+    // returns whether pc_ has been updated
+    bool Execute     (DecodedInstruction instr);
     bool ExecuteRType(DecodedInstruction instr);
     bool ExecuteIType(DecodedInstruction instr);
     bool ExecuteSType(DecodedInstruction instr);
@@ -99,34 +142,7 @@ public:
     bool ExecuteJType(DecodedInstruction instr);
     bool ExecuteBType(DecodedInstruction instr);
 
-    void WriteReg(size_t index, Word value);
-    Word ReadReg (size_t index) const;
-
-    Word pc() const;
-
-    Word ReadMemoryWord(Word address) const;
-    Half ReadMemoryHalf(Word address) const;
-    Byte ReadMemoryByte(Word address) const;
-
-    void set_pc_for_testing(Word value);
-    void write_memory_word_for_testing(Word addr, Word value) {
-        ram_.WriteWord(addr, value);
-    }
-
-private:
-    Reg        x[32];
-    Reg        pc_;
-    Memory     ram_;
-    Memory     rom_;
-    alu::Alu   alu_;
-
-    int32_t SignExtend(uint32_t value, uint32_t bits) const;
-
-    Word ExtractRs1(Word instruction);
-    Word ExtractRs2(Word instruction);
-    alu::AluOp MapToAluOp(isa::Opcode opcode) const;
-    alu::AluOutput EffectiveAddress(Word base, int32_t offset) const;
-
+    void Ecall();
 };
 
 } // namespace cpu
