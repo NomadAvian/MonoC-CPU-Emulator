@@ -8,7 +8,7 @@ const initialState = {
   isDocsOpen: false,
   fontStyle: 'Monospace',
   tabSize: 4,
-  leftWidth: 180,
+  leftWidth: 210,
   docsWidth: 420,
   rightWidth: 420,
   bottomHeight: 180,

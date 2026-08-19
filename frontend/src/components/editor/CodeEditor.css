@@ -50,12 +50,12 @@
 
 .cm-editor .cm-cursor,
 .cm-editor .cm-dropCursor {
-  border-left-color: #7DCFFF !important;
+  border-left-color: var(--cyan) !important;
 }
 
 .cm-executing-line {
-  background-color: rgba(250, 179, 135, 0.15) !important;
-  border-left: 3px solid #FAB387 !important;
+  background-color: var(--yellow-dim) !important;
+  border-left: 3px solid var(--yellow) !important;
   padding-left: 0 !important;
 }
 

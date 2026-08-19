@@ -20,7 +20,7 @@
   width: 350px;
   font-family: var(--font-sans);
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
   animation: modal-in 180ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -68,12 +68,12 @@
 
 .settings-modal__options {
   display: flex;
-  gap: 4px;
+  gap: 6px;
 }
 
 .settings-modal__opt-btn {
   flex: 1;
-  padding: 5px 8px;
+  padding: 8px 12px;
   font-size: var(--fs-sm);
 }
 
@@ -81,10 +81,18 @@
   background: var(--bg-hover);
 }
 
+/* Active option button styling */
 .settings-modal__opt-btn.active {
-  background: var(--accent-dim);
-  border-color: var(--accent-border);
-  color: var(--accent);
+  background: var(--btn-active-bg);
+  border-color: var(--btn-active-bg);
+  color: var(--btn-active-fg);
+  font-weight: 600;
+}
+
+.settings-modal__opt-btn.active:hover {
+  background: var(--btn-active-hover);
+  border-color: var(--btn-active-hover);
+  color: var(--btn-active-fg);
 }
 
 .settings-modal__divider {
@@ -95,7 +103,7 @@
 
 .settings-modal__action-btn {
   width: 100%;
-  padding: 8px 12px;
+  padding: 10px 14px;
   text-align: left;
   justify-content: flex-start;
 }
@@ -111,17 +119,26 @@
 }
 
 /* Save button */
-.settings-modal__save-btn {
+button.settings-modal__save-btn {
   width: 100%;
-  padding: 9px 12px;
-  font-size: 13px;
+  padding: 11px 16px;
+  font-size: 14px;
   font-weight: 600;
   text-align: center;
+  background: var(--btn-active-bg) !important;
+  border-color: var(--btn-active-bg) !important;
+  color: var(--btn-active-fg) !important;
 }
 
-.settings-modal__save-btn.saved {
-  background: var(--green-dim);
-  border-color: var(--green);
-  color: var(--green);
+button.settings-modal__save-btn:hover:not(:disabled) {
+  background: var(--btn-active-hover) !important;
+  border-color: var(--btn-active-hover) !important;
+  color: var(--btn-active-fg) !important;
+}
+
+button.settings-modal__save-btn.saved {
+  background: var(--green) !important;
+  border-color: var(--green) !important;
+  color: var(--bg-base) !important;
   pointer-events: none;
 }

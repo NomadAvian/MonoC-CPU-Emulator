@@ -1,6 +1,6 @@
 import '../App.css'
 import { useCallback, useEffect } from 'react'
-import { AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
 import MainLayout from './layout/MainLayout'
 import TopBar from './layout/TopBar'
 import LeftSideBar from './layout/LeftSideBar'
@@ -15,7 +15,7 @@ import { useUIStore } from '../store/uiStore'
 import { useScreenStore } from '../store/screenStore'
 
 // Size constraints
-const LEFT_MIN = 160; const LEFT_MAX = 480
+const LEFT_MIN = 200; const LEFT_MAX = 480
 const RIGHT_MIN = 280; const RIGHT_MAX = 800
 const BOTTOM_MIN = 80; const BOTTOM_MAX = 520
 const DOCS_MIN = 280; const DOCS_MAX = 800 // left panel too small for it
@@ -56,14 +56,19 @@ function App() {
       <TopBar />
 
       <div className="workspace">
-        {/* Left sidebar */}
-        <AnimatePresence mode="popLayout">
+        {/* Left panel shell */}
+        <motion.aside
+          className="panel left-panel-shell"
+          animate={{ width: isDocsOpen ? docsWidth : leftWidth }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          style={{ overflow: 'hidden', flexShrink: 0, height: '100%', display: 'flex' }}
+        >
           {isDocsOpen ? (
-            <DocsPanel key="docs" style={{ width: docsWidth }} />
+            <DocsPanel style={{ width: docsWidth }} />
           ) : (
-            <LeftSideBar key="left-sidebar" style={{ width: leftWidth }} />
+            <LeftSideBar style={{ width: leftWidth }} />
           )}
-        </AnimatePresence>
+        </motion.aside>
 
         <ResizeDivider
           direction="horizontal"

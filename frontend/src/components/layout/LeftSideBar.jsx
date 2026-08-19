@@ -16,14 +16,7 @@ export default function LeftSideBar({ style }) {
   }
 
   return (
-    <motion.aside
-      className="left-sidebar"
-      initial={{ width: 0, opacity: 0 }}
-      animate={{ width: style.width, opacity: 1 }}
-      exit={{ width: 0, opacity: 0 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
-      style={{ ...style, alignItems: 'flex-end' }}
-    >
+    <div className="left-sidebar-container" style={{ width: style.width, display: 'flex', flexShrink: 0, height: '100%' }}>
       <div className="panel-content-wrapper" style={{ width: style.width }}>
         {/* Tab bar */}
         <div className="tab-bar">
@@ -45,6 +38,6 @@ export default function LeftSideBar({ style }) {
           {activeTab === 'Mem' && <MemoryBar />}
         </div>
       </div>
-    </motion.aside>
+    </div>
   )
 }

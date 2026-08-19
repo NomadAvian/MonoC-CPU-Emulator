@@ -1,53 +1,6 @@
+@import './styles/themes.css';
+
 :root {
-  color-scheme: dark;
-  /* Ambient base with subtle mesh gradient applied on body */
-  --bg-base: #111318;
-  
-  /* Glassmorphism panels */
-  --bg-panel: rgba(29, 33, 42, 0.65);
-  --bg-surface: rgba(29, 33, 42, 0.85);
-  --bg-elevated: rgba(37, 42, 53, 0.9);
-  --bg-hover: rgba(46, 51, 65, 0.8);
-  
-  --active-line: rgba(255, 255, 255, 0.06);
-  --selection: rgba(180, 180, 180, 0.20);
-
-  /* Clean, subtle borders */
-  --border: rgba(255, 255, 255, 0.08);
-  --border-bright: rgba(255, 255, 255, 0.15);
-
-  /* Depth */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.2);
-  --shadow-glow: 0 0 12px var(--accent-glow);
-
-  /* text */
-  --text-primary: #dbdbdb;
-  --text-secondary: #a6adc8;
-  --text-muted: #6c7086;
-
-  /* accent */
-  --accent: #c6a0f6;
-  /*Mauve*/
-  --accent-hover: #dcbaf8;
-  --accent-dim: rgba(198, 160, 246, 0.12);
-  --accent-border: rgba(198, 160, 246, 0.35);
-  --accent-glow: rgba(198, 160, 246, 0.08);
-
-  --accent2: #3b5364;
-  /* secondary accent     */
-
-  /* ── Semantic ─────────────────────────────────────────────────── */
-  --green: #a6e3a1;
-  --green-dim: rgba(166, 227, 161, 0.12);
-  --red: #f38ba8;
-  --red-dim: rgba(243, 139, 168, 0.12);
-  --yellow: #f9e2af;
-  --yellow-dim: rgba(249, 226, 175, 0.12);
-  --cyan: #89dceb;
-  --cyan-dim: rgba(137, 220, 235, 0.12);
-
   /* Typography */
   --font-sans: 'Space Grotesk', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
@@ -64,9 +17,9 @@
   --lh-base: 1.5;
   --lh-loose: 1.75;
 
-  --radius-sm: 6px 3px 6px 3px;
-  --radius-md: 12px 4px 12px 4px;
-  --radius-lg: 16px 6px 16px 6px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -74,45 +27,6 @@
   --control-height: 36px;
 
   --transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* gruvbox theme */
-[data-theme="gruvbox"] {
-  --bg-base: #1d2021;
-  
-  /* Glassmorphism panels based on Gruvbox */
-  --bg-panel: rgba(40, 40, 40, 0.65);
-  --bg-surface: rgba(60, 56, 54, 0.85);
-  --bg-elevated: rgba(80, 73, 69, 0.9);
-  --bg-hover: rgba(102, 92, 84, 0.8);
-
-  --active-line: rgba(255, 255, 255, 0.06);
-  --selection: rgba(213, 196, 161, 0.20);
-
-  /* Warm, subtle borders for Gruvbox */
-  --border: rgba(213, 196, 161, 0.1);
-  --border-bright: rgba(213, 196, 161, 0.25);
-
-  --text-primary: #ebdbb2;
-  --text-secondary: #bdae93;
-  --text-muted: #928374;
-
-  --accent: #d65d0e; /* orange */
-  --accent-hover: #fe8019;
-  --accent-dim: rgba(214, 93, 14, 0.12);
-  --accent-border: rgba(214, 93, 14, 0.35);
-  --accent-glow: rgba(214, 93, 14, 0.08);
-
-  --accent2: #458588;
-
-  --green: #98971a;
-  --green-dim: rgba(152, 151, 26, 0.12);
-  --red: #cc241d;
-  --red-dim: rgba(204, 36, 29, 0.12);
-  --yellow: #d79921;
-  --yellow-dim: rgba(215, 153, 33, 0.12);
-  --cyan: #689d6a; /* aqua */
-  --cyan-dim: rgba(104, 157, 106, 0.12);
 }
 
 /* Custom CSS Reset */
@@ -303,7 +217,8 @@ button:focus-visible {
   align-items: center;
   justify-content: center;
   min-height: var(--control-height);
-  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border: 2px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--bg-elevated);
   color: var(--text-secondary);
@@ -350,7 +265,7 @@ button:focus-visible {
    /* UI Input */
 .ui-input {
   width: 100%;
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--bg-elevated);
   color: var(--text-primary);

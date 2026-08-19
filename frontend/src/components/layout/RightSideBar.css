@@ -3,6 +3,7 @@
   flex-direction: column;
   overflow: hidden;
   border-left: 1px solid var(--border);
+  border-radius: 12px 0 0 12px;
 }
 
 .right-sidebar__header {

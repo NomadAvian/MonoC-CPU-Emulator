@@ -17,11 +17,11 @@ async function maybeRefreshScreen(force = false) {
 }
 
 export const SPEEDS = [
-  { label: 'Trace',  steps: 1,    delay: 1000 }, 
-  { label: 'Slow',   steps: 1,    delay: 100  }, 
-  { label: 'Normal', steps: 1,    delay: 50   },
-  { label: 'Fast',   steps: 128,  delay: 0    },
-  { label: 'Full',   steps: 1024, delay: 0    }, 
+  { label: 'Trace', steps: 1, delay: 1000 },
+  { label: 'Slow', steps: 1, delay: 100 },
+  { label: 'Normal', steps: 1, delay: 50 },
+  { label: 'Fast', steps: 128, delay: 0 },
+  { label: 'Full', steps: 1024, delay: 0 },
 ]
 
 const initialState = {
@@ -66,7 +66,7 @@ export const useCPUStore = create((set, get) => ({
       const pc = data.pc ?? 0
       if (pc !== get().programCounter) changed.add('pc')
       const romSize = get().romSize
-      
+
       // pc is a byte address; romSize is instruction count.
       // past the end = program ran off the end of ROM
       const halted = romSize > 0 && pc >= romSize * 4
@@ -142,22 +142,22 @@ export const useCPUStore = create((set, get) => ({
 
     const tick = async () => {
       if (!get().running) return
-      
+
       const { steps, delay } = SPEEDS[get().speedIndex]
       const ok = await get().step(steps)
-      
+
       if (!ok) {
         get().stopRun()
         return
       }
-      
+
       if (delay > 0) {
         setTimeout(tick, delay)
       } else {
         requestAnimationFrame(tick)
       }
     }
-    
+
     requestAnimationFrame(tick)
   },
 

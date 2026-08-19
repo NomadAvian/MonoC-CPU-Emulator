@@ -2,7 +2,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2px 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin: 1px 4px;
   transition: background var(--transition);
 }
 
@@ -11,30 +13,41 @@
 }
 
 .reg-cell--highlighted {
-  background: rgba(250, 179, 135, 0.15);
-  border-left: 2px solid #FAB387;
+  background: var(--yellow-dim);
+  border-left: 3px solid var(--yellow);
 }
 
 .reg-cell__name {
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
-  min-width: 32px;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
   cursor: pointer;
+  min-width: 56px;
+  border-right: 1px solid var(--border);
+  padding-right: 8px;
+  margin-right: 8px;
 }
 
 .reg-cell__value {
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
-  font-weight: 400;
-  color: var(--text-primary);
-  letter-spacing: 0.03em;
-  opacity: 0.5;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
   cursor: pointer;
+  transition: color var(--transition);
+}
+
+.reg-cell:hover .reg-cell__value {
+  color: var(--text-primary);
 }
 
 .reg-cell--highlighted .reg-cell__value {
-  color: #FAB387;
+  color: var(--yellow);
+  font-weight: 600;
 }

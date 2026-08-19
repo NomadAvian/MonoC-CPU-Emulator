@@ -46,15 +46,15 @@ const riscvLanguage = StreamLanguage.define({
 })
 
 const riscvHighlight = HighlightStyle.define([
-    { tag: t.comment,      color: "#6B7A99", fontStyle: "italic" },
-    { tag: t.string,       color: "#A3D977" },
-    { tag: t.number,       color: "#F6C177" },
-    { tag: t.atom,         color: "#C792EA" },
-    { tag: t.keyword,      color: "#7DCFFF", fontWeight: "bold" },
-    { tag: t.labelName,    color: "#FF9E64", fontWeight: "bold" },
-    { tag: t.meta,         color: "#89DDFF" },
-    { tag: t.variableName, color: "#D9E0EE" },
-    { tag: t.punctuation,  color: "#A9B1D6" },
+    { tag: t.comment,      color: "var(--code-comment)", fontStyle: "italic" },
+    { tag: t.string,       color: "var(--code-string)" },
+    { tag: t.number,       color: "var(--code-number)" },
+    { tag: t.atom,         color: "var(--code-atom)" },
+    { tag: t.keyword,      color: "var(--code-keyword)", fontWeight: "bold" },
+    { tag: t.labelName,    color: "var(--code-label)", fontWeight: "bold" },
+    { tag: t.meta,         color: "var(--code-meta)" },
+    { tag: t.variableName, color: "var(--code-variable)" },
+    { tag: t.punctuation,  color: "var(--code-punctuation)" },
 ])
 
 export const riscv = new LanguageSupport(riscvLanguage, [

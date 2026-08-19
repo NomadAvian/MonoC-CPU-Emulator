@@ -1,15 +1,15 @@
 .reg-grid {
-  padding: 8px 0;
+  padding: 4px 0;
 }
 
 .reg-grid__section-label {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 10px;
+  font-weight: 600;
   font-family: var(--font-sans);
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 6px 10px 2px;
+  letter-spacing: 0.06em;
+  padding: 4px 10px 2px;
 }
 
 .reg-grid__pinned {
@@ -18,7 +18,7 @@
 }
 
 .reg-grid__divider {
-  margin: 6px 10px;
+  margin: 4px 10px;
 }
 
 .reg-grid__list {
@@ -26,9 +26,27 @@
   flex-direction: column;
 }
 .reg-grid__alias {
-  font-size: 11px;
-  padding: 0px 2px;
-  color: var(--text-muted);
-  opacity: .8;
+  font-family: var(--font-mono);
+  font-size: 10px;
   font-weight: 500;
+  color: var(--text-muted);
+  opacity: 0.45;
+  margin-left: 5px;
+  letter-spacing: 0.02em;
+  transition: opacity var(--transition), color var(--transition);
+}
+
+.reg-cell:hover .reg-grid__alias {
+  opacity: 0.85;
+  color: var(--text-secondary);
+}
+
+[data-theme="gruvbox"] .reg-grid__alias {
+  color: var(--text-muted);
+  opacity: 0.45;
+}
+
+[data-theme="gruvbox"] .reg-cell:hover .reg-grid__alias {
+  color: var(--accent);
+  opacity: 0.85;
 }

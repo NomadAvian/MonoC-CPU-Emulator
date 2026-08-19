@@ -1,0 +1,130 @@
+/* ── MonoC Theme System ────────────────────────────────────────────── */
+
+/* 1. Catppuccin (Default Theme) */
+:root,
+[data-theme="catppuccin"] {
+  color-scheme: dark;
+
+  /* Workspace & Glassmorphic Surfaces */
+  --bg-base: #111318;
+  --bg-panel: rgba(29, 33, 42, 0.65);
+  --bg-surface: rgba(29, 33, 42, 0.85);
+  --bg-elevated: rgba(37, 42, 53, 0.9);
+  --bg-hover: rgba(46, 51, 65, 0.8);
+
+  --active-line: rgba(255, 255, 255, 0.06);
+  --selection: rgba(180, 180, 180, 0.20);
+
+  /* Clean Borders & Shadows */
+  --border: rgba(255, 255, 255, 0.12);
+  --border-bright: rgba(255, 255, 255, 0.25);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.3), 0 2px 4px -1px rgba(0,0,0,0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.2);
+  --shadow-glow: 0 0 12px var(--accent-glow);
+
+  /* Typography Colors */
+  --text-primary: #dbdbdb;
+  --text-secondary: #a6adc8;
+  --text-muted: #6c7086;
+
+  /* Accents */
+  --accent: #c6a0f6; /* Mauve */
+  --accent-hover: #dcbaf8;
+  --accent-dim: rgba(198, 160, 246, 0.12);
+  --accent-border: rgba(198, 160, 246, 0.35);
+  --accent-glow: rgba(198, 160, 246, 0.08);
+
+  --accent2: #3b5364;
+
+  /* Primary Button / Active CTA Tokens */
+  --btn-active-bg: var(--accent);
+  --btn-active-hover: var(--accent-hover);
+  --btn-active-fg: #111318;
+
+  /* Semantics */
+  --green: #a6e3a1;
+  --green-dim: rgba(166, 227, 161, 0.12);
+  --red: #f38ba8;
+  --red-dim: rgba(243, 139, 168, 0.12);
+  --yellow: #f9e2af;
+  --yellow-dim: rgba(249, 226, 175, 0.12);
+  --cyan: #89dceb;
+  --cyan-dim: rgba(137, 220, 235, 0.12);
+
+  /* Code Syntax Highlighting */
+  --code-comment: #6c7086;
+  --code-string: #a6e3a1;
+  --code-number: #f9e2af;
+  --code-atom: #cba6f7;
+  --code-keyword: #89dceb;
+  --code-label: #fab387;
+  --code-meta: #f5c2e7;
+  --code-variable: #cdd6f4;
+  --code-punctuation: #bac2de;
+}
+
+/* 2. Gruvbox Theme */
+[data-theme="gruvbox"] {
+  color-scheme: dark;
+
+  /* Workspace & Glassmorphic Surfaces */
+  --bg-base: #1D2021;
+  --bg-panel: rgba(40, 40, 40, 0.70);
+  --bg-surface: rgba(50, 48, 47, 0.85);
+  --bg-elevated: rgba(66, 60, 57, 0.90);
+  --bg-hover: rgba(80, 73, 69, 0.85);
+
+  --active-line: rgba(255, 255, 255, 0.06);
+  --selection: rgba(254, 128, 25, 0.22);
+
+  /* Warm Borders & Shadows */
+  --border: rgba(235, 219, 178, 0.1);
+  --border-bright: rgba(235, 219, 178, 0.25);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -1px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -2px rgba(0,0,0,0.3);
+  --shadow-glow: 0 0 12px var(--accent-glow);
+
+  /* Typography Colors */
+  --text-primary: #fbf1c7;
+  --text-secondary: #d5c4a1;
+  --text-muted: #928374;
+
+  /* Accents */
+  --accent: #fe8019; /* Bright Orange */
+  --accent-hover: #ff9e3b;
+  --accent-dim: rgba(254, 128, 25, 0.14);
+  --accent-border: rgba(254, 128, 25, 0.35);
+  --accent-glow: rgba(254, 128, 25, 0.12);
+
+  --accent2: #83a598; /* Bright Blue */
+
+  /* Primary Button / Active CTA Tokens */
+  --btn-active-bg: #C6613F;
+  --btn-active-hover: #d86d49;
+  --btn-active-fg: #ffffff;
+
+  /* Semantics */
+  --green: #b8bb26;
+  --green-dim: rgba(184, 187, 38, 0.14);
+  --red: #fb4934;
+  --red-dim: rgba(251, 73, 52, 0.14);
+  --yellow: #fabd2f;
+  --yellow-dim: rgba(250, 189, 47, 0.14);
+  --cyan: #8ec07c;
+  --cyan-dim: rgba(142, 192, 124, 0.14);
+
+  /* Code Syntax Highlighting */
+  --code-comment: #928374;
+  --code-string: #b8bb26;
+  --code-number: #d3869b;
+  --code-atom: #fabd2f;
+  --code-keyword: #fe8019;
+  --code-label: #8ec07c;
+  --code-meta: #83a598;
+  --code-variable: #fbf1c7;
+  --code-punctuation: #d5c4a1;
+}

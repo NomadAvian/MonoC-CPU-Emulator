@@ -53,7 +53,13 @@
 }
 
 .topbar__nav-btn--active {
-  background: var(--accent);
+  background: var(--btn-active-bg) !important;
+  color: var(--btn-active-fg) !important;
+}
+
+.topbar__nav-btn--active:hover {
+  background: var(--btn-active-hover) !important;
+  color: var(--btn-active-fg) !important;
 }
 
 .topbar__icon {
@@ -61,4 +67,8 @@
   height: 18px;
   opacity: 0.85;
   transition: opacity 0.2s, filter 0.2s;
+}
+
+.topbar__nav-btn--active .topbar__icon {
+  opacity: 1;
 }

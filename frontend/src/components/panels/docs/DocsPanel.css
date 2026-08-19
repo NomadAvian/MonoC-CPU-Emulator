@@ -7,6 +7,7 @@
   flex-shrink: 0;
   overflow: hidden;
   height: 100%;
+  border-radius: 12px 0 0 12px;
 }
 
 .docs-panel__header {
