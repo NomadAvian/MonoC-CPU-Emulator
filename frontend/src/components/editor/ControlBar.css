@@ -1,12 +1,27 @@
 .control-bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
-  height: 32px;
+  height: 36px;
   padding: 0 12px;
   background: var(--bg-surface);
   border-top: 1px solid var(--border);
   flex-shrink: 0;
+}
+
+.control-bar__left {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.control-bar__center {
+  display: flex;
+  justify-content: center;
+}
+
+.control-bar__right {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .control-bar__status {
@@ -21,19 +36,29 @@
 }
 
 
-.control-bar__actions {
+
+
+/* Group the action buttons in a pill */
+.toolbar__actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  padding: 3px;
 }
 
-/* increased specificity */
 button.ui-button.control-bar__btn {
   min-height: 24px;
   height: 24px;
   padding: 0 8px;
   font-size: var(--fs-xs);
   color: var(--accent);
+  border-radius: 2px;
+  box-shadow: none;
+  background: transparent;
+  border-color: transparent;
 }
 
 .control-bar__icon {
@@ -43,7 +68,7 @@ button.ui-button.control-bar__btn {
 }
 
 button.ui-button.control-bar__btn:hover:not(:disabled) {
-  border-color: var(--border); 
+  border-color: var(--border);
   transform: none;
 }
 
@@ -75,23 +100,51 @@ button.ui-button.control-bar__btn:hover:not(:disabled) {
   }
 }
 
-/* Speed Control */
-.speed-control {
+/* Divider between button group and speed control */
+.toolbar__divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 12px;
+  opacity: 0.5;
+}
+
+/* Speed label + slider grouped together */
+.toolbar__speed {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-left: 16px;
-  color: var(--text);
-  opacity: 0.8;
-}
-
-.speed-label {
+  gap: 8px;
   font-size: var(--fs-xs);
   font-weight: 600;
-  width: 50px;
+  color: var(--text-muted);
 }
 
-.speed-slider-input {
+/* Custom slider */
+.toolbar__slider {
+  -webkit-appearance: none;
   width: 100px;
+  height: 3px;
+  border-radius: 99px;
+  background: linear-gradient(
+    to right,
+    var(--accent) 0%,
+    var(--accent) var(--fill, 50%),
+    rgba(255,255,255,0.1) var(--fill, 50%)
+  );
+  outline: none;
+}
+
+.toolbar__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  box-shadow: 0 0 6px rgba(0,0,0,0.4);
   cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.toolbar__slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
 }

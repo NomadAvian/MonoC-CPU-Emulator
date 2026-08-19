@@ -16,7 +16,7 @@
 }
 
 .cm-scroller {
-  font-family: inherit !important;
+  font-family: var(--font-mono) !important;
 }
 
 .cm-editor .cm-content {

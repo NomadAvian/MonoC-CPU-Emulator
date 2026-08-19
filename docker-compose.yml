@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:80"
+  python-api:
+    build:
+      context: ./backend/ai
+      dockerfile: Dockerfile.python
+    ports:
+      - "8000:8000"
+  cpp-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.cpp
+    ports:
+      - "6969:6969"

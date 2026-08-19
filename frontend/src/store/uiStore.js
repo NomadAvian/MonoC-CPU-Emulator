@@ -51,7 +51,9 @@ export const useUIStore = create(
     {
       name: 'monoc-ui-store',
       partialize: (state) => Object.fromEntries(
-        Object.entries(state).filter(([key]) => key !== 'toasts')
+        Object.entries(state).filter(([key]) => 
+          !['toasts', 'leftWidth', 'docsWidth', 'rightWidth', 'bottomHeight'].includes(key)
+        )
       ),
     }
   )

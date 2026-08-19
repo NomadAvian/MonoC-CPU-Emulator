@@ -19,19 +19,19 @@
   font-family: var(--font-mono);
   font-size: 14px;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--text-primary);
   min-width: 32px;
   text-transform: uppercase;
   cursor: pointer;
 }
 
 .reg-cell__value {
-  font-family: monospace;
-  font-size: 14px;
-  font-weight: 200;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 400;
   color: var(--text-primary);
   letter-spacing: 0.03em;
-  opacity: 0.8;
+  opacity: 0.5;
   cursor: pointer;
 }
 

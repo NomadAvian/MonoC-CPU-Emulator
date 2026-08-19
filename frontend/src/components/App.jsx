@@ -1,5 +1,6 @@
 import '../App.css'
 import { useCallback, useEffect } from 'react'
+import { AnimatePresence } from 'motion/react'
 import MainLayout from './layout/MainLayout'
 import TopBar from './layout/TopBar'
 import LeftSideBar from './layout/LeftSideBar'
@@ -56,11 +57,13 @@ function App() {
 
       <div className="workspace">
         {/* Left sidebar */}
-        {isDocsOpen ? (
-          <DocsPanel style={{ width: docsWidth }} />
-        ) : (
-          <LeftSideBar style={{ width: leftWidth }} />
-        )}
+        <AnimatePresence mode="popLayout">
+          {isDocsOpen ? (
+            <DocsPanel key="docs" style={{ width: docsWidth }} />
+          ) : (
+            <LeftSideBar key="left-sidebar" style={{ width: leftWidth }} />
+          )}
+        </AnimatePresence>
 
         <ResizeDivider
           direction="horizontal"
@@ -85,14 +88,16 @@ function App() {
 
         {/* Right sidebar */}
         {isChatOpen && (
-          <>
-            <ResizeDivider
-              direction="horizontal"
-              onDrag={onRightResize}
-            />
-            <RightSideBar style={{ width: rightWidth }} />
-          </>
+          <ResizeDivider
+            direction="horizontal"
+            onDrag={onRightResize}
+          />
         )}
+        <AnimatePresence>
+          {isChatOpen && (
+            <RightSideBar key="right-sidebar" style={{ width: rightWidth }} />
+          )}
+        </AnimatePresence>
       </div>
 
       <ToastContainer />

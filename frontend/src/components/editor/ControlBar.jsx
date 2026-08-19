@@ -8,11 +8,11 @@ import resetIcon from '../../assets/reset.svg'
 
 
 const CONTROLS = [
-  { id: 'ctrl-compile', label: 'Compile',   icon: buildIcon, /* shortcut: 'Ctrl-R',       */ },
-  { id: 'ctrl-play', label: 'Run',          icon: playIcon, /* shortcut: 'Ctrl-R',       */ },
-  { id: 'ctrl-stop', label: 'Stop',         icon: stopIcon, /* shortcut: 'Ctrl-S',       */ },
-  { id: 'ctrl-step-over', label: 'Step',    icon: stepIcon, /* shortcut: 'Ctrl-Shift-S', */ },
-  { id: 'ctrl-reset', label: 'Reset',       icon: resetIcon, /* shortcut: 'Ctrl-Shift-R',*/ },
+  { id: 'ctrl-compile', label: 'Compile', icon: buildIcon, /* shortcut: 'Ctrl-R',       */ },
+  { id: 'ctrl-play', label: 'Run', icon: playIcon, /* shortcut: 'Ctrl-R',       */ },
+  { id: 'ctrl-stop', label: 'Stop', icon: stopIcon, /* shortcut: 'Ctrl-S',       */ },
+  { id: 'ctrl-step-over', label: 'Step', icon: stepIcon, /* shortcut: 'Ctrl-Shift-S', */ },
+  { id: 'ctrl-reset', label: 'Reset', icon: resetIcon, /* shortcut: 'Ctrl-Shift-R',*/ },
 ]
 
 export default function ControlBar() {
@@ -55,35 +55,40 @@ export default function ControlBar() {
 
   return (
     <div className="control-bar">
-      <span className={`control-bar__status control-bar__status--${halted ? 'halted' : status}`}>
-        {halted ? 'Halted' : status[0].toUpperCase() + status.slice(1)}
-      </span>
-      <div className="control-bar__actions">
-        {CONTROLS.map(({ id, label, icon, shortcut }) => {
-          const { disabled, loading } = getButtonState(id)
-          return (
-            <button
-              key={id}
-              id={id}
-              className={`ui-button control-bar__btn ${loading ? 'control-bar__btn--loading' : ''}`}
-              title={label}
-              disabled={disabled}
-              onClick={() => handleControl(id)}
-            >
-              {loading ? (
-                <span className="control-bar__spinner" />
-              ) : (
-                <img src={icon} alt={label} className="control-bar__icon" />
-              )}
-            </button>
-          )
-        })}
+      <div className="control-bar__left">
+        <span className={`control-bar__status control-bar__status--${halted ? 'halted' : status}`}>
+          {halted ? 'Halted' : status[0].toUpperCase() + status.slice(1)}
+        </span>
+      </div>
 
+      <div className="control-bar__center">
+        <div className="toolbar__actions">
+          {CONTROLS.map(({ id, label, icon, shortcut }) => {
+            const { disabled, loading } = getButtonState(id)
+            return (
+              <button
+                key={id}
+                id={id}
+                className={`ui-button control-bar__btn ${loading ? 'control-bar__btn--loading' : ''}`}
+                title={label}
+                disabled={disabled}
+                onClick={() => handleControl(id)}
+              >
+                {loading ? (
+                  <span className="control-bar__spinner" />
+                ) : (
+                  <img src={icon} alt={label} className="control-bar__icon" />
+                )}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="control-bar__right">
         {/* Speed Control */}
-        <div className="speed-control">
-          <span className="speed-label">
-            {SPEEDS[speedIndex].label}
-          </span>
+        <div className="toolbar__speed">
+          <span>{SPEEDS[speedIndex].label}</span>
           <input
             type="range"
             min={0}
@@ -91,8 +96,9 @@ export default function ControlBar() {
             step={1}
             value={speedIndex}
             title={SPEEDS[speedIndex].label}
-            className="speed-slider-input"
+            className="toolbar__slider"
             onChange={handleSpeedChange}
+            style={{ '--fill': `${(speedIndex / (SPEEDS.length - 1)) * 100}%` }}
           />
         </div>
       </div>
