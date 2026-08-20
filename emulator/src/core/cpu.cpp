@@ -13,10 +13,10 @@ void CPU::LoadROM(const std::string& filename) {
     // TODO: more elegant solution to relative filepaths ?
     // resolve a bare filename
     static const char* kCandidates[] = {
-        "",
         "emulator/roms/",
         "../emulator/roms/",
         "roms/",
+        "",
     };
     std::string path;
     for (const char* dir : kCandidates) {

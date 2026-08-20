@@ -4,6 +4,7 @@
 *.obj
 *.o
 .env
+frontend/.env
 .zed
 .gram
 test_program.txt

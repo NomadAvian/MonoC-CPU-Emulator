@@ -2,26 +2,22 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# path resolution relative to this file
-_ai_dir = Path(__file__).parent               # backend/ai
-_backend_dir = _ai_dir.parent                 # backend
+# load .env from project root (gitignored). docker injects vars directly — no file needed.
+_root_dir = Path(__file__).parent.parent.parent  # backend/ai -> backend -> root
+load_dotenv(_root_dir / ".env", override=False)
 
-if (_ai_dir / ".env").exists():
-    load_dotenv(_ai_dir / ".env")
-elif (_backend_dir / ".env").exists():
-    load_dotenv(_backend_dir / ".env")
-
-_default_db = str((_backend_dir / "db" / "test.db").resolve())
-
-# environment variables with defaults
+# --- user config (from .env) ---
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
+GEMINI_MODEL   = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+OLLAMA_MODEL   = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
+OLLAMA_HOST    = os.environ.get("OLLAMA_HOST", "")
+
+# --- internal networking (docker overrides these via environment: in compose) ---
 CROW_BASE_URL = os.environ.get("CROW_BASE_URL", "http://localhost:6969")
-DB_PATH = os.environ.get("DB_PATH", _default_db)
+DB_PATH       = os.environ.get("DB_PATH", str((_root_dir / "backend" / "db" / "monoc.db").resolve()))
 
 _cors_raw = os.environ.get(
     "CORS_ORIGINS",
-    "http://localhost:6969,http://localhost:5173,http://localhost:8000"
+    "http://localhost:5173,http://localhost:8000,http://localhost:6969"
 )
-CORS_ORIGINS = [origin.strip() for origin in _cors_raw.split(",") if origin.strip()]
+CORS_ORIGINS = [o.strip() for o in _cors_raw.split(",") if o.strip()]

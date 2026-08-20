@@ -1,5 +1,3 @@
-// route -> cpu state -> send to Ollama -> return
-
 #include <crow.h>
 #include "../emulator/src/core/cpu.h"
 #include "../emulator/src/core/framebuffer.h"
@@ -7,8 +5,11 @@
 
 int main()
 {
+    const char* env_port = std::getenv("PORT");
+    int port = env_port ? std::stoi(env_port) : 6969;
+
     crow::SimpleApp app;
-    cpu::CPU* cpu_instance = new cpu::CPU("test_program.txt");
+    cpu::CPU* cpu_instance = new cpu::CPU();
 
     // POST /cpu/compile
     // assembles the source buffer into a ROM and loads it into the CPU
@@ -116,5 +117,5 @@ int main()
         return crow::response(200, "memory");
     });
 
-    app.port(6969).multithreaded().run();
+    app.port(port).multithreaded().run();
 }

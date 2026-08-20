@@ -4,17 +4,14 @@ const initialState = {
   source: [
     '# Welcome to MonoC CPU Emulator!',
     '#',
-    '# This is a simple infinite counting loop.',
-    '# Use the speed control to watch it execute at different rates!',
-    '',
+    '# This is a simple addition program.',
+    '# Use the control panel below to compile, and run the code',
+    '#',
     '.global _start',
     '_start:',
-    'addi x1, x0, 0     # Initialize counter (x1) to 0',
-    'addi x2, x0, 1     # Step value (x2) = 1',
-    '',
-    'loop:',
-    'add x1, x1, x2     # Increment counter by 1',
-    'jal x0, loop       # Jump back to the start of the loop',
+    '    li a0, 10       # load 10 into a0 register',
+    '    li a1, 25       # load 25 into a1 register',
+    '    add t0, a0, a1  # t0 = a0 + a1',
   ].join('\n'),
 }
 

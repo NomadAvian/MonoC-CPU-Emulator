@@ -1,0 +1,39 @@
+# MonoC CPU Emulator — Caddy Reverse Proxy
+# Single entry point
+#
+# Routing:
+#   /cpu/*        c++ crow api
+#   /chat         python api
+#   /auth/*       
+#   /user/*       
+#   /explain      
+#   /*            react frontend
+
+:80 {
+    # crow and emulator
+	handle /cpu/* {
+		reverse_proxy monoc-cpu:6969
+	}
+
+	# ai
+	handle /chat* {
+		reverse_proxy monoc-ai:8000
+	}
+    
+    handle /explain* {
+		reverse_proxy monoc-ai:8000
+	}
+
+	handle /auth* {
+		reverse_proxy monoc-ai:8000
+	}
+
+	handle /user* {
+		reverse_proxy monoc-ai:8000
+	}
+
+	# Catch-all: Frontend UI (React)
+	handle /* {
+		reverse_proxy monoc-frontend:80
+	}
+}

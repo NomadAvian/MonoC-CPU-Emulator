@@ -1,5 +1,8 @@
 # Ollama is the primary model; Gemini is the fallback when Ollama is unavailable
 
+import warnings
+warnings.filterwarnings("ignore")
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel

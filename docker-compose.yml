@@ -1,20 +1,56 @@
-version: '3.8'
 services:
+  caddy:
+    image: caddy:alpine
+    container_name: monoc-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    depends_on:
+      - frontend
+      - python-api
+      - cpp-api
+    restart: unless-stopped
+
   frontend:
+    image: monoc/frontend:latest
+    container_name: monoc-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile.frontend
-    ports:
-      - "3000:80"
+      args:
+        # caddy handles routing; frontend talks to same origin
+        VITE_AI_API_URL: ""
+        VITE_CPU_API_URL: ""
+    restart: unless-stopped
+
   python-api:
+    image: monoc/ai:latest
+    container_name: monoc-ai
     build:
       context: ./backend/ai
       dockerfile: Dockerfile.python
-    ports:
-      - "8000:8000"
+    env_file: .env                          # user secrets
+    environment:                            # internal docker networking
+      CROW_BASE_URL: http://monoc-cpu:6969
+      DB_PATH: /app/db/monoc.db
+      CORS_ORIGINS: http://localhost
+    volumes:
+      - monoc_db:/app/db
+    depends_on:
+      - cpp-api
+    restart: unless-stopped
+
   cpp-api:
+    image: monoc/cpu:latest
+    container_name: monoc-cpu
     build:
-      context: ./backend
-      dockerfile: Dockerfile.cpp
-    ports:
-      - "6969:6969"
+      context: .
+      dockerfile: backend/Dockerfile.cpp
+    environment:
+      PORT: 6969
+    restart: unless-stopped
+
+volumes:
+  monoc_db:

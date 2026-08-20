@@ -4,7 +4,7 @@ import sys
 
 from ollama import AsyncClient
 
-from config import OLLAMA_MODEL as MODEL
+from config import OLLAMA_MODEL as MODEL, OLLAMA_HOST
 from chat.prompt import SYSTEM_PROMPT
 
 from mcp import ClientSession, StdioServerParameters
@@ -12,7 +12,17 @@ from mcp.client.stdio import stdio_client
 
 _mcp_server_path = os.path.join(os.path.dirname(__file__), "..", "mcp_server.py")
 
+# if OLLAMA_HOST is set, connect to a remote ollama instance
+_ollama_kwargs = {"host": OLLAMA_HOST} if OLLAMA_HOST else {}
+
 async def chat(messages: list[dict], source: str):
+    # check ollama availability before starting mcp server
+    client = AsyncClient(**_ollama_kwargs)
+    try:
+        await client.list()
+    except Exception as e:
+        raise RuntimeError(f"Ollama server unreachable: {e}")
+
     if not messages or messages[0].get("role") != "system":
         messages = [{"role": "system", "content": SYSTEM_PROMPT}] + messages
 
@@ -60,7 +70,7 @@ async def chat(messages: list[dict], source: str):
             })
 
             # 4. enter AI chat loop
-            client = AsyncClient()
+            client = AsyncClient(**_ollama_kwargs)
             while True:
                 response = await client.chat(
                     model=MODEL,

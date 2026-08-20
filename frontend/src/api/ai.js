@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_AI_API_URL ?? 'http://localhost:8000'
 
 export async function sendPrompt(messages, source) {
   const res = await fetch(`${API_URL}/chat`, {

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-const API_URL = 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_AI_API_URL ?? 'http://localhost:8000'
 
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('auth_user')) || null,

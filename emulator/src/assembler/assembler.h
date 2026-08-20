@@ -30,6 +30,7 @@ public:
             if (std::filesystem::is_directory(dir))
                 return dir;
         }
+        std::filesystem::create_directories(kCandidates[0]);
         return kCandidates[0];
     }
 

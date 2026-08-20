@@ -111,7 +111,7 @@ export const useCPUStore = create((set, get) => ({
     } catch (error) {
       set({ compiling: false })
       console.error('compilation failed:', error)
-      log.addLog(`Compilation failed`)
+      log.addLog(`Compilation failed: ${error.message}`)
       return { ok: false, error: error.message };
     }
   },

@@ -1,4 +1,4 @@
-const CROW_BASE = 'http://localhost:6969'
+const CROW_BASE = import.meta.env.VITE_CPU_API_URL ?? 'http://localhost:6969'
 
 export async function fetchRegisters() {
   const res = await fetch(`${CROW_BASE}/cpu/registers`)
@@ -25,8 +25,12 @@ export async function compile(source) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ source })
   })
-  if (!res.ok) throw new Error(`POST /cpu/compile failed: ${res.status}`)
-  return res.json()
+  const data = await res.json().catch(() => null)
+  if (!res.ok) {
+    const errorMsg = data?.error || data?.detail || `Compilation failed (${res.status})`
+    throw new Error(errorMsg)
+  }
+  return data
 }
 
 // Fetches the framebuffer (tail end of RAM, 768 words)

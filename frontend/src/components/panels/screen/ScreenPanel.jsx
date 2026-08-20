@@ -3,6 +3,9 @@ import './ScreenPanel.css'
 import closeIcon from '../../../assets/close.svg'
 import { useScreenStore } from '../../../store/screenStore'
 
+const DEFAULT_DISPLAY_WIDTH = 128
+const DEFAULT_DISPLAY_HEIGHT = 96
+
 // Renders the b&w framebuffer onto a canvas scaled to fit the panel.
 // Each byte of the framebuffer maps to one pixel: 0 = black, anything else = white.
 export default function ScreenPanel({ style }) {
@@ -25,8 +28,8 @@ export default function ScreenPanel({ style }) {
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    const w = width || 128
-    const h = height || 96
+    const w = width || DEFAULT_DISPLAY_WIDTH
+    const h = height || DEFAULT_DISPLAY_HEIGHT
     if (w <= 0 || h <= 0) return
     ctx.clearRect(0, 0, w, h)
     const img = ctx.createImageData(w, h)
