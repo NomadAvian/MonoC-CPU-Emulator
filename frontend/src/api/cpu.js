@@ -25,8 +25,36 @@ export async function compile(source) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ source })
   })
-  if (!res.ok) throw new Error(`POST /cpu/compile failed: ${res.status}`)
-  return res.json()
+  const data = await res.json().catch(() => null)
+  if (!res.ok) {
+    const errorMsg = data?.error || data?.detail || `Compilation failed (${res.status})`
+    throw new Error(errorMsg)
+  }
+  return data
+}
+
+// Fetches the emulator's accumulated console output.
+export async function fetchOutput() {
+  const res = await fetch(`${CROW_BASE}/cpu/output`)
+  if (!res.ok) throw new Error(`GET /cpu/output failed: ${res.status}`)
+  const data = await res.json().catch(() => null)
+  return { text: data?.text ?? '', len: data?.len ?? 0 }
+}
+
+// Feeds runtime input to the running program (read syscalls).
+export async function sendInput(data) {
+  const res = await fetch(`${CROW_BASE}/cpu/input`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data })
+  })
+  if (!res.ok) throw new Error(`POST /cpu/input failed: ${res.status}`)
+}
+
+// Clears the emulator's accumulated console output.
+export async function clearConsole() {
+  const res = await fetch(`${CROW_BASE}/cpu/console-clear`, { method: 'POST' })
+  if (!res.ok) throw new Error(`POST /cpu/console-clear failed: ${res.status}`)
 }
 
 // Fetches the framebuffer (tail end of RAM, 768 words)

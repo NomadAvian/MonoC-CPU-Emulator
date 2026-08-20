@@ -465,17 +465,38 @@ bool Parser::IsPseudoInstruction(const std::string& mnem) const {
 size_t Parser::PseudoExpansionWords(const Statement& s, size_t idx) const {
     const std::string& mnem = s.tokens[idx].lexeme();
 
-    if (mnem == "la" || mnem == "call") return 2;
     if (mnem == "j" || mnem == "mv" || mnem == "nop") return 1;
+    if (mnem == "call") return 2;
 
+    // For "li"/"la" the expansion size depends on the resolved value
+    // keywords / symbols resolve through Resolve()
+    // if the low 12 bits are zero
+    // the pseudo emits a single lui, so count must match
     if (mnem == "li") {
         if (idx + 3 < s.tokens.size()) {
             const Token& t = s.tokens[idx + 3];
+            int64_t val = 0;
             if (t.type() == TokenType::kInteger) {
-                int64_t val = std::get<int64_t>(t.literal());
-                if (val >= -2048 && val <= 2047) return 1;
-                if ((val & 0xFFF) == 0) return 1; // lui-only
+                val = std::get<int64_t>(t.literal());
+            } else if (t.type() == TokenType::kIdentifier) {
+                val = Resolve(s, t);
+            } else {
+                return 2;
             }
+            if (val >= -2048 && val <= 2047) return 1;
+            if ((val & 0xFFF) == 0) return 1; // lui-only
+        }
+        return 2;
+    }
+
+    if (mnem == "la") {
+        // la rd, label -> auipc + addi (2 words), unless the target is an
+        // absolute keyword whose low 12 bits are zero (lui only, 1 word).
+        if (idx + 3 < s.tokens.size() &&
+            s.tokens[idx + 3].type() == TokenType::kIdentifier &&
+            IsKeyword(s.tokens[idx + 3].lexeme())) {
+            int64_t val = Resolve(s, s.tokens[idx + 3]);
+            if ((val & 0xFFF) == 0) return 1;
         }
         return 2;
     }

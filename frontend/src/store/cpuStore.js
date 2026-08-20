@@ -3,10 +3,16 @@ import { fetchRegisters, stepCpu, resetCpu, compile } from '../api/cpu'
 import { useEditorStore } from './editorStore'
 import { useLogStore } from './logStore'
 import { useScreenStore } from './screenStore'
+import { useConsoleStore } from './consoleStore'
+import { useMemoryStore } from './memoryStore'
 
 // throttle framebuffer
 const SCREEN_REFRESH_MS = 50
 let lastScreenRefresh = 0
+
+// throttle console output polling
+const CONSOLE_REFRESH_MS = 50
+let lastConsoleRefresh = 0
 
 // force enabled when cpu halts to update the screen to final state
 async function maybeRefreshScreen(force = false) {
@@ -14,6 +20,13 @@ async function maybeRefreshScreen(force = false) {
   if (!force && now - lastScreenRefresh < SCREEN_REFRESH_MS) return
   lastScreenRefresh = now
   await useScreenStore.getState().refreshScreen()
+}
+
+async function maybeRefreshConsole(force = false) {
+  const now = Date.now()
+  if (!force && now - lastConsoleRefresh < CONSOLE_REFRESH_MS) return
+  lastConsoleRefresh = now
+  await useConsoleStore.getState().poll(force)
 }
 
 export const SPEEDS = [
@@ -51,7 +64,7 @@ export const useCPUStore = create((set, get) => ({
   resetCPU: () => set(initialState),
 
   //  ------ FETCH REGISTERS ------
-  fetchRegisters: async () => {
+  fetchRegisters: async (trackChanges = true) => {
     try {
       const prev = get().registers
       const data = await fetchRegisters()
@@ -59,12 +72,14 @@ export const useCPUStore = create((set, get) => ({
 
       // Track deltas so the UI can highlight modified registers
       const changed = new Set()
-      for (let i = 0; i < next.length; i++) {
-        if (next[i] !== prev[i]) changed.add(i)
+      if (trackChanges) {
+        for (let i = 0; i < next.length; i++) {
+          if (next[i] !== prev[i]) changed.add(i)
+        }
       }
 
       const pc = data.pc ?? 0
-      if (pc !== get().programCounter) changed.add('pc')
+      if (trackChanges && pc !== get().programCounter) changed.add('pc')
       const romSize = get().romSize
 
       // pc is a byte address; romSize is instruction count.
@@ -105,13 +120,15 @@ export const useCPUStore = create((set, get) => ({
         compiling: false,
       })
       log.addLog('Compilation successful')
+      useConsoleStore.getState().reset()
       await get().fetchRegisters()
       maybeRefreshScreen()
+      maybeRefreshConsole(true)
       return result
     } catch (error) {
       set({ compiling: false })
       console.error('compilation failed:', error)
-      log.addLog(`Compilation failed`)
+      log.addLog(`Compilation failed: ${error.message}`)
       return { ok: false, error: error.message };
     }
   },
@@ -127,6 +144,7 @@ export const useCPUStore = create((set, get) => ({
       await stepCpu(count)
       await get().fetchRegisters()
       maybeRefreshScreen(get().halted)
+      maybeRefreshConsole(get().halted)
       return true
     } catch (error) {
       console.error('step failed:', error)
@@ -169,8 +187,11 @@ export const useCPUStore = create((set, get) => ({
     try {
       await resetCpu()
       set({ status: 'stopped', changedRegisters: new Set(), halted: false })
-      await get().fetchRegisters()
+      useConsoleStore.getState().reset()
+      useMemoryStore.getState().clearMemoryWrites()
+      await get().fetchRegisters(false)
       maybeRefreshScreen()
+      maybeRefreshConsole(true)
       useLogStore.getState().addLog('CPU reset')
       return true
     } catch (error) {
