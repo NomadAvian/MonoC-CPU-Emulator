@@ -4,6 +4,8 @@
 #include <cctype>
 #include <stdexcept>
 
+#include "../core/framebuffer.h"
+
 namespace riscv {
 
 // Instruction encoding table
@@ -85,6 +87,11 @@ const std::unordered_map<std::string, int> Parser::kAbiRegisters = {
     {"s3", 19},   {"s4", 20},  {"s5", 21},  {"s6", 22},  {"s7", 23},
     {"s8", 24},   {"s9", 25},  {"s10", 26}, {"s11", 27}, {"t3", 28},
     {"t4", 29},   {"t5", 30},  {"t6", 31},
+};
+
+// Named constants used in source
+const std::unordered_map<std::string, Word> Parser::kKeywords = {
+    {"SCREEN", kFramebufferBase},
 };
 
 void Parser::Assemble(const std::string& source, std::vector<Word>& words) {
@@ -486,6 +493,19 @@ void Parser::EncodePseudo(const Statement& s, size_t idx, Word pc,
     if (mnem == "la") {
         ExpectReg(s, i, rd);
         ExpectComma(s, i);
+        if (i < s.tokens.size() && IsKeyword(s.tokens[i].lexeme())) {
+            // keyword constants are absolute addresses
+            // so they loaded directly
+            int64_t target = ParseImm(s, i, pc);
+            ExpectEnd(s, i);
+            int64_t lo = target & 0xFFF;
+            int64_t hi = ((target + 0x800) >> 12) & 0xFFFFF;
+            words.push_back(Encode(*Lookup("lui"), rd, 0, 0, hi, 0));
+            if (lo != 0) {
+                words.push_back(Encode(*Lookup("addi"), rd, rd, 0, lo, 0));
+            }
+            return;
+        }
         int64_t target = ParseImm(s, i, pc);
         ExpectEnd(s, i);
 
@@ -746,10 +766,19 @@ TokenType Parser::Peek(const Statement& s, size_t i) const {
 
 int64_t Parser::Resolve(const Statement& s, const Token& t) const {
     auto it = symbols_.find(t.lexeme());
-    if (it == symbols_.end()) {
-        Error(s, "undefined symbol '" + t.lexeme() + "'");
+    if (it != symbols_.end()) {
+        return static_cast<int64_t>(it->second);
     }
-    return static_cast<int64_t>(it->second);
+    auto kw = kKeywords.find(t.lexeme());
+    if (kw != kKeywords.end()) {
+        return static_cast<int64_t>(kw->second);
+    }
+    Error(s, "undefined symbol '" + t.lexeme() + "'");
+    return 0;  // unreachable
+}
+
+bool Parser::IsKeyword(const std::string& name) const {
+    return kKeywords.find(name) != kKeywords.end();
 }
 
 int64_t Parser::ParseImm(const Statement& s, size_t& i, Word pc) const {

@@ -31,9 +31,8 @@ void CPU::LoadROM(const std::string& filename) {
         throw std::runtime_error("CPU: could not open ROM file: " + filename);
     
     Reset();
-    rom_.LoadFile(path);
-    MirrorRomToRam();
-    SetPC(rom_.entry());
+    ram_.LoadFile(path);
+    SetPC(ram_.entry());
 }
 
 Word CPU::pc() const {
@@ -52,7 +51,7 @@ Byte CPU::ReadMemoryByte(Word address) const {
     return ram_.ReadByte(address);
 }
 
-std::vector<Byte> CPU::ReadFramebuffer() const {
+std::vector<Byte> CPU::ReadFramebuffer() {
     std::vector<Byte> buf;
     buf.reserve(kFramebufferBytes);
     for (size_t i = 0; i < kFramebufferBytes; ++i) {
@@ -421,71 +420,71 @@ Word CPU::ReadReg(size_t index) const {
     return x[index].value;
 }
 
-alu::AluOp CPU::MapToAluOp(isa::Opcode opcode) const {
-    alu::AluOp op;
+AluOp CPU::MapToAluOp(isa::Opcode opcode) const {
+    AluOp op;
     switch (opcode){
         case isa::Opcode::kAdd:
         case isa::Opcode::kAddi:
-            op = alu::AluOp::kAdd;
+            op = AluOp::kAdd;
             break;
         case isa::Opcode::kAnd:
         case isa::Opcode::kAndi:
-            op = alu::AluOp::kAnd;
+            op = AluOp::kAnd;
             break;
         case isa::Opcode::kSub:
-            op = alu::AluOp::kSub;
+            op = AluOp::kSub;
             break;
         case isa::Opcode::kOr:
         case isa::Opcode::kOri:
-            op = alu::AluOp::kOr;
+            op = AluOp::kOr;
             break;
         case isa::Opcode::kXor:
         case isa::Opcode::kXori:
-            op = alu::AluOp::kXor;
+            op = AluOp::kXor;
             break;
         case isa::Opcode::kSlt:
         case isa::Opcode::kSlti:
-            op = alu::AluOp::kSlt;
+            op = AluOp::kSlt;
             break;
         case isa::Opcode::kSltu:
         case isa::Opcode::kSltiu:
-            op = alu::AluOp::kSltu;
+            op = AluOp::kSltu;
             break;
         case isa::Opcode::kSll:
         case isa::Opcode::kSlli:
-            op = alu::AluOp::kSll;
+            op = AluOp::kSll;
             break;
         case isa::Opcode::kSrl:
         case isa::Opcode::kSrli:
-            op = alu::AluOp::kSrl;
+            op = AluOp::kSrl;
             break;
         case isa::Opcode::kSra:
         case isa::Opcode::kSrai:
-            op = alu::AluOp::kSra;
+            op = AluOp::kSra;
             break;
         case isa::Opcode::kMul:
-            op = alu::AluOp::kMul;
+            op = AluOp::kMul;
             break;
         case isa::Opcode::kMulh:
-            op = alu::AluOp::kMulh;
+            op = AluOp::kMulh;
             break;
         case isa::Opcode::kMulhsu:
-            op = alu::AluOp::kMulhsu;
+            op = AluOp::kMulhsu;
             break;
         case isa::Opcode::kMulhu:
-            op = alu::AluOp::kMulhu;
+            op = AluOp::kMulhu;
             break;
         case isa::Opcode::kDiv:
-            op = alu::AluOp::kDiv;
+            op = AluOp::kDiv;
             break;
         case isa::Opcode::kDivu:
-            op = alu::AluOp::kDivu;
+            op = AluOp::kDivu;
             break;
         case isa::Opcode::kRem:
-            op = alu::AluOp::kRem;
+            op = AluOp::kRem;
             break;
         case isa::Opcode::kRemu:
-            op = alu::AluOp::kRemu;
+            op = AluOp::kRemu;
             break;
         case isa::Opcode::kUnknown:
         default:
@@ -495,9 +494,9 @@ alu::AluOp CPU::MapToAluOp(isa::Opcode opcode) const {
     return op;
 }
 
-alu::AluOutput CPU::EffectiveAddress(Word base, int32_t offset) const {
+AluOutput CPU::EffectiveAddress(Word base, int32_t offset) const {
     // compute effective address by adding base and offset
-    return alu_.Execute(base, static_cast<Word>(offset), alu::AluOp::kAdd);
+    return alu_.Execute(base, static_cast<Word>(offset), AluOp::kAdd);
 }
 
 bool CPU::Execute(DecodedInstruction instr) {
@@ -577,8 +576,8 @@ bool CPU::Execute(DecodedInstruction instr) {
 bool CPU::ExecuteRType(DecodedInstruction instr) {
     Word rs1 = ReadReg(static_cast<size_t>(instr.rs1));
     Word rs2 = ReadReg(static_cast<size_t>(instr.rs2));
-    alu::AluOp alu_opcode = MapToAluOp(instr.opcode);
-    alu::AluOutput alu_output = alu_.Execute(rs1, rs2, alu_opcode);
+    AluOp alu_opcode = MapToAluOp(instr.opcode);
+    AluOutput alu_output = alu_.Execute(rs1, rs2, alu_opcode);
     WriteReg(static_cast<size_t>(instr.rd), alu_output.result);
     return false;
 }
@@ -597,8 +596,8 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
         case isa::Opcode::kSrai: {
             Word rs1 = ReadReg(static_cast<size_t>(instr.rs1));
             Word rs2 = static_cast<Word>(instr.imm); // immediate as second operand
-            alu::AluOp alu_opcode = MapToAluOp(instr.opcode);
-            alu::AluOutput alu_output = alu_.Execute(rs1, rs2, alu_opcode);
+            AluOp alu_opcode = MapToAluOp(instr.opcode);
+            AluOutput alu_output = alu_.Execute(rs1, rs2, alu_opcode);
             WriteReg(static_cast<size_t>(instr.rd), alu_output.result);
             return false;
         }
@@ -610,7 +609,7 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
         case isa::Opcode::kLhu:
         case isa::Opcode::kLw: {
             Word base = ReadReg(static_cast<size_t>(instr.rs1));
-            alu::AluOutput addr = EffectiveAddress(base, instr.imm);
+            AluOutput addr = EffectiveAddress(base, instr.imm);
             switch (instr.opcode) {
                 case isa::Opcode::kLb: {
                     Byte raw = ram_.ReadByte(addr.result);
@@ -646,7 +645,7 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
         case isa::Opcode::kJalr: {
             Word return_address = pc_.value + 4;
             Word base = ReadReg(static_cast<size_t>(instr.rs1));
-            alu::AluOutput target_address = EffectiveAddress(base, instr.imm);
+            AluOutput target_address = EffectiveAddress(base, instr.imm);
             target_address.result &= ~1u;  // clear LSB per spec
             if (target_address.result & 0x3) {
                 throw std::runtime_error("JALR: misaligned target address");
@@ -673,7 +672,7 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
 bool CPU::ExecuteSType(DecodedInstruction instr) {
     Word base = ReadReg(static_cast<size_t>(instr.rs1));
     Word value = ReadReg(static_cast<size_t>(instr.rs2));
-    alu::AluOutput addr = EffectiveAddress(base, instr.imm);
+    AluOutput addr = EffectiveAddress(base, instr.imm);
     switch (instr.opcode){
         case isa::Opcode::kSb:
             ram_.WriteByte(static_cast<size_t>(addr.result), static_cast<Byte>(value & 0xFF));
@@ -694,7 +693,7 @@ bool CPU::ExecuteSType(DecodedInstruction instr) {
 bool CPU::ExecuteJType(DecodedInstruction instr) {
     Word return_address = pc_.value + 4; // address of the next instruction
     WriteReg(static_cast<size_t>(instr.rd), return_address);
-    alu::AluOutput target_address = EffectiveAddress(pc_.value, instr.imm);
+    AluOutput target_address = EffectiveAddress(pc_.value, instr.imm);
     if (target_address.result & 0x3){
         throw std::runtime_error("JAL: misaligned target address");    
     }
@@ -710,7 +709,7 @@ bool CPU::ExecuteUType(DecodedInstruction instr) {
             WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(instr.imm)); 
             break;
         case isa::Opcode::kAuipc: {
-            alu::AluOutput result = EffectiveAddress(pc_.value, instr.imm);
+            AluOutput result = EffectiveAddress(pc_.value, instr.imm);
             WriteReg(static_cast<size_t>(instr.rd), result.result); 
             break;
         }
@@ -723,7 +722,7 @@ bool CPU::ExecuteUType(DecodedInstruction instr) {
 bool CPU::ExecuteBType(DecodedInstruction instr) {
     Word rs1 = ReadReg(static_cast<size_t>(instr.rs1));
     Word rs2 = ReadReg(static_cast<size_t>(instr.rs2));
-    alu::AluOutput target_address = EffectiveAddress(pc_.value, instr.imm);
+    AluOutput target_address = EffectiveAddress(pc_.value, instr.imm);
     bool take_branch = false;
     switch (instr.opcode) {
         case isa::Opcode::kBeq:
@@ -766,20 +765,7 @@ void CPU::Reset() {
     // initialize program counter
     SetPC(0);
     ram_.Reset();
-    // required for .string / .ascii support
-    MirrorRomToRam();
-
     halted_ = false;
-}
-
-void CPU::MirrorRomToRam() {
-    // The assembled image (code + data) lives in rom_; loads/stores (lb/lw/sb/sw)
-    // and string syscalls access ram_, so copy the loaded ROM bytes into RAM so
-    // that .string/.word/.byte data is readable through data accesses.
-    size_t bytes = rom_.loaded_bytes();
-    for (size_t i = 0; i < bytes; ++i) {
-        ram_.WriteByte(static_cast<Word>(i), rom_.ReadByte(static_cast<Word>(i)));
-    }
 }
 
 void CPU::Step() {

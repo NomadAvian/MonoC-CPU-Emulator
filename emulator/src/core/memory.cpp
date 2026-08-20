@@ -7,13 +7,8 @@
 
 #include "../common.h"
 
-Word Memory::WrapAddr(Word addr) const {
-	// fast modulo with powers of 2
-    return addr & static_cast<Word>(size() - 1);
-}
 
 void Memory::LoadFile(const std::string& filename) {
-    loaded_bytes_ = 0;
     entry_ = 0;
     std::ifstream file(filename);
     if (!file)  {
@@ -23,7 +18,6 @@ void Memory::LoadFile(const std::string& filename) {
 
     std::string line;
     Word addr = 0;
-    size_t bytes = 0;
     Word word = 0;
     size_t pending = 0;
 
@@ -31,7 +25,6 @@ void Memory::LoadFile(const std::string& filename) {
         if (pending == 4) {
             WriteWord(addr, word);
             addr += 4;
-            bytes += 4;
             pending = 0;
             word = 0;
         }
@@ -57,33 +50,30 @@ void Memory::LoadFile(const std::string& filename) {
             FlushWord();
         } while (iss >> tok);
     }
-    loaded_bytes_ = bytes;
 }
 
 void Memory::Reset() {
-	for (size_t i = 0; i < data_.size(); i++) {
-		data_[i] = 0;
-	}
-	loaded_bytes_ = 0;
+	data_.clear();
 	entry_ = 0;
 }
 
 Byte Memory::ReadByte(Word addr) const {
-	return data_[WrapAddr(addr)];
+	auto it = data_.find(addr);
+	return (it == data_.end()) ? Byte{0} : it->second;
 }
 
 Half Memory::ReadHalf(Word addr) const {
-	Byte b0 = data_[WrapAddr(addr)];
-	Byte b1 = data_[WrapAddr(addr + 1)];
+	Byte b0 = ReadByte(addr);
+	Byte b1 = ReadByte(addr + 1);
 	return (static_cast<Half>(b0)) |
 		   (static_cast<Half>(b1) << 8);
 }
 
 Word Memory::ReadWord(Word addr) const {
-	Byte b0 = data_[WrapAddr(addr)];
-	Byte b1 = data_[WrapAddr(addr + 1)];
-	Byte b2 = data_[WrapAddr(addr + 2)];
-	Byte b3 = data_[WrapAddr(addr + 3)];
+	Byte b0 = ReadByte(addr);
+	Byte b1 = ReadByte(addr + 1);
+	Byte b2 = ReadByte(addr + 2);
+	Byte b3 = ReadByte(addr + 3);
 	return (static_cast<Word>(b0)) |
 		   (static_cast<Word>(b1) << 8)  |
 		   (static_cast<Word>(b2) << 16) |
@@ -92,7 +82,7 @@ Word Memory::ReadWord(Word addr) const {
 
 void Memory::WriteByte(Word addr, Byte value) {
 	if (read_only_) return;
-	data_[WrapAddr(addr)] = value;
+	data_[addr] = value;
 }
 
 void Memory::WriteHalf(Word addr, Half value) {
@@ -100,8 +90,8 @@ void Memory::WriteHalf(Word addr, Half value) {
 	Byte first  = static_cast<Byte>((value) & 0xFF);
 	Byte second = static_cast<Byte>((value >> 8) & 0xFF);
 
-	data_[WrapAddr(addr)]     = first;
-	data_[WrapAddr(addr + 1)] = second;
+	data_[addr]     = first;
+	data_[addr + 1] = second;
 }
 
 void Memory::WriteWord(Word addr, Word value) {
@@ -111,8 +101,8 @@ void Memory::WriteWord(Word addr, Word value) {
 	Byte b2 = static_cast<Byte>((value >> 16) & 0xFF);
 	Byte b3 = static_cast<Byte>((value >> 24) & 0xFF);
 
-	data_[WrapAddr(addr)]     = b0;
-	data_[WrapAddr(addr + 1)] = b1;
-	data_[WrapAddr(addr + 2)] = b2;
-	data_[WrapAddr(addr + 3)] = b3;
+	data_[addr]     = b0;
+	data_[addr + 1] = b1;
+	data_[addr + 2] = b2;
+	data_[addr + 3] = b3;
 }

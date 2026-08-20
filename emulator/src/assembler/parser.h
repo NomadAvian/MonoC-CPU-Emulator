@@ -67,6 +67,7 @@ private:
 
     static const Entry* Lookup(const std::string& mnemonic);
     static size_t FirstNonLabel(const Statement& stmt);
+    bool IsKeyword(const std::string& name) const;
 
     [[noreturn]] void Error(const Statement& s, const std::string& msg) const;
     void ExpectReg(const Statement& s, size_t& i, int& reg) const;
@@ -102,6 +103,8 @@ private:
 
     static const std::unordered_map<std::string, Entry> kEntries;
     static const std::unordered_map<std::string, int> kAbiRegisters;
+    // Named constants resolvable anywhere an identifier/label is allowed.
+    static const std::unordered_map<std::string, Word> kKeywords;
 };
 
 }  // namespace riscv
