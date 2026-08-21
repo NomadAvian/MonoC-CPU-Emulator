@@ -3,7 +3,7 @@
 #include <cassert>
 #include <climits>
 
-namespace alu {
+namespace cpu {
 
 AluOutput Alu::FixOutput(uint32_t result, bool carry) {
     return AluOutput{
@@ -129,4 +129,4 @@ AluOutput Alu::Execute(uint32_t rs1, uint32_t rs2, AluOp op) const {
     }
 }
 
-}  // namespace alu
+}  // namespace cpu

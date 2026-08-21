@@ -46,3 +46,4 @@ run: $(TARGET)
 
 clean:
 	rm -f $(TARGET)
+	rm -f emulator/roms/session_*.txt

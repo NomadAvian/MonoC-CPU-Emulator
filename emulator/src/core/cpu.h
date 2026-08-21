@@ -68,7 +68,7 @@ struct DecodedInstruction {
 
 class CPU {
 public:
-    CPU(std::string filename = "") : ram_(), rom_() {
+    CPU(std::string filename = "") : ram_() {
         Reset();
         LoadROM(filename);
     }
@@ -88,7 +88,7 @@ public:
 
     void Reset();
     void Step();
-    std::vector<Byte> ReadFramebuffer() const;
+    std::vector<Byte> ReadFramebuffer();
 
     bool IsHalted() const { return halted_; }
 
@@ -102,15 +102,13 @@ private:
     Reg         x[32];
     Reg         pc_;
     Memory      ram_;
-    Memory      rom_;
-    alu::Alu    alu_;
+    Alu    alu_;
     bool        halted_;
     // std::string output_;
     // std::string input_;
     // size_t      input_pos_ = 0;
 
     int32_t SignExtend(uint32_t value, uint32_t bits) const;
-    void MirrorRomToRam();
 
     // fixed bit-field extractors
     Word ExtractOpcode(Word instruction);
@@ -119,13 +117,13 @@ private:
     Word ExtractFunct7(Word instruction);
     Word ExtractRs1   (Word instruction);
     Word ExtractRs2   (Word instruction);
-    alu::AluOp MapToAluOp(isa::Opcode opcode) const;
-    alu::AluOutput EffectiveAddress(Word base, int32_t offset) const;
+    AluOp MapToAluOp(isa::Opcode opcode) const;
+    AluOutput EffectiveAddress(Word base, int32_t offset) const;
 
     void WriteReg(size_t index, Word value);
 
-    Word Fetch() const {
-        return rom_.ReadWord(pc_.value);
+    Word Fetch() {
+        return ram_.ReadWord(pc_.value);
     }
 
     DecodedInstruction Decode     (Word instruction);

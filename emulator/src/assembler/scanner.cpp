@@ -10,6 +10,7 @@
 #include "error.h"
 #include "token.h"
 #include "token_type.h"
+#include "value.h"
 
 namespace riscv {
 
@@ -56,7 +57,7 @@ std::vector<Token> Scanner::ScanTokens() {
         ScanToken();
     }
 
-    tokens_.emplace_back(TokenType::kEndOfFile, "", std::monostate{}, line_);
+    tokens_.emplace_back(TokenType::kEndOfFile, "", LiteralValue{}, line_);
     return tokens_;
 }
 

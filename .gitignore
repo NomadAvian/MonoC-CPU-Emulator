@@ -8,6 +8,7 @@ frontend/.env
 .zed
 .gram
 test_program.txt
+session_*.txt
 
 .DS_Store
 

@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-namespace alu {
+namespace cpu {
 
 enum class AluOp {
 
@@ -56,6 +56,6 @@ private:
     [[nodiscard]] static AluOutput FixOutput(uint32_t result, bool carry = false);
 };
 
-}  // namespace alu
+}  // namespace cpu
 
 #endif  // ALU_ALU_H_

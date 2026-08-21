@@ -66,6 +66,7 @@
   --code-label: #fab387;
   --code-meta: #f5c2e7;
   --code-variable: #cdd6f4;
+  --code-constant: #f38ba8;
   --code-punctuation: #bac2de;
 }
 
@@ -134,5 +135,6 @@
   --code-label: #8ec07c;
   --code-meta: #83a598;
   --code-variable: #fbf1c7;
+  --code-constant: #fb4934;
   --code-punctuation: #d5c4a1;
 }
