@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import './LibraryPanel.css'
-import closeIcon from '../../../assets/close.svg'
 import { useLibraryStore } from '../../../store/libraryStore'
+import ModalWrapper from '../../ui/ModalWrapper'
 
 export default function LibraryPanel({ onClose }) {
   // ── Store Selectors & Actions ──
@@ -23,10 +23,6 @@ export default function LibraryPanel({ onClose }) {
   // ── Handlers ──
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
-  }
-
-  const handleModalClick = (e) => {
-    e.stopPropagation()
   }
 
   const grouped = useMemo(() => {
@@ -60,28 +56,7 @@ export default function LibraryPanel({ onClose }) {
   }
 
   return (
-    <div className="modal-overlay" id="library-overlay" onClick={onClose}>
-      <div
-        id="library-modal"
-        className="library-modal"
-        onClick={handleModalClick}
-      >
-        {/* Header */}
-        <div className="library-modal__header">
-          <div className="library-modal__title-wrap">
-            <span className="library-modal__title">Code Library</span>
-            <span className="library-modal__subtitle">Example Programs</span>
-          </div>
-          <button
-            id="library-close-btn"
-            className="icon-btn library-modal__close-btn"
-            aria-label="Close library"
-            onClick={onClose}
-          >
-            <img src={closeIcon} alt="Close" />
-          </button>
-        </div>
-
+    <ModalWrapper title="Code Library" onClose={onClose} style={{ maxWidth: '680px' }}>
         {/* Search Bar */}
         <div className="library-modal__search-wrap">
           <input
@@ -137,7 +112,6 @@ export default function LibraryPanel({ onClose }) {
               </details>
             ))}
         </div>
-      </div>
-    </div>
+    </ModalWrapper>
   )
 }

@@ -20,8 +20,8 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   pointer-events: auto;
   cursor: pointer;
-  animation: toast-in 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transition: opacity 0.2s, transform 0.2s;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .toast:hover {

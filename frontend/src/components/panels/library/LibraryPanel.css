@@ -1,42 +1,4 @@
-.library-modal {
-  width: 100%;
-  max-width: 680px;
-  max-height: 85vh;
-  font-family: var(--font-sans);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  box-shadow: var(--shadow-lg);
-  animation: modal-in 180ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
 
-.library-modal__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-.library-modal__title-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.library-modal__title {
-  font-size: var(--fs-base);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.library-modal__subtitle {
-  font-size: var(--fs-xs);
-  color: var(--text-muted);
-}
 
 .library-modal__search-wrap {
   padding: 12px 16px 8px;
@@ -86,10 +48,10 @@
 
 .library-category__summary {
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--accent);
+  color: var(--text-muted);
   margin-bottom: 2px;
   cursor: pointer;
   padding: 4px 0;

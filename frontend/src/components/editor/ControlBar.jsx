@@ -77,7 +77,16 @@ export default function ControlBar() {
                 {loading ? (
                   <span className="control-bar__spinner" />
                 ) : (
-                  <img src={icon} alt={label} className="control-bar__icon" />
+                  <span
+                    className="control-bar__icon"
+                    style={{
+                      WebkitMask: `url("${icon}") no-repeat center / contain`,
+                      mask: `url("${icon}") no-repeat center / contain`,
+                      backgroundColor: 'currentColor'
+                    }}
+                    role="img"
+                    aria-label={label}
+                  />
                 )}
               </button>
             )

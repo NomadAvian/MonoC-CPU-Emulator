@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react'
 import { DOCS_DATA } from '../../../data/docsData'
 import './DocsPanel.css'
-import { motion } from "motion/react"
+import { useUIStore } from '../../../store/uiStore'
+import collapseIcon from '../../../assets/collapse.svg'
 
 export default function DocsPanel({ style }) {
+  const toggleDocs = useUIStore(s => s.toggleDocs)
   // ── Local State ──
   const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState(() => new Set(DOCS_DATA.map(d => d.category)))
@@ -72,6 +74,14 @@ export default function DocsPanel({ style }) {
               {isAllExpanded ? "▼" : "▲"}
             </button>
           </div>
+          <button
+            className="icon-btn docs-panel__close-btn"
+            onClick={toggleDocs}
+            title="Collapse Docs"
+            aria-label="Collapse Docs"
+          >
+            <img src={collapseIcon} alt="Collapse" />
+          </button>
         </div>
 
         <div className="docs-panel__content">

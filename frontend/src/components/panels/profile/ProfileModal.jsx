@@ -3,7 +3,6 @@ import { useAuthStore } from '../../../store/authStore'
 import { useEditorStore } from '../../../store/editorStore'
 import { useUIStore } from '../../../store/uiStore'
 import ModalWrapper from '../../ui/ModalWrapper'
-import loadIcon from '../../../assets/load.svg'
 import deleteIcon from '../../../assets/delete.svg'
 import './ProfileModal.css'
 
@@ -70,16 +69,14 @@ export default function ProfileModal({ onClose }) {
         ) : (
           <div className="profile-modal__list">
             {codes.map((item) => (
-              <div key={item.id} className="profile-modal__item">
+              <div 
+                key={item.id} 
+                className="profile-modal__item"
+                onClick={() => handleLoadCode(item)}
+                title="Load program"
+              >
                 <span className="profile-modal__item-name">{item.name}</span>
                 <div className="profile-modal__item-actions">
-                  <button
-                    className="icon-btn"
-                    onClick={() => handleLoadCode(item)}
-                    title="Load program"
-                  >
-                    <img src={loadIcon} alt="Load" />
-                  </button>
                   <button
                     className="icon-btn profile-modal__action-btn--delete"
                     onClick={(e) => handleDeleteCode(e, item.id, item.name)}

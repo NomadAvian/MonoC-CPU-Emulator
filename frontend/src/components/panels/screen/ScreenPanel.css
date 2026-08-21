@@ -49,8 +49,6 @@
   font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--text-primary);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .screen-panel__body {

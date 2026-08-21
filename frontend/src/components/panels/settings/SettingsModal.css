@@ -125,20 +125,16 @@ button.settings-modal__save-btn {
   font-size: var(--fs-base);
   font-weight: 600;
   text-align: center;
-  background: var(--btn-active-bg) !important;
-  border-color: var(--btn-active-bg) !important;
-  color: var(--btn-active-fg) !important;
-}
-
-button.settings-modal__save-btn:hover:not(:disabled) {
-  background: var(--btn-active-hover) !important;
-  border-color: var(--btn-active-hover) !important;
-  color: var(--btn-active-fg) !important;
-}
-
-button.settings-modal__save-btn.saved {
   background: var(--green) !important;
   border-color: var(--green) !important;
   color: var(--bg-base) !important;
+}
+
+button.settings-modal__save-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+button.settings-modal__save-btn.saved {
+  opacity: 0.8;
   pointer-events: none;
 }

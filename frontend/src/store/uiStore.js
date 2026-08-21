@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 
 const initialState = {
+  isLeftOpen: true,
   isChatOpen: false,
   isDocsOpen: false,
   leftWidth: 260,
@@ -18,6 +19,7 @@ export const useUIStore = create((set) => ({
   setRightWidth: (rightWidth) => set({ rightWidth }),
   setBottomHeight: (bottomHeight) => set({ bottomHeight }),
 
+  toggleLeft: () => set((state) => ({ isLeftOpen: !state.isLeftOpen })),
   toggleChat: () => set((state) => ({ isChatOpen: !state.isChatOpen })),
   toggleDocs: () => set((state) => ({ isDocsOpen: !state.isDocsOpen })),
 

@@ -44,22 +44,38 @@
   text-decoration: none;
   cursor: pointer;
   transition: background 0.2s;
+  color: var(--text-secondary);
 }
 
-.topbar__nav-btn:hover,
-.topbar__nav-btn:active {
+.topbar__nav-btn:hover {
   background: var(--bg-hover);
   transform: none !important;
 }
 
 .topbar__nav-btn--active {
-  background: var(--btn-active-bg) !important;
-  color: var(--btn-active-fg) !important;
+  background: var(--bg-hover) !important;
+  transform: none !important;
 }
 
-.topbar__nav-btn--active:hover {
-  background: var(--btn-active-hover) !important;
-  color: var(--btn-active-fg) !important;
+.topbar__ai-btn {
+  background: var(--accent-dim) !important;
+}
+
+.topbar__ai-btn .topbar__icon {
+  color: var(--accent);
+  filter: drop-shadow(0 0 2px var(--accent-dim));
+}
+
+.topbar__ai-btn:hover {
+  background: rgba(198, 160, 246, 0.15) !important; 
+}
+[data-theme="gruvbox"] .topbar__ai-btn:hover {
+  background: rgba(254, 128, 25, 0.15) !important;
+}
+
+.topbar__ai-btn.topbar__nav-btn--active {
+  /* less saturated than full active color, just slightly more intense than dim */
+  background: var(--accent-border) !important;
 }
 
 .topbar__icon {
@@ -71,4 +87,70 @@
 
 .topbar__nav-btn--active .topbar__icon {
   opacity: 1;
+}
+
+/* dropdown menu */
+.topbar__overflow {
+  position: relative;
+}
+
+.topbar__overflow-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 170px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 6px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: overflow-in 0.12s ease;
+}
+
+@keyframes overflow-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.topbar__overflow-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-secondary);
+  font: 500 var(--fs-sm) var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  text-decoration: none;
+}
+
+.topbar__overflow-item:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.topbar__overflow-item .topbar__icon {
+  opacity: 0.7;
+}
+
+.topbar__overflow-item:hover .topbar__icon {
+  opacity: 1;
+}
+
+.topbar__overflow-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
 }

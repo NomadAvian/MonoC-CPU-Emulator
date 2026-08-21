@@ -70,6 +70,26 @@ button.ui-button.control-bar__btn {
   opacity: 0.9;
 }
 
+#ctrl-play {
+  color: var(--green);
+}
+
+#ctrl-stop {
+  color: var(--red);
+}
+
+#ctrl-step-over {
+  color: var(--cyan);
+}
+
+#ctrl-compile {
+  color: var(--text-primary);
+}
+
+#ctrl-reset {
+  color: var(--yellow);
+}
+
 button.ui-button.control-bar__btn:hover:not(:disabled) {
   background: var(--bg-hover);
   border-color: transparent;
