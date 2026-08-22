@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { SimpleMarkdown } from './SimpleMarkdown'
 import { useChatStore } from '../../../store/chatStore'
+import { useUIStore } from '../../../store/uiStore'
 import './ChatPanel.css'
 import sendIcon from '../../../assets/send-horizontal.svg'
 
@@ -18,6 +19,7 @@ export default function ChatPanel() {
   const messages    = useChatStore(s => s.messages)
   const isLoading   = useChatStore(s => s.isLoading)
   const sendMessage = useChatStore(s => s.sendMessage)
+  const addToast    = useUIStore(s => s.addToast)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -29,6 +31,20 @@ export default function ChatPanel() {
     el.style.height = 'auto'
     el.style.height = `${Math.min(el.scrollHeight, MAX_TEXTAREA_HEIGHT)}px`
   }, [input])
+
+  useEffect(() => {
+    const handleCopyClick = (e) => {
+      const btn = e.target.closest('.chat-codeblock__copy-btn')
+      if (!btn) return
+      const code = btn.getAttribute('data-code')
+      if (code) {
+        navigator.clipboard.writeText(code)
+        addToast('Copied', 'success', 1500)
+      }
+    }
+    document.addEventListener('click', handleCopyClick)
+    return () => document.removeEventListener('click', handleCopyClick)
+  }, [addToast])
 
   // ── Handlers ──
   const handleInputChange = (e) => {
