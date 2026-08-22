@@ -37,7 +37,7 @@ export function SimpleMarkdown({ content }) {
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     // lists
     .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    .replace(/((?:<li>.*?<\/li>\n?)+)/g, '<ul>$1</ul>')
     // blank lines → paragraph breaks
     .replace(/\n{2,}/g, '</p><p>')
 

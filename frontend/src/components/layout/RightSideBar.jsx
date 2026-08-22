@@ -1,11 +1,20 @@
 import './RightSideBar.css'
 import { motion } from 'motion/react'
 import ChatPanel from '../panels/chat/ChatPanel'
+import DocsPanel from '../panels/docs/DocsPanel'
 import { useUIStore } from '../../store/uiStore'
-import closeIcon from '../../assets/close.svg'
+import collapseIcon from '../../assets/collapse.svg'
 
 export default function RightSideBar({ style }) {
+  const isChatOpen = useUIStore(s => s.isChatOpen)
+  const isDocsOpen = useUIStore(s => s.isDocsOpen)
   const toggleChat = useUIStore(s => s.toggleChat)
+  const toggleDocs = useUIStore(s => s.toggleDocs)
+
+  const handleClose = () => {
+    if (isChatOpen) toggleChat()
+    if (isDocsOpen) toggleDocs()
+  }
 
   return (
     <motion.aside
@@ -14,23 +23,28 @@ export default function RightSideBar({ style }) {
       animate={{ width: style.width, opacity: 1 }}
       exit={{ width: 0, opacity: 0 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}
-      style={style}
+      style={{ width: style.width }}
     >
       <div className="panel-content-wrapper" style={{ width: style.width }}>
-        <div className="right-sidebar__header">
-          <span className="right-sidebar__title">MonoC AI</span>
+        <div className="tab-bar tab-bar--sidebar">
           <button
-            id="chat-hide-btn"
-            className="icon-btn right-sidebar__hide-btn"
-            onClick={toggleChat}
-            title="Hide chat panel"
-            aria-label="Hide chat panel"
+            className="icon-btn tab-bar__collapse-btn--left"
+            onClick={handleClose}
+            title="Collapse Sidebar"
           >
-            <img src={closeIcon} alt="Close" />
+            <span
+              className="icon-collapse icon-collapse--right"
+              role="img"
+              aria-label="Collapse"
+            />
           </button>
+          <div className="tab-bar__title">
+            {isChatOpen ? 'MonoC AI' : 'Documentation'}
+          </div>
         </div>
         <div className="right-sidebar__content">
-          <ChatPanel />
+          {isChatOpen && <ChatPanel />}
+          {isDocsOpen && <DocsPanel />}
         </div>
       </div>
     </motion.aside>

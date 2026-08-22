@@ -47,10 +47,10 @@ export default function BottomPanel({ style }) {
           title={isCollapsed ? "Expand Panel" : "Collapse Panel"}
           onClick={handleCollapseClick}
         >
-          <img 
-            src={collapseIcon} 
-            alt="Toggle Collapse" 
-            className={`bottom-panel__collapse-icon ${isCollapsed ? 'bottom-panel__collapse-icon--collapsed' : ''}`}
+          <span 
+            className={`icon-collapse ${isCollapsed ? 'icon-collapse--up' : 'icon-collapse--down'}`}
+            role="img"
+            aria-label="Toggle Collapse"
           />
         </button>
       </div>

@@ -46,23 +46,22 @@ export default function SettingsModal({ onClose }) {
     setDraftFont(opt)
   }
 
-  const handleFontSizeChange = (e) => {
-    let val = parseInt(e.target.value, 10)
-    if (isNaN(val)) val = 16
-    if (val < 16) val = 16
-    if (val > 32) val = 32
-    setDraftFontSize(val)
-  }
+
 
   const handleTabChange = (opt) => {
     setDraftTab(opt)
   }
 
   const handleSave = () => {
+    let finalSize = parseInt(draftFontSize, 10)
+    if (isNaN(finalSize) || finalSize < 16) finalSize = 16
+    if (finalSize > 32) finalSize = 32
+
     setFormat(draftFormat)
     setTheme(draftTheme.toLowerCase())
     setFontStyle(draftFont)
-    setEditorFontSize(draftFontSize)
+    setEditorFontSize(finalSize)
+    setDraftFontSize(finalSize) // update draft state with clamped value
     setTabSize(draftTab)
 
     setSaved(true)
@@ -134,10 +133,9 @@ export default function SettingsModal({ onClose }) {
               type="number"
               className="ui-input"
               value={draftFontSize}
-              onChange={handleFontSizeChange}
+              onChange={(e) => setDraftFontSize(e.target.value)}
               min="16"
               max="32"
-              style={{ width: '80px' }}
             />
           </div>
         </div>

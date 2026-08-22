@@ -17,18 +17,57 @@
 .chat-panel__welcome {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 32px 16px;
-  color: var(--text-muted);
-  text-align: center;
+  gap: 16px;
+  padding: 24px 16px;
+  margin-top: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  align-self: center;
+  max-width: 90%;
+  animation: modal-in 200ms ease-out;
 }
 
-.chat-panel__welcome p {
+.chat-panel__welcome-title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chat-panel__welcome-text {
   font-size: var(--fs-sm);
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: 1.5;
+  margin: 0;
+}
+
+.chat-panel__suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chat-suggestion-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: left;
+}
+
+.chat-suggestion-chip:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-border);
+  color: var(--accent);
 }
 
 /* Input area */
@@ -153,15 +192,33 @@
 }
 
 .chat-message h1 {
-  font-size: 1.25em;
+  font-size: var(--fs-lg);
+  color: var(--text-primary);
+  margin-top: 18px;
+  margin-bottom: 12px;
 }
 
 .chat-message h2 {
-  font-size: 1.15em;
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+  margin-top: 16px;
+  margin-bottom: 10px;
 }
 
 .chat-message h3 {
-  font-size: 1.05em;
+  font-size: var(--fs-base);
+  color: var(--text-primary);
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+.chat-message h4 {
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 12px;
+  margin-bottom: 6px;
 }
 
 .chat-message blockquote {

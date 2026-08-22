@@ -21,23 +21,15 @@ export default function LeftSideBar({ style }) {
 
   if (!isLeftOpen) {
     return (
-      <div className="left-sidebar-container collapsed" style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', borderRight: '1px solid var(--border)' }}>
-        <div style={{ height: '34px', display: 'flex', alignItems: 'center' }}>
+      <div className="left-sidebar-container collapsed">
+        <div className="left-sidebar__collapsed-header">
           <button
             className="icon-btn"
             onClick={toggleLeft}
             title="Expand Sidebar"
           >
             <span
-              style={{
-                display: 'inline-block',
-                width: '18px',
-                height: '18px',
-                WebkitMask: `url("${collapseIcon}") no-repeat center / contain`,
-                mask: `url("${collapseIcon}") no-repeat center / contain`,
-                backgroundColor: 'currentColor',
-                transform: 'scaleX(-1)'
-              }}
+              className="icon-collapse icon-collapse--right"
               role="img"
               aria-label="Expand"
             />
@@ -48,17 +40,16 @@ export default function LeftSideBar({ style }) {
   }
 
   return (
-    <div className="left-sidebar-container" style={{ width: '100%', display: 'flex', flexShrink: 0, height: '100%' }}>
-      <div className="panel-content-wrapper" style={{ width: '100%' }}>
+    <div className="left-sidebar-container">
+      <div className="panel-content-wrapper">
         {/* Tab bar */}
-        <div className="tab-bar" style={{ display: 'flex', paddingLeft: '8px', paddingRight: '4px' }}>
-          <div style={{ display: 'flex', flex: 1, gap: '4px' }}>
+        <div className="tab-bar tab-bar--sidebar">
+          <div className="tab-bar__tabs">
             {TABS.map(tab => (
               <button
                 key={tab}
                 id={`left-tab-${tab.toLowerCase()}`}
                 className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-                style={{ flex: 1 }}
                 onClick={() => handleTabClick(tab)}
               >
                 {tab}
@@ -66,20 +57,12 @@ export default function LeftSideBar({ style }) {
             ))}
           </div>
           <button
-            className="icon-btn"
-            style={{ margin: 'auto 0 auto 8px' }}
+            className="icon-btn tab-bar__collapse-btn"
             onClick={toggleLeft}
             title="Collapse Sidebar"
           >
             <span
-              style={{
-                display: 'inline-block',
-                width: '18px',
-                height: '18px',
-                WebkitMask: `url("${collapseIcon}") no-repeat center / contain`,
-                mask: `url("${collapseIcon}") no-repeat center / contain`,
-                backgroundColor: 'currentColor'
-              }}
+              className="icon-collapse"
               role="img"
               aria-label="Collapse"
             />

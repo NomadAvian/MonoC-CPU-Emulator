@@ -6,3 +6,22 @@
   width: 100%;
   overflow: hidden;
 }
+
+.left-panel-shell {
+  overflow: hidden;
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+}
+
+.left-panel-shell__inner {
+  height: 100%;
+  display: flex;
+}
+
+.screen-panel-wrapper {
+  display: flex;
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+}

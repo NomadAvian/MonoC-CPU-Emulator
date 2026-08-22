@@ -54,10 +54,8 @@ export default function DocsPanel({ style }) {
   }, [search])
 
   return (
-    <div className="docs-panel-container" style={{ width: style.width, display: 'flex', flexShrink: 0, height: '100%' }}>
-      <div className="panel-content-wrapper" style={{ width: style.width }}>
+    <div className="docs-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div className="docs-panel__header">
-          <span className="docs-panel__title">Docs</span>
           <input
             type="text"
             className="ui-input docs-panel__search"
@@ -74,14 +72,6 @@ export default function DocsPanel({ style }) {
               {isAllExpanded ? "▼" : "▲"}
             </button>
           </div>
-          <button
-            className="icon-btn docs-panel__close-btn"
-            onClick={toggleDocs}
-            title="Collapse Docs"
-            aria-label="Collapse Docs"
-          >
-            <img src={collapseIcon} alt="Collapse" />
-          </button>
         </div>
 
         <div className="docs-panel__content">
@@ -110,7 +100,6 @@ export default function DocsPanel({ style }) {
             ))
           )}
         </div>
-      </div>
     </div>
   )
 }

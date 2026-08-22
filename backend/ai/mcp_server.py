@@ -16,5 +16,16 @@ def read_memory(addr: str) -> str:
     res = httpx.get(f"{CROW_BASE}/cpu/memory/{addr}", timeout=5)
     return res.text
 
+@mcp.tool()
+def get_ui_guide() -> str:
+    """Get the documentation for the MonoC Emulator UI."""
+    import pathlib
+    # easy path for ai & docker
+    docs_path = pathlib.Path(__file__).parent / "ui-guide.md"
+    try:
+        return docs_path.read_text()
+    except Exception as e:
+        return f"Error reading UI guide: {e}"
+
 if __name__ == "__main__":
     mcp.run()

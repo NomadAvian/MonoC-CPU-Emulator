@@ -13,7 +13,7 @@ export default function ToastContainer() {
           <motion.div
             key={toast.id}
             layout
-            initial={{ opacity: 0, x: 45, scale: 0.92 }}
+            initial={{ opacity: 0, x: 50, scale: 0.92 }}
             animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
             exit={{ opacity: 0, x: 50, scale: 0.88 }}
             transition={{ type: 'spring', damping: 22, stiffness: 320 }}

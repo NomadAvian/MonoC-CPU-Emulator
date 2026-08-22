@@ -55,7 +55,25 @@ export default function ChatPanel() {
 
         {messages.length === 0 ? (
           <div className="chat-panel__welcome">
-            <p>I can read and interact with the emulator. Try asking me questions about your code and I'll try to help! </p>
+            <h3 className="chat-panel__welcome-title">Welcome to MonoC!</h3>
+            <p className="chat-panel__welcome-text">
+              I'm your local AI assistant. I can write MonoC assembly, debug your code, or explain how this emulator works.
+            </p>
+            <div className="chat-panel__suggestions">
+              <button 
+                className="chat-suggestion-chip"
+                onClick={() => sendMessage("Explain the UI layout")}
+              >
+                Explain the UI layout
+              </button>
+
+              <button 
+                className="chat-suggestion-chip"
+                onClick={() => sendMessage("What does line 10 do?")}
+              >
+                What does line 10 do?
+              </button>
+            </div>
           </div>
         ) : (
           messages.map((msg, i) => (

@@ -5,7 +5,6 @@ import MainLayout from './layout/MainLayout'
 import TopBar from './layout/TopBar'
 import LeftSideBar from './layout/LeftSideBar'
 import RightSideBar from './layout/RightSideBar'
-import DocsPanel from './panels/docs/DocsPanel'
 import ScreenPanel from './panels/screen/ScreenPanel'
 import EditorPanel from './layout/EditorPanel'
 import BottomPanel from './layout/BottomPanel'
@@ -19,13 +18,12 @@ import { useScreenStore } from '../store/screenStore'
 const LEFT_MIN = 260; const LEFT_MAX = 480
 const RIGHT_MIN = 280; const RIGHT_MAX = 800
 const BOTTOM_MIN = 80; const BOTTOM_MAX = 520
-const DOCS_MIN = 280; const DOCS_MAX = 800 // left panel too small for it
 
 function App() {
   // ── Store Selectors ──
   const leftWidth = useUIStore(s => s.leftWidth)
-  const docsWidth = useUIStore(s => s.docsWidth)
   const rightWidth = useUIStore(s => s.rightWidth)
+  const screenWidth = useUIStore(s => s.screenWidth)
   const bottomHeight = useUIStore(s => s.bottomHeight)
 
   // ── Store Selectors ──
@@ -43,11 +41,11 @@ function App() {
   const onLeftResize = useCallback((d) => {
     useUIStore.setState(s => ({ leftWidth: Math.max(LEFT_MIN, Math.min(LEFT_MAX, s.leftWidth + d)) }))
   }, [])
-  const onDocsResize = useCallback((d) => {
-    useUIStore.setState(s => ({ docsWidth: Math.max(DOCS_MIN, Math.min(DOCS_MAX, s.docsWidth + d)) }))
-  }, [])
   const onRightResize = useCallback((d) => {
     useUIStore.setState(s => ({ rightWidth: Math.max(RIGHT_MIN, Math.min(RIGHT_MAX, s.rightWidth - d)) }))
+  }, [])
+  const onScreenResize = useCallback((d) => {
+    useUIStore.setState(s => ({ screenWidth: Math.max(RIGHT_MIN, Math.min(RIGHT_MAX, s.screenWidth - d)) }))
   }, [])
   const onBottomResize = useCallback((d) => {
     useUIStore.setState(s => ({ bottomHeight: Math.max(BOTTOM_MIN, Math.min(BOTTOM_MAX, s.bottomHeight - d)) }))
@@ -61,40 +59,27 @@ function App() {
         {/* Left panel shell */}
         <motion.aside
           className="panel left-panel-shell"
-          animate={{ width: isDocsOpen ? docsWidth : (isLeftOpen ? leftWidth : 44) }}
+          animate={{ width: isLeftOpen ? leftWidth : 44 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
-          style={{ overflow: 'hidden', flexShrink: 0, height: '100%', display: 'flex' }}
         >
           <AnimatePresence mode="wait" initial={false}>
-            {isDocsOpen ? (
-              <motion.div
-                key="docs-panel"
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -16 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-                style={{ width: docsWidth, height: '100%', display: 'flex' }}
-              >
-                <DocsPanel style={{ width: docsWidth }} />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="left-sidebar"
-                initial={{ opacity: 0, x: -16 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -16 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-                style={{ width: isLeftOpen ? leftWidth : 44, height: '100%', display: 'flex' }}
-              >
-                <LeftSideBar style={{ width: isLeftOpen ? leftWidth : 44 }} />
-              </motion.div>
-            )}
+            <motion.div
+              key="left-sidebar"
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -16 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              className="left-panel-shell__inner"
+              style={{ width: isLeftOpen ? leftWidth : 44 }}
+            >
+              <LeftSideBar style={{ width: isLeftOpen ? leftWidth : 44 }} />
+            </motion.div>
           </AnimatePresence>
         </motion.aside>
 
         <ResizeDivider
           direction="horizontal"
-          onDrag={isDocsOpen ? onDocsResize : onLeftResize}
+          onDrag={onLeftResize}
         />
 
         {/* Center: Editor + bottom panel */}
@@ -107,13 +92,13 @@ function App() {
                 <motion.div
                   key="screen-panel-wrapper"
                   initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: rightWidth }}
+                  animate={{ opacity: 1, width: screenWidth }}
                   exit={{ opacity: 0, width: 0 }}
                   transition={{ duration: 0.2, ease: 'easeOut' }}
-                  style={{ display: 'flex', flexShrink: 0, height: '100%', overflow: 'hidden' }}
+                  className="screen-panel-wrapper"
                 >
-                  <ResizeDivider direction="horizontal" onDrag={onRightResize} />
-                  <ScreenPanel style={{ width: rightWidth }} />
+                  <ResizeDivider direction="horizontal" onDrag={onScreenResize} />
+                  <ScreenPanel style={{ width: screenWidth }} />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -123,14 +108,14 @@ function App() {
         </div>
 
         {/* Right sidebar */}
-        {isChatOpen && (
+        {(isChatOpen || isDocsOpen) && (
           <ResizeDivider
             direction="horizontal"
             onDrag={onRightResize}
           />
         )}
         <AnimatePresence>
-          {isChatOpen && (
+          {(isChatOpen || isDocsOpen) && (
             <RightSideBar key="right-sidebar" style={{ width: rightWidth }} />
           )}
         </AnimatePresence>
