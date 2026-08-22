@@ -1,16 +1,23 @@
 import { useState, useMemo } from 'react'
 import { DOCS_DATA } from '../../../data/docsData'
+import { useUIStore } from '../../../store/uiStore'
+import copyIcon from '../../../assets/copy.svg'
 import './DocsPanel.css'
-import { motion } from "motion/react"
 
 export default function DocsPanel({ style }) {
   // ── Local State ──
   const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState(() => new Set(DOCS_DATA.map(d => d.category)))
+  const addToast = useUIStore(s => s.addToast)
 
   // ── Handlers ──
   const handleSearchChange = (e) => {
     setSearch(e.target.value)
+  }
+
+  const handleCopy = (text) => {
+    navigator.clipboard.writeText(text)
+    addToast('Copied', 'success', 1500)
   }
 
   const isAllExpanded = expanded.size >= DOCS_DATA.length
@@ -92,7 +99,17 @@ export default function DocsPanel({ style }) {
                     <h4>{item.title}</h4>
                     <p>{item.desc}</p>
                     {item.example && (
-                      <pre className="docs-item__example">{item.example}</pre>
+                      <div className="docs-item__example-wrapper">
+                        <button
+                          className="docs-item__copy-btn"
+                          onClick={() => handleCopy(item.example)}
+                          title="Copy to clipboard"
+                          aria-label="Copy code example"
+                        >
+                          <img src={copyIcon} alt="" className="docs-item__copy-icon" />
+                        </button>
+                        <pre className="docs-item__example">{item.example}</pre>
+                      </div>
                     )}
                   </div>
                 ))}
