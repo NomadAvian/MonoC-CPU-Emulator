@@ -70,10 +70,10 @@ class CPU {
 public:
     CPU(std::string filename = "") : ram_() {
         Reset();
-        LoadROM(filename);
+        LoadExecutable(filename);
     }
 
-    void LoadROM(const std::string& filename);	
+    void LoadExecutable(const std::string& filename);	
 
     Word ReadReg (size_t index) const;
     Word pc() const;
@@ -102,7 +102,7 @@ private:
     Reg         x[32];
     Reg         pc_;
     Memory      ram_;
-    Alu    alu_;
+    Alu         alu_;
     bool        halted_;
     // std::string output_;
     // std::string input_;

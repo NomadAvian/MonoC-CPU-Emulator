@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { fetchRegisters, stepCpu, resetCpu, compile } from '../api/cpu'
 import { useEditorStore } from './editorStore'
-import { useLogStore } from './logStore'
 import { useScreenStore } from './screenStore'
 import { useConsoleStore } from './consoleStore'
 import { useMemoryStore } from './memoryStore'
@@ -87,7 +86,7 @@ export const useCPUStore = create((set, get) => ({
       const halted = romSize > 0 && pc >= romSize * 4
 
       if (halted && !get().halted) {
-        useLogStore.getState().addLog('Execution completed')
+        useConsoleStore.getState().writeSys('Execution completed')
       }
 
       set({
@@ -106,9 +105,10 @@ export const useCPUStore = create((set, get) => ({
 
   //  ------ COMPILE ------
   compile: async () => {
-    const log = useLogStore.getState()
+    const consoleStore = useConsoleStore.getState()
+    consoleStore.reset()
     set({ compiling: true })
-    log.addLog('Compiling...')
+    consoleStore.writeSys('Compiling...')
     try {
       const source = useEditorStore.getState().source
       const result = await compile(source)
@@ -119,8 +119,7 @@ export const useCPUStore = create((set, get) => ({
         halted: false,
         compiling: false,
       })
-      log.addLog('Compilation successful')
-      useConsoleStore.getState().reset()
+      consoleStore.writeSys('Compilation successful')
       await get().fetchRegisters()
       maybeRefreshScreen()
       maybeRefreshConsole(true)
@@ -128,7 +127,7 @@ export const useCPUStore = create((set, get) => ({
     } catch (error) {
       set({ compiling: false })
       console.error('compilation failed:', error)
-      log.addLog(`Compilation failed: ${error.message}`)
+      consoleStore.writeSys(`Compilation failed: ${error.message}`)
       return { ok: false, error: error.message };
     }
   },
@@ -136,7 +135,7 @@ export const useCPUStore = create((set, get) => ({
   // -------- STEP --------
   step: async (count = 1) => {
     if (get().halted) {
-      useLogStore.getState().addLog('Program terminated')
+      useConsoleStore.getState().writeSys('Program terminated')
       return false
     }
 
@@ -148,7 +147,7 @@ export const useCPUStore = create((set, get) => ({
       return true
     } catch (error) {
       console.error('step failed:', error)
-      useLogStore.getState().addLog(`Error: ${error.message}`)
+      useConsoleStore.getState().writeSys(`Error: ${error.message}`)
       return false
     }
   },
@@ -192,11 +191,11 @@ export const useCPUStore = create((set, get) => ({
       await get().fetchRegisters(false)
       maybeRefreshScreen()
       maybeRefreshConsole(true)
-      useLogStore.getState().addLog('CPU reset')
+      useConsoleStore.getState().writeSys('CPU reset')
       return true
     } catch (error) {
       console.error('reset failed:', error)
-      useLogStore.getState().addLog(`Error: ${error.message}`)
+      useConsoleStore.getState().writeSys(`Error: ${error.message}`)
       return false
     }
   },

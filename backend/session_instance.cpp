@@ -32,7 +32,7 @@ public:
 
     // registry-guaranteed non-empty sanitized id
     explicit SessionInstance(const std::string& id)
-        : id_(id), rom_name_("session_" + id) {}
+        : id_(id), exec_name_("session_" + id) {}
 
     const std::string& id() const { return id_; }
 
@@ -42,12 +42,12 @@ public:
     size_t Compile(const std::string& source) {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
         const std::vector<Word> words =
-            riscv::Assembler::AssembleToRom(source, rom_name_);
+            riscv::Assembler::AssembleToRom(source, exec_name_);
         if (!cpu_) {
-            cpu_ = std::make_unique<cpu::CPU>(rom_name_ + ".txt");
+            cpu_ = std::make_unique<cpu::CPU>(exec_name_ + ".txt");
         } else {
             cpu_->Reset();
-            cpu_->LoadROM(rom_name_ + ".txt");
+            cpu_->LoadExecutable(exec_name_ + ".txt");
         }
         ClearConsole();
         return words.size();
@@ -119,7 +119,7 @@ public:
 
 private:
     std::string                 id_;
-    std::string                 rom_name_;   // per-session ROM file (no extension)
+    std::string                 exec_name_;   // per-session executable file (no extension)
     std::unique_ptr<cpu::CPU>   cpu_;        // null until the first compile
     std::string                 console_out_;
     std::string                 console_in_;

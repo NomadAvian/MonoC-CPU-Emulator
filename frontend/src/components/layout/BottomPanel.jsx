@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import './BottomPanel.css'
 import OutputTabs from '../panels/bottom/OutputTabs'
-import LogPanel from '../panels/bottom/LogPanel'
 import ConsolePanel from '../panels/bottom/ConsolePanel'
 import collapseIcon from '../../assets/collapse.svg'
 
-const TABS = ['Console', 'Status', 'Disassembler']
+const TABS = ['Console', 'Disassembler']
 
 export default function BottomPanel({ style }) {
   // ── Local State ──
@@ -59,7 +58,6 @@ export default function BottomPanel({ style }) {
       {!isCollapsed && (
         <div className="bottom-panel__content">
           {activeTab === 'Console' && <ConsolePanel />}
-          {activeTab === 'Status' && <LogPanel />}
           {activeTab === 'Disassembler' && <OutputTabs />}
         </div>
       )}

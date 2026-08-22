@@ -1,4 +1,4 @@
-const CROW_BASE = import.meta.env.VITE_CPU_API_URL ?? 'http://localhost:6969'
+const CROW_BASE = import.meta.env.VITE_CPU_API_URL ?? ''
 
 // multiuser: every request carries X-Session-Id and every response may
 // return a (new) id — unknown/absent ids mint a fresh session server-side,

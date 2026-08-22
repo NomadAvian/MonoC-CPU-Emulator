@@ -60,4 +60,9 @@ export const useConsoleStore = create((set, get) => ({
     }
     set({ lines: [...get().lines, { kind: 'in', text: data }] })
   },
+
+  // Appends a system message (like compilation status) to the transcript.
+  writeSys: (text) => {
+    set({ lines: [...get().lines, { kind: 'sys', text }] })
+  },
 }))

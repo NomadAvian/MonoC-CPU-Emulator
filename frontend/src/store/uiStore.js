@@ -7,7 +7,7 @@ const initialState = {
   leftWidth: 260,
   docsWidth: 420,
   rightWidth: 420,
-  bottomHeight: 180,
+  bottomHeight: 240,
   toasts: [],
 }
 

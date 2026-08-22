@@ -21,7 +21,7 @@ export default function ConsolePanel() {
 
   // auto-scroll to bottom on new entries
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    bottomRef.current?.scrollIntoView()
   }, [lines])
 
   const handleSubmit = (e) => {
@@ -33,18 +33,16 @@ export default function ConsolePanel() {
 
   return (
     <div className="console-panel" id="console-panel">
-      <div className="console-panel__header">
-        <p>Console</p>
-        <button className="ui-button ui-button--ghost console-panel__clear" onClick={clear}>
-          Clear
-        </button>
-      </div>
+      <button className="ui-button ui-button--ghost console-panel__clear" onClick={clear}>
+        Clear
+      </button>
       <div className="console-panel__output">
-        {lines.length === 0 ? (
-          <div className="console-panel__empty">No output yet</div>
-        ) : (
-          lines.map((line, i) =>
-            line.kind === 'in' ? (
+        {lines.map((line, i) =>
+            line.kind === 'sys' ? (
+              <div key={i} className="console-panel__line console-panel__line--sys">
+                [SYSTEM] {line.text}
+              </div>
+            ) : line.kind === 'in' ? (
               <div key={i} className="console-panel__line console-panel__line--in">
                 <span className="console-panel__prompt">&gt;</span>
                 <span className="console-panel__in">{line.text}</span>
@@ -55,7 +53,7 @@ export default function ConsolePanel() {
               </pre>
             )
           )
-        )}
+        }
         <form className="console-panel__line console-panel__line--in" onSubmit={handleSubmit}>
           <span className="console-panel__prompt">&gt;</span>
           <input

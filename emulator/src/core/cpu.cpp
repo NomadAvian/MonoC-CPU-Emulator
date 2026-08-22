@@ -9,7 +9,8 @@
 
 namespace cpu {
 
-void CPU::LoadROM(const std::string& filename) {
+void CPU::LoadExecutable(const std::string& filename) {
+    if (filename.empty()) return;
     // TODO: more elegant solution to relative filepaths ?
     // resolve a bare filename
     static const char* kCandidates[] = {

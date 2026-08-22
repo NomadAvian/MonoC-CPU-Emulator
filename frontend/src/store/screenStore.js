@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { fetchScreen } from '../api/cpu'
-import { useLogStore } from './logStore'
 
 const initialState = {
   width: 0,
