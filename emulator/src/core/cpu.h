@@ -6,6 +6,7 @@
 
 #include "../common.h"
 #include "alu.h"
+#include "io.h"
 #include "memory.h"
 
 namespace isa {
@@ -54,6 +55,13 @@ enum class ecall : Word {
     kExit2       = 93
 };
 
+
+enum class CpuState {
+    kRunning,
+    kWaiting,
+    kHalted,
+};
+
 struct Reg {
     Word value;
 };
@@ -84,29 +92,30 @@ public:
     Half ReadMemoryHalf(Word address) const;
     Byte ReadMemoryByte(Word address) const;
 
+    void WriteMemoryByte(Word address, Byte value);
+
     // accessors for frontend
 
     void Reset();
     void Step();
     std::vector<Byte> ReadFramebuffer();
 
-    bool IsHalted() const { return halted_; }
+    void SetIo(Io* io) { io_ = io; }
 
-    // program I/O: print syscalls append to output_, read syscalls consume input_
-    // const std::string& Output() const { return output_; }
-    // void ClearOutput() { output_.clear(); }
-    // void WriteInput(const std::string& data) { input_ += data; }
-    // void ClearInput() { input_.clear(); input_pos_ = 0; }
+    CpuState state() const { return state_; }
+    bool IsWaiting() const { return state_ == CpuState::kWaiting; }
+    bool IsHalted()  const { return state_ == CpuState::kHalted; }
 
 private:
     Reg         x[32];
     Reg         pc_;
     Memory      ram_;
     Alu         alu_;
-    bool        halted_;
-    // std::string output_;
-    // std::string input_;
-    // size_t      input_pos_ = 0;
+    CpuState    state_ = CpuState::kRunning;
+    Io*         io_;
+
+    // the only writer of state_; ecalls and internal ops transition here
+    void SetCpuState(CpuState s) { state_ = s; }
 
     int32_t SignExtend(uint32_t value, uint32_t bits) const;
 

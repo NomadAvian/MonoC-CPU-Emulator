@@ -23,6 +23,7 @@ EMU_ASM     = emulator/src/assembler
 SRC = \
 	$(BACKEND_DIR)/main.cpp \
 	$(EMU_CORE)/cpu.cpp \
+	$(EMU_CORE)/io.cpp \
 	$(EMU_CORE)/memory.cpp \
 	$(EMU_CORE)/alu.cpp \
 	$(EMU_ASM)/parser.cpp \
@@ -38,12 +39,14 @@ all: build
 build: $(TARGET)
 
 $(TARGET): $(SRC)
-	mkdir -p $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET)
+	@echo "Building MonoC..."
+	@mkdir -p $(BUILD_DIR)
+	@$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET)
+	@echo "Build Finished."
 
 run: $(TARGET)
-	cd $(BUILD_DIR) && ./crow_server
+	@cd $(BUILD_DIR) && ./crow_server
 
 clean:
-	rm -f $(TARGET)
-	rm -f emulator/roms/session_*.txt
+	@rm -f $(TARGET)
+	@rm -f emulator/roms/session_*.txt

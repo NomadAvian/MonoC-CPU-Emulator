@@ -2,375 +2,261 @@ export const EXAMPLES_DATA = [
   {
     id: "basic/integer-input-output",
     category: "Basic",
-    title: "integer input and output",
-    description: "Simple integer input and output with prompt message",
-    source: `.data 
-     prompt: .asciiz "Please enter an integer.\\n"
-     res: .asciiz "The value you have entered is:\\n"
-     
-    .text
-        main: 
-            li a7,4
-            la a0,prompt
-            ecall
-            
-            li a7,5
-            ecall 
-            add s0,a7,zero
-            
-            li a7,4
-            la a0,res
-            ecall
-            
-            li a7,1
-            add a0,s0,zero
-            ecall
-            
-            li a7,10
-            ecall`
-  },
-  {
-    id: "basic/integer-even/odd",
-    category: "Basic",
-    title: "Integer even or odd",
-    description: "Code for checking whether an input integer is even or odd",
-    source: `.data 
-     prompt: .asciiz "Please enter an integer.\\n"
-     oddm: .asciiz "\\nThe given number is odd."
-     evenm: .asciiz "\\nThe given number is even."
-
-
-    .text
-
-
-        main: 
-            li a7,4
-            la a0,prompt
-            ecall
-            
-            li a7,5
-            ecall 
-            add s0,a0,zero
-            
-            li t0,2
-            rem t1,s0,t0
-            
-            li a7,4
-            bne t1,zero,odd
-            j even
-            
-        odd: 
-        
-            la a0,oddm
-            j exit
-            
-        even: 
-        
-            la a0,evenm
-            
-        exit: 
-            
-            ecall
-            li a7,10
-            ecall`
-  },
-  {
-    id: "intermediate/array-initialization-traversal",
-    category: "Intermediate",
-    title: "Array initialization and traversal",
-    description: "Array initialization and traversal loop",
-    source: `# An array save[4] = {2,2,2,3} is initialized and the values are traveled and printed in the terminal.
-# While check with array value performed by the below logic:
-# int save[4] = {2,2,2,3};
-# i = 0, k = 2;
-# while (save[i] == k){
-#     i++;
-# }
-
-.data 
-        save: .word 2,2,2,3
-        msg: .asciiz "The array is: \\n"
-        msg2: .asciiz "\\nWhile check save[i]=2 begins:\\n"
-        
-    .text
-        main:
-            la t0,save
-            lw t1,0(t0)
-            li a7,4
-            la a0,msg
-            ecall
-            li a7,1
-            add a0,t1,zero
-            ecall
-            
-            addi t0,t0,4
-            lw t1,0(t0)
-            li a7,1
-            add a0,t1,zero
-            ecall
-            
-            addi t0,t0,4
-            lw t1,0(t0)
-            li a7,1
-            add a0,t1,zero
-            ecall
-            
-            addi t0,t0,4
-            lw t1,0(t0)
-            li a7,1
-            add a0,t1,zero
-            ecall
-            
-            li s0,0
-            li s1,2
-            la s3,save
-            li a7,4
-
-    la a0,msg2
-            ecall
-
-
-    while:
-        sll t0,s0,2
-        add t0,t0,s3
-        lw t1,0(t0)
-        bne t1,s1,exit
-        addi s0,s0,1
-        li a7,1
-        add a0,t1,zero
-        ecall
-        j while 
-        
-    exit: 
-        li a7,10
-        ecall`
-  },
-  {
-    id: "basic/while-loop",
-    category: "Basic",
-    title: "While loop",
-    description: "Simple while loop example",
-    source: `# Problem : 
-# int i = 0;
-# while (i <= 5){
-#     i++;
-# }
-
-.data
-    msg1: .asciiz "While loop begins"
-    msg2: .asciiz "While loop ends"
-    nl: .asciiz "\\n"
-
-
-        .text
-
-
-        main:
-            li t0,0
-            li t1,5
-            li a7,4
-            la a0,msg1
-            ecall
-            li a7,4
-            la a0,nl
-            ecall
-            
-        while: 
-            slt t2,t1,t0
-            bne t2,zero,exit
-            jal print
-            addi t0,t0,1
-            j while
-            
-        print: 
-            li a7,1
-            add a0,t0,zero
-            ecall
-            li a7,4
-            la a0,nl
-            ecall
-            jalr zero, ra, 0
-            
-        exit:  
-            li a7,4
-            la a0,msg2
-            ecall
-            li a7,10
-            ecall `
-  },
-  {
-    id: "basic/32-bit multiplication",
-    category: "Basic",
-    title: "32-bit multiplication",
-    description: "32 bit multiplication of integer number 4 and 5 using \"mul\" instruction",
-    source: `.data 
-    msg: .asciiz "The product is: "
-        
-    .text
-        main: 
-            li a0,30
-            li a1,5
-            
-            jal ra multiplication 
-            add s0,a0,zero
-            
-            li a7,4
-            la a0, msg
-            ecall
-            
-            add a0,s0,zero
-            li a7,1
-            ecall
-            li a7,10 
-            ecall
-            
-            
-            
-    multiplication: 
-                    mul a7,a0,a1
-                    jalr zero, ra, 0`
-  },
-  {
-    id: "intermediate/signed-addition-with-overflow",
-    category: "Intermediate",
-    title: "Safe signed addition with overflow detection",
-    description: "Safe signed add: returns result or prints \"OVERFLOW\"",
+    title: "Integer input and output",
+    description: "Prompts for an integer, echoes it back with printint",
     source: `.data
-        overflow_msg: .asciiz "OVERFLOW\\n"
-        ok_msg:       .asciiz "OK\\n"
+    prompt: .asciiz "Please enter an integer.\\n"
+    res:    .asciiz "The value you have entered is:\\n"
 
+.text
+main:
+    li      a7, 4               # a7 = 4  -> select "print string" syscall
+    la      a0, prompt          # a0 = address of prompt string (syscall arg)
+    ecall                       # print the string at a0
 
-        .text
-        main:
-            li s0, 2000000000
-            li s1, 2000000000
+    li      a7, 5               # a7 = 5  -> select "read int" syscall
+    ecall                       # read an int from input, returned in a0
+    add     s0, a0, zero        # s0 = a0 (save the input value; s0 is callee-saved)
 
+    li      a7, 4               # a7 = 4  -> select "print string" syscall again
+    la      a0, res             # a0 = address of res string (syscall arg)
+    ecall                       # print "The value you have entered is:"
 
-            # manual overflow check before adding
-            # rule: overflow iff same sign and result has opposite sign
-            # check signs
-            slt  t0, s0, zero    # t0 = 1 if s0 < 0
-            slt  t1, s1, zero    # t1 = 1 if s1 < 0
-            bne  t0, t1, no_overflow   # different signs = safe
+    li      a7, 1               # a7 = 1  -> select "print int" syscall
+    add     a0, s0, zero        # a0 = s0 (move saved input into arg register)
+    ecall                       # print the integer in a0
 
-
-            # Same sign: do the add and check result sign
-            add t2, s0, s1      
-            slt  t3, t2, zero    # t3 = 1 if result < 0
-            beq  t0, t3, no_overflow   # same sign as operands = no overflow
-
-
-            # overflow!
-            la   a0, overflow_msg
-            li   a7, 4
-            ecall
-            j    done
-
-
-        no_overflow:
-            la   a0, ok_msg
-            li   a7, 4
-            ecall
-
-
-        done:
-            li a7, 10
-            ecall`
+    li      a7, 10              # a7 = 10 -> select "exit" syscall
+    ecall                       # terminate the program`
   },
   {
-    id: "basic/sum-of-array",
+    id: "basic/string-input-output",
     category: "Basic",
-    title: "Sum of Array values",
-    description: "Calculate the sum of an array using a loop",
-    source: `# Question: Conversion of the below C code to assembly
-# 
-# #include <stdio.h>
-# int sumArray(int *arr, int n) {
-#     int sum = 0;
-#     for (int i = 0; i < n; i++) {
-#         sum = sum + arr[i];
-#     }
-#     return sum;
-# }
-# int main() {
-#     int array[5] = {1, 2, 3, 4, 5};
-#     int result = sumArray(array, 5);
-#     printf("The sum is: %d", result);
-#     return 0;
-# }
+    title: "String input and output",
+    description: "Reads a line into a RAM buffer and echoes it back",
+    source: `.data
+prompt: .asciz "Enter a string: "
+reply:  .asciz "You typed: "
 
-.data 
-        array: .word 1,2,3,4,5
-        msg: .asciiz "The sum is: "
-        
-    .text
+.text
+    li   a7, 4          # print prompt
+    la   a0, prompt
+    ecall
 
+    li   a7, 8          # readstring: a0 = buffer, a1 = max length
+    li   a0, 0x1000     # scratch buffer in free RAM (unified memory)
+    li   a1, 64         # stores up to 63 chars + NUL terminator
+    ecall               # suspends until you submit a line
 
-        main: 
-            
-            la s0,array  # base address of array 
-            li t0,0      # array index i, initialized with 0
-            li t1,5      # array size, n = t1
-            jal sumarray  # call sumarray function
-            
-            li a7,4      # code for printing string
-            la a0,msg    # load the message in ao register
-            ecall       # ecall to perform the operation
-            
-            li a7,1      # code for printing integer
-            add a0,s1,zero     # the sum saved from s1 to a0 for printing 
-            ecall        # ecall to perform the operation
-            
-            j exit        # jump to exit to terminate the program 
-            
-            
-            
-        sumarray:          # helper function to calculate the sum
-                
-                li s1,0  # sum initialized with 0
-                
-                while: 
-                        slt t2,t0,t1             # t2 = 1 while t0(i)<5
-                        beq t2,zero,return       # branch when i=5 or t2=0
-                        sll t3,t0,2              # shifting t0 2 unit to get 4*i
-                        addu t2,s0,t3            # t2 = base address(s0) + 4i
-                        lw t4,0(t2)              # load value from t2 register 
-                        add s1,s1,t4             # add the array index value to sum
-                        addi t0,t0,1             # increment i value by 1
-                        j while                  # continue the while loop
-                return: 
-                    jalr zero, ra, 0             # use the ra register value to jump and link back to main
-                    
-        exit:
-            
-            li a7,10     # code for exiting the program 
-            ecall      # ecall to perform the operation`
+    li   a7, 4          # print prefix
+    la   a0, reply
+    ecall
+
+    li   a7, 4          # echo what was typed
+    li   a0, 0x1000
+    ecall
+
+    li   a7, 10         # exit
+    ecall`
   },
   {
-    id: "basic/add-two-numbers",
+    id: "basic/add-two-integers",
     category: "Basic",
-    title: "Add Two Numbers",
-    description: "Simple addition of two immediate values into registers",
-    source: `# Program: Simple Addition Example
-# Goal: Calculate 10 + 25
+    title: "Add two integers",
+    description: "Reads two integers from input and prints their sum",
+    source: `.data
+    prompt1: .asciiz "Enter first integer:\\n"
+    prompt2: .asciiz "Enter second integer:\\n"
+    res_msg: .asciiz "The sum is:\\n"
 
-.global _start
-_start:
-    li a0, 10       # Load immediate value 10 into register a0
-    li a1, 25       # Load immediate value 25 into register a1
-    add t0, a0, a1  # Add values in a0 and a1 into t0`
+.text
+main:
+    li      a7, 4
+    la      a0, prompt1
+    ecall
+    li      a7, 5
+    ecall
+    add     s0, a0, zero        # s0 = first number
+
+    li      a7, 4
+    la      a0, prompt2
+    ecall
+    li      a7, 5
+    ecall
+    add     s1, a0, zero        # s1 = second number
+
+    add     s2, s0, s1          # s2 = sum
+
+    li      a7, 4
+    la      a0, res_msg
+    ecall
+
+    li      a7, 1
+    add     a0, s2, zero
+    ecall
+
+    li      a7, 10
+    ecall`
+  },
+  {
+    id: "basic/even-odd-check",
+    category: "Basic",
+    title: "Even or odd check",
+    description: "Checks whether an input integer is even or odd via its parity bit",
+    source: `.data
+    prompt:     .asciiz "Please enter an integer.\\n"
+    even_msg:   .asciiz "The value is even.\\n"
+    odd_msg:    .asciiz "The value is odd.\\n"
+
+.text
+main:
+    li      a7, 4               # a7 = 4  -> select "print string" syscall
+    la      a0, prompt          # a0 = address of prompt string (syscall arg)
+    ecall                       # print the string at a0
+
+    li      a7, 5               # a7 = 5  -> select "read int" syscall
+    ecall                       # read an int from input, returned in a0
+    add     s0, a0, zero        # s0 = input value
+
+    andi    t0, s0, 1           # t0 = s0 & 1  (isolate parity bit)
+    bne     t0, zero, is_odd    # if t0 != 0, LSB was 1 -> branch to is_odd
+
+is_even:
+    li      a7, 4               # a7 = 4  -> select "print string" syscall
+    la      a0, even_msg        # a0 = address of "even" message
+    ecall                       # print it
+    j       done                # skip over is_odd, jump straight to done
+
+is_odd:
+    li      a7, 4               # a7 = 4  -> select "print string" syscall
+    la      a0, odd_msg         # a0 = address of "odd" message
+    ecall                       # print it
+                                # (falls through into done, no jump needed)
+
+done:
+    li      a7, 10              # a7 = 10 -> select "exit" syscall
+    ecall                       # terminate the program`
+  },
+  {
+    id: "intermediate/array-maximum",
+    category: "Intermediate",
+    title: "Array maximum",
+    description: "Scans a hardcoded array with a loop and prints the largest value",
+    source: `.data
+    array:      .word   3, 17, 9, 42, 8, 23, 4    # 7 hardcoded words, contiguous in memory
+    arr_len:    .word   7                          # number of elements in array
+    result_msg: .asciiz "The maximum value is:\\n"
+
+.text
+main:
+    la      t0, array           # t0 = base address of array (pointer, not data)
+    la      t3, arr_len         # t3 = address of arr_len
+    lw      t1, 0(t3)           # t1 = *t3 = 7 (dereference to get the actual count)
+    lw      s0, 0(t0)           # s0 = array[0], seed running max with first element
+    li      t2, 1               # t2 = loop index i, start at 1 (index 0 already consumed)
+
+while_loop:
+    bge     t2, t1, loop_end    # while (i < len): if i >= len, branch out of loop
+    slli    t4, t2, 2           # t4 = i * 4  (word index -> byte offset)
+    add     t5, t0, t4          # t5 = &array[i]  (base + byte offset)
+    lw      t6, 0(t5)           # t6 = array[i]  (dereference to get the value)
+    ble     t6, s0, skip_update # if array[i] <= max, skip the update
+    add     s0, t6, zero        # max = array[i]  (new max found)
+
+skip_update:
+    addi    t2, t2, 1           # i++
+    j       while_loop          # jump back to re-check loop condition
+
+loop_end:
+    li      a7, 4               # a7 = 4  -> select "print string" syscall
+    la      a0, result_msg      # a0 = address of result message
+    ecall                       # print "The maximum value is:"
+
+    li      a7, 1               # a7 = 1  -> select "print int" syscall
+    add     a0, s0, zero        # a0 = s0 (move max value into arg register)
+    ecall                       # print the max value
+
+    li      a7, 10              # a7 = 10 -> select "exit" syscall
+    ecall                       # terminate the program`
+  },
+  {
+    id: "intermediate/signed-mul-with-overflow",
+    category: "Intermediate",
+    title: "Signed multiplication with overflow detection",
+    description: "Multiplies two inputs using mul/mulh and reports 32-bit overflow",
+    source: `.data
+    prompt1:      .asciiz "Enter first integer:\\n"
+    prompt2:      .asciiz "Enter second integer:\\n"
+    res_msg:      .asciiz "The product is:\\n"
+    overflow_msg: .asciiz "Overflow detected! Result does not fit in 32 bits.\\n"
+
+.text
+main:
+    li      a7, 4
+    la      a0, prompt1
+    ecall
+    li      a7, 5
+    ecall
+    add     s0, a0, zero        # s0 = first operand (a)
+
+    li      a7, 4
+    la      a0, prompt2
+    ecall
+    li      a7, 5
+    ecall
+    add     s1, a0, zero        # s1 = second operand (b)
+
+    mul     s2, s0, s1          # s2 = low 32 bits of (a * b)
+    mulh    s3, s0, s1          # s3 = high 32 bits of signed (a * b)
+                                 # together, (s3:s2) is the true 64-bit signed product
+
+    # Overflow check: the 64-bit product fits in 32 bits (signed) if and only if
+    # the high word is exactly the sign-extension of the low word.
+    #   if s2's sign bit is 0, s3 must be 0x00000000
+    #   if s2's sign bit is 1, s3 must be 0xFFFFFFFF
+    # Equivalently: (s2 arithmetic-shifted right by 31) must equal s3.
+    srai    t0, s2, 31           # t0 = sign-extension of s2 (all 0s or all 1s)
+    bne     t0, s3, overflow    # if high word != sign-extension of low word -> overflow
+
+no_overflow:
+    li      a7, 4
+    la      a0, res_msg
+    ecall
+
+    li      a7, 1
+    add     a0, s2, zero        # safe to print the 32-bit result
+    ecall
+    j       done
+
+overflow:
+    li      a7, 4
+    la      a0, overflow_msg
+    ecall
+    # s2 still holds the truncated (wrapped) low 32 bits, s3 holds the true
+    # high bits, in case you want to print/inspect the full 64-bit result instead.
+
+done:
+    li      a7, 10              # a7 = 10 -> select "exit" syscall
+    ecall                       # terminate the program`
   },
   {
     id: "graphics/monoc-screen",
     category: "Graphics",
     title: "Print 'MonoC' to Screen",
-    description: "Draws the word 'MonoC' on the emulator screen",
+    description: "Draws the word 'MonoC' on the framebuffer with a scaled bitmap font",
     source: `# MonoC screen
+# Renders the text "MonoC" to a framebuffer using a hardcoded 5x7 bitmap font,
+# with each font pixel scaled up 4x in both dimensions (so each glyph pixel
+# becomes a 4x4 block of framebuffer pixels).
 
 .global _start
 
 .data
 font_data:
+    # Each letter is 7 bytes (rows), each byte's low 5 bits are the pixel
+    # pattern for that row, bit c = column c (LSB = leftmost column, col 0).
+    # A '1' bit means "draw a pixel here".
+
     # 'M' (5x7), 1 bit per pixel, bit c = column c (LSB = col 0)
     .byte 0x11, 0x1B, 0x15, 0x11, 0x11, 0x11, 0x11
     # 'o'
@@ -384,54 +270,67 @@ font_data:
 
 .text
 _start:
-    li   s0, 0x07FFD000     # framebuffer base address
-    li   t1, 4366           # y=34 -> 34*128=4352, x=14 -> +14
-    add  s0, s0, t1         # s0 = top-left of "MonoC"
+    li   s0, SCREEN         # s0 = framebuffer base address (predefined constant)
+    li   t1, 4366           # t1 = pixel offset for start position:
+                            #   y=34 -> row 34 * 128 bytes/row = 4352
+                            #   x=14 -> +14 bytes into that row
+                            #   4352 + 14 = 4366
+    add  s0, s0, t1         # s0 = address of top-left pixel of "MonoC" text
 
-    la   t0, font_data      # t0 = pointer into the font table
+    la   t0, font_data      # t0 = pointer into the font table, starts at 'M' row 0
+    li   s1, 0              # s1 = letter index, 0..4 (one of M, o, n, o, C)
 
-    li   s1, 0              # letter index 0..4
 letter_loop:
-    li   s2, 0              # row index 0..6
+    li   s2, 0              # s2 = row index within the glyph, 0..6 (7 rows tall)
+
 row_loop:
-    lbu  s3, 0(t0)          # load this row's 5-bit pixel pattern
-    li   s5, 0              # vertical scale repeat 0..3
+    lbu  s3, 0(t0)          # s3 = this row's 5-bit pixel pattern (zero-extended byte load)
+    li   s5, 0              # s5 = vertical scale repeat counter, 0..3
+                             #      (each source row is drawn 4x to scale the glyph up)
+
 yloop:
-    # rowbase = s0 + (row*4 + yrep) * 128
-    slli t1, s2, 2          # row*4
-    add  t1, t1, s5         # row*4 + yrep
-    slli t1, t1, 7          # *128
-    add  t1, t1, s0         # rowbase
+    # Compute rowbase = s0 + (row*4 + yrep) * 128
+    # i.e. the address of the start of the scaled output row we're about to draw.
+    slli t1, s2, 2          # t1 = row * 4        (each source row maps to 4 output rows)
+    add  t1, t1, s5         # t1 = row*4 + yrep   (which of those 4 output rows we're on)
+    slli t1, t1, 7          # t1 = (row*4 + yrep) * 128   (row index -> byte offset;
+                             #      128 = framebuffer stride, bytes per row)
+    add  t1, t1, s0         # t1 = rowbase = base address of this output row
 
-    li   s4, 0              # column index 0..4
+    li   s4, 0              # s4 = column index within the glyph, 0..4 (5 columns wide)
+
 cloop:
-    srl  t2, s3, s4         # shift bit into LSB
-    andi t2, t2, 1
-    beq  t2, zero, skip
-    li   t3, -1             # 0xFFFFFFFF -> four white pixels
-    slli t4, s4, 2          # col*4
-    add  t4, t1, t4
-    sw   t3, 0(t4)          # write 4 white bytes
+    srl  t2, s3, s4         # t2 = s3 >> s4   (shift the target column's bit down to LSB)
+    andi t2, t2, 1          # t2 = that bit isolated (0 or 1)
+    beq  t2, zero, skip     # if the bit is 0, no pixel to draw here -> skip
+
+    li   t3, -1             # t3 = 0xFFFFFFFF (all bits set -> 4 consecutive white pixel bytes)
+    slli t4, s4, 2          # t4 = col * 4     (each source column maps to 4 output columns,
+                            #                   and we write all 4 in one word store)
+    add  t4, t1, t4         # t4 = rowbase + (col*4) = address of this scaled pixel block
+    sw   t3, 0(t4)          # write 4 white bytes at once (one store = one row of the 4x4 block)
+
 skip:
-    addi s4, s4, 1
+    addi s4, s4, 1           # column++
     li   t5, 5
-    blt  s4, t5, cloop
+    blt  s4, t5, cloop       # while (col < 5): loop back for next column
 
-    addi s5, s5, 1
+    addi s5, s5, 1           # yrep++ (move to next of the 4 vertical-scale repeats)
     li   t5, 4
-    blt  s5, t5, yloop
+    blt  s5, t5, yloop       # while (yrep < 4): loop back and redraw this source row scaled
 
-    addi t0, t0, 1          # advance to the next font byte
-    addi s2, s2, 1
+    addi t0, t0, 1           # advance font pointer to the next row byte
+    addi s2, s2, 1           # row++
     li   t5, 7
-    blt  s2, t5, row_loop
+    blt  s2, t5, row_loop    # while (row < 7): loop back for next row of this glyph
 
-    addi s0, s0, 21         # next letter: 5 columns * scale 4
-    addi s1, s1, 1
+    addi s0, s0, 21          # advance draw position to next letter:
+                             #   5 columns * 4x scale = 20 pixels, +1 pixel of spacing = 21
+    addi s1, s1, 1           # letter index++
     li   t5, 5
-    blt  s1, t5, letter_loop
+    blt  s1, t5, letter_loop # while (letter < 5): loop back for next letter (M-o-n-o-C)
 
-    li   a7, 10             # exit
-    ecall`
+    li   a7, 10              # a7 = 10 -> select "exit" syscall
+    ecall                    # terminate the program`
   }
 ];

@@ -81,6 +81,7 @@ int main()
         crow::json::wvalue res;
         res["stepped"] = true;
         res["halted"]  = session->halted();
+        res["waiting"] = session->waiting();
         return respond(*session, crow::response(200, res));
     });
 

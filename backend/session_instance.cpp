@@ -49,6 +49,7 @@ public:
             cpu_->Reset();
             cpu_->LoadExecutable(exec_name_ + ".txt");
         }
+        cpu_->SetIo(&io_);
         ClearConsole();
         return words.size();
     }
@@ -68,6 +69,9 @@ public:
         while (executed < static_cast<size_t>(max_steps) && !cpu_->IsHalted()) {
             cpu_->Step();
             ++executed;
+            // parked on a read ecall: stop burning the batch, the PC
+            // stays at the ecall until input arrives
+            if (cpu_->IsWaiting()) break;
         }
         return executed;
     }
@@ -75,6 +79,11 @@ public:
     bool halted() {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
         return cpu_ && cpu_->IsHalted();
+    }
+
+    bool waiting() {
+        std::lock_guard<std::recursive_mutex> lock(mutex_);
+        return cpu_ && cpu_->IsWaiting();
     }
 
     Word Pc() {
@@ -86,7 +95,8 @@ public:
         std::lock_guard<std::recursive_mutex> lock(mutex_);
         std::vector<Word> regs(32, 0);
         if (cpu_) {
-            for (size_t i = 0; i < regs.size(); ++i) regs[i] = cpu_->ReadReg(i);
+            for (size_t i = 0; i < regs.size(); ++i)
+                regs[i] = cpu_->ReadReg(i);
         }
         return regs;
     }
@@ -96,34 +106,36 @@ public:
         return cpu_ ? cpu_->ReadFramebuffer() : std::vector<Byte>();
     }
 
+    // ---- console (print-syscall output / stdin for read syscalls) ----
+    // backed by the CpuIo payload the CPU reads/writes during ecalls
+
     void AppendOutput(const std::string& data) {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        console_out_ += data;
+        io_.Emit(data);
     }
 
     void WriteInput(const std::string& data) {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        console_in_ += data;
+        io_.WriteInput(data);
     }
 
     ConsoleSnapshot console() const {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        return {console_out_, console_out_.size()};
+        const std::string text = io_.Output();
+        return {text, text.size()};
     }
 
     void ClearConsole() {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        console_out_.clear();
-        console_in_.clear();
+        io_.Clear();
     }
 
 private:
-    std::string                 id_;
-    std::string                 exec_name_;   // per-session executable file (no extension)
-    std::unique_ptr<cpu::CPU>   cpu_;        // null until the first compile
-    std::string                 console_out_;
-    std::string                 console_in_;
-    mutable std::recursive_mutex mutex_;     // serializes access within a session
+    std::string                  id_;
+    std::string                  exec_name_;
+    std::unique_ptr<cpu::CPU>    cpu_;
+    cpu::Io                      io_;
+    mutable std::recursive_mutex mutex_;
 };
 
 // maps session ids to live sessions. Absent or unknown ids mint a new session
@@ -165,7 +177,8 @@ private:
     }
 
     std::mutex map_mutex_;
-    std::unordered_map<std::string, std::shared_ptr<SessionInstance>> sessions_;
+    std::unordered_map<std::string,
+                       std::shared_ptr<SessionInstance>> sessions_;
 };
 
 } // namespace backend

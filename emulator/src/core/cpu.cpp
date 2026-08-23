@@ -2,6 +2,7 @@
 #include "cpu.h"
 
 #include <cassert>
+#include <cstdlib>
 #include <fstream>
 #include <stdexcept>
 
@@ -50,6 +51,10 @@ Half CPU::ReadMemoryHalf(Word address) const {
 
 Byte CPU::ReadMemoryByte(Word address) const {
     return ram_.ReadByte(address);
+}
+
+void CPU::WriteMemoryByte(Word address, Byte value) {
+    ram_.WriteByte(address, value);
 }
 
 std::vector<Byte> CPU::ReadFramebuffer() {
@@ -659,10 +664,13 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
         case isa::Opcode::kFence:
             return false;  // nop for single core
         case isa::Opcode::kEcall:
+            SetCpuState(CpuState::kRunning);      // clear a prior suspension
             Ecall();
-            return false;
+            // suspended on input ⇒ report pc as changed so Step() skips
+            // IncrementPC and the PC stays parked at this ecall
+            return state_ == CpuState::kWaiting;
         case isa::Opcode::kEbreak:
-            halted_ = true;
+            SetCpuState(CpuState::kHalted);
             return false;
         default:
             assert(false); 
@@ -766,7 +774,8 @@ void CPU::Reset() {
     // initialize program counter
     SetPC(0);
     ram_.Reset();
-    halted_ = false;
+    SetCpuState(CpuState::kRunning);
+    io_ = nullptr;
 }
 
 void CPU::Step() {
@@ -783,24 +792,70 @@ void CPU::Ecall() {
     switch (static_cast<ecall>(ecall_number)) {
         // print functions
         case ecall::kPrintint:
+            if (io_) io_->Emit(std::to_string(static_cast<int32_t>(x[10].value)));
             break;
-        case ecall::kPrintstring:
+        case ecall::kPrintstring: {
+            if (!io_) break;
+            // limit to stop scanning entire mem space
+            static constexpr Word kMaxScan = 4096;
+            std::string s;
+            for (Word i = 0; i < kMaxScan; ++i) {
+                const Byte b = ram_.ReadByte(x[10].value + i);
+                if (b == 0) break;
+                s.push_back(static_cast<char>(b));
+            }
+            io_->Emit(s);
             break;
+        }
         case ecall::kPrintchar:
+            if (io_) io_->Emit(std::string(1, static_cast<char>(x[10].value & 0xFF)));
             break;
-            
-        // read functions
-        case ecall::kReadint:
+
+        // cpu is set to waiting on read ecalls
+        case ecall::kReadint: {
+            if (!io_) {
+                x[10].value = 0;
+                break;
+            }
+            if (!io_->HasLine()) {
+                SetCpuState(CpuState::kWaiting);
+                break;
+            }
+            const std::string line = io_->ReadLine(64);
+            x[10].value = static_cast<Word>(std::strtol(line.c_str(), nullptr, 10));
             break;
-        case ecall::kReadstring:
+        }
+        case ecall::kReadstring: {
+            if (!io_ || x[11].value == 0) break;
+            if (!io_->HasLine()) {
+                SetCpuState(CpuState::kWaiting);
+                break;
+            }
+            // fgets-style: store up to a1-1 chars, always NUL-terminate
+            const std::string line = io_->ReadLine(x[11].value - 1);
+            for (size_t i = 0; i < line.size(); ++i) {
+                ram_.WriteByte(x[10].value + static_cast<Word>(i),
+                               static_cast<Byte>(line[i]));
+            }
+            ram_.WriteByte(x[10].value + static_cast<Word>(line.size()), 0);
             break;
+        }
         case ecall::kReadchar:
+            if (!io_) {
+                x[10].value = 0;
+                break;
+            }
+            if (!io_->HasInput()) {
+                SetCpuState(CpuState::kWaiting);
+                break;
+            }
+            x[10].value = static_cast<Word>(static_cast<Byte>(io_->ReadByte()));
             break;
 
         // exit calls
         case ecall::kExit:
         case ecall::kExit2:
-            halted_ = true; // do not change this pls
+            SetCpuState(CpuState::kHalted); // do not change this pls
             break;
 
         default:
