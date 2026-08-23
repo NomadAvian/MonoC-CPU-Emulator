@@ -4,6 +4,13 @@
   overflow: hidden;
   border-left: 1px solid var(--border);
   border-radius: 12px 0 0 12px;
+
+  /* slightly denser type than the rest of the app (docs / examples / chat) */
+  --fs-xs: 0.8125rem;    /* ~13px  */
+  --fs-sm: 0.90625rem;   /* ~14.5px */
+  --fs-base: 1.03125rem; /* ~16.5px */
+  --fs-md: 1.25rem;      /* 20px   */
+  --fs-lg: 1.5rem;       /* 24px   */
 }
 
 .right-sidebar__header {

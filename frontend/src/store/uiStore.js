@@ -2,8 +2,8 @@ import { create } from 'zustand'
 
 const initialState = {
   isLeftOpen: true,
-  isChatOpen: false,
-  isDocsOpen: false,
+  isRightPanelOpen: false,
+  activeRightTab: 'docs',   // 'docs' | 'ai' | 'examples'
   leftWidth: 260,
   rightWidth: 420,
   screenWidth: 420,
@@ -18,23 +18,21 @@ export const useUIStore = create((set) => ({
   setRightWidth: (rightWidth) => set({ rightWidth }),
   setScreenWidth: (screenWidth) => set({ screenWidth }),
   setBottomHeight: (bottomHeight) => set({ bottomHeight }),
-  setActiveRightTab: (activeRightTab) => set({ activeRightTab }),
 
   toggleLeft: () => set((state) => ({ isLeftOpen: !state.isLeftOpen })),
-  toggleChat: () => set((state) => {
-    // if opening chat, make sure right sidebar is open and tab is chat
-    if (!state.isChatOpen) {
-      return { isChatOpen: true, isDocsOpen: false }
-    }
-    return { isChatOpen: false }
-  }),
-  toggleDocs: () => set((state) => {
-    // if opening docs, make sure right sidebar is open and tab is docs
-    if (!state.isDocsOpen) {
-      return { isDocsOpen: true, isChatOpen: false }
-    }
-    return { isDocsOpen: false }
-  }),
+
+  // opens the right panel on the given tab; clicking the entry for the
+  // already-active tab collapses the panel instead
+  openRightTab: (tab) => set((state) => (
+    state.isRightPanelOpen && state.activeRightTab === tab
+      ? { isRightPanelOpen: false }
+      : { isRightPanelOpen: true, activeRightTab: tab }
+  )),
+  closeRightPanel: () => set({ isRightPanelOpen: false }),
+
+  // plain open/close of the whole panel; the last-active tab is kept
+  // (defaults to 'docs' on a fresh session)
+  toggleRightPanel: () => set((state) => ({ isRightPanelOpen: !state.isRightPanelOpen })),
 
   addToast: (message, type = 'info', duration = 3000) => {
     const id = Date.now().toString() + Math.random().toString()

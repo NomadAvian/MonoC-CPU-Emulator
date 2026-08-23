@@ -2,19 +2,19 @@ import './RightSideBar.css'
 import { motion } from 'motion/react'
 import ChatPanel from '../panels/chat/ChatPanel'
 import DocsPanel from '../panels/docs/DocsPanel'
+import LibraryPanel from '../panels/library/LibraryPanel'
 import { useUIStore } from '../../store/uiStore'
-import collapseIcon from '../../assets/collapse.svg'
+
+const TABS = [
+  { id: 'docs', label: 'Docs' },
+  { id: 'ai', label: 'MonoC AI' },
+  { id: 'examples', label: 'Examples' },
+]
 
 export default function RightSideBar({ style }) {
-  const isChatOpen = useUIStore(s => s.isChatOpen)
-  const isDocsOpen = useUIStore(s => s.isDocsOpen)
-  const toggleChat = useUIStore(s => s.toggleChat)
-  const toggleDocs = useUIStore(s => s.toggleDocs)
-
-  const handleClose = () => {
-    if (isChatOpen) toggleChat()
-    if (isDocsOpen) toggleDocs()
-  }
+  const activeRightTab = useUIStore(s => s.activeRightTab)
+  const openRightTab = useUIStore(s => s.openRightTab)
+  const closeRightPanel = useUIStore(s => s.closeRightPanel)
 
   return (
     <motion.aside
@@ -29,7 +29,7 @@ export default function RightSideBar({ style }) {
         <div className="tab-bar tab-bar--sidebar">
           <button
             className="icon-btn tab-bar__collapse-btn--left"
-            onClick={handleClose}
+            onClick={closeRightPanel}
             title="Collapse Sidebar"
           >
             <span
@@ -38,13 +38,24 @@ export default function RightSideBar({ style }) {
               aria-label="Collapse"
             />
           </button>
-          <div className="tab-bar__title">
-            {isChatOpen ? 'MonoC AI' : 'Documentation'}
+          <div className="tab-bar__tabs" role="tablist">
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                role="tab"
+                aria-selected={activeRightTab === tab.id}
+                className={`tab-btn ${activeRightTab === tab.id ? 'active' : ''}`}
+                onClick={() => openRightTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
         <div className="right-sidebar__content">
-          {isChatOpen && <ChatPanel />}
-          {isDocsOpen && <DocsPanel />}
+          {activeRightTab === 'docs' && <DocsPanel />}
+          {activeRightTab === 'ai' && <ChatPanel />}
+          {activeRightTab === 'examples' && <LibraryPanel />}
         </div>
       </div>
     </motion.aside>

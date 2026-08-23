@@ -3,10 +3,8 @@ import { DOCS_DATA } from '../../../data/docsData'
 import { useUIStore } from '../../../store/uiStore'
 import copyIcon from '../../../assets/copy.svg'
 import './DocsPanel.css'
-import collapseIcon from '../../../assets/collapse.svg'
 
-export default function DocsPanel({ style }) {
-  const toggleDocs = useUIStore(s => s.toggleDocs)
+export default function DocsPanel() {
   // ── Local State ──
   const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState(() => new Set(DOCS_DATA.map(d => d.category)))

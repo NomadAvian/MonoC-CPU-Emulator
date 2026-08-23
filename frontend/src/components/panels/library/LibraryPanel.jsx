@@ -1,24 +1,19 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import './LibraryPanel.css'
 import { useLibraryStore } from '../../../store/libraryStore'
-import ModalWrapper from '../../ui/ModalWrapper'
 
-export default function LibraryPanel({ onClose }) {
+export default function LibraryPanel() {
   // ── Store Selectors & Actions ──
   const examples      = useLibraryStore(s => s.examples)
   const search        = useLibraryStore(s => s.search)
-  
+
   const setSearch     = useLibraryStore(s => s.setSearch)
   const selectExample = useLibraryStore(s => s.selectExample)
 
-  const [expanded, setExpanded] = useState(new Set())
-
-  // Expand all when examples are loaded for the first time
-  useEffect(() => {
-    if (examples.length > 0 && expanded.size === 0) {
-      setExpanded(new Set(examples.map(i => i.category || 'Other')))
-    }
-  }, [examples])
+  // example data is static, so all categories start expanded
+  const [expanded, setExpanded] = useState(
+    () => new Set(examples.map(i => i.category || 'Other'))
+  )
 
   // ── Handlers ──
   const handleSearchChange = (e) => {
@@ -56,19 +51,18 @@ export default function LibraryPanel({ onClose }) {
   }
 
   return (
-    <ModalWrapper title="Code Library" onClose={onClose} style={{ maxWidth: '680px' }}>
+    <div className="library-panel">
         {/* Search Bar */}
-        <div className="library-modal__search-wrap">
+        <div className="library-panel__search-wrap">
           <input
             type="text"
-            className="ui-input library-modal__search-input"
+            className="ui-input library-panel__search-input"
             placeholder="Search examples..."
             value={search}
-            autoFocus
             onChange={handleSearchChange}
           />
           <button
-            className="icon-btn library-modal__action-btn"
+            className="icon-btn library-panel__action-btn"
             onClick={handleToggleAll}
             title={isAllExpanded ? "Collapse All" : "Expand All"}
           >
@@ -77,32 +71,32 @@ export default function LibraryPanel({ onClose }) {
         </div>
 
         {/* Content Body */}
-        <div className="library-modal__body">
+        <div className="library-panel__body">
           {Object.keys(grouped).length === 0 && (
-            <div className="library-modal__status">No matching code examples found.</div>
+            <div className="library-panel__status">No matching code examples found.</div>
           )}
 
           {Object.entries(grouped).sort(([a], [b]) => {
               const order = { 'Basic': 1, 'Intermediate': 2, 'Graphics': 3 }
               return (order[a] || 99) - (order[b] || 99)
             }).map(([category, items]) => (
-              <details 
-                key={category} 
+              <details
+                key={category}
                 className="library-category"
                 open={expanded.has(category)}
                 onToggle={(e) => handleToggle(category, e.currentTarget.open)}
               >
                 <summary className="library-category__summary">{category}</summary>
-                <div className="library-modal__items">
+                <div className="library-panel__items">
                   {items.map(item => (
                     <button
                       key={item.id}
-                      className="library-modal__item"
-                      onClick={() => selectExample(item.id, onClose)}
+                      className="library-panel__item"
+                      onClick={() => selectExample(item.id)}
                     >
-                      <div className="library-modal__item-title">{item.title}</div>
+                      <div className="library-panel__item-title">{item.title}</div>
                       {item.description && (
-                        <div className="library-modal__item-desc">
+                        <div className="library-panel__item-desc">
                           {item.description}
                         </div>
                       )}
@@ -112,6 +106,6 @@ export default function LibraryPanel({ onClose }) {
               </details>
             ))}
         </div>
-    </ModalWrapper>
+    </div>
   )
 }

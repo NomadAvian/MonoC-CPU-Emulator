@@ -3,19 +3,17 @@ import './TopBar.css'
 import SettingsModal from '../panels/settings/SettingsModal'
 import AuthModal from '../panels/profile/AuthModal'
 import ProfileModal from '../panels/profile/ProfileModal'
-import LibraryPanel from '../panels/library/LibraryPanel'
 import SaveModal from '../panels/profile/SaveModal'
 import { useUIStore } from '../../store/uiStore'
 import { useScreenStore } from '../../store/screenStore'
 import { useAuthStore } from '../../store/authStore'
 import { useEditorStore } from '../../store/editorStore'
 
-import aiIcon from '../../assets/ai.svg'
+import graduationIcon from '../../assets/graduation-cap.svg'
 import screenIcon from '../../assets/screen.svg'
-import docsIcon from '../../assets/docs.svg'
+import screenActiveIcon from '../../assets/screen-active.svg'
 import settingsIcon from '../../assets/settings.svg'
 import profileIcon from '../../assets/profile.svg'
-import libraryIcon from '../../assets/library.svg'
 import saveIcon from '../../assets/save.svg'
 import loadIcon from '../../assets/load.svg'
 import moreIcon from '../../assets/more.svg'
@@ -25,7 +23,6 @@ import resetIcon from '../../assets/reset.svg'
 
 export default function TopBar() {
   // ── Local State ──
-  const [libraryOpen, setLibraryOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -46,10 +43,8 @@ export default function TopBar() {
   }, [overflowOpen])
 
   // ── Store Selectors ──
-  const isChatOpen = useUIStore(s => s.isChatOpen)
-  const toggleChat = useUIStore(s => s.toggleChat)
-  const isDocsOpen = useUIStore(s => s.isDocsOpen)
-  const toggleDocs = useUIStore(s => s.toggleDocs)
+  const isRightPanelOpen = useUIStore(s => s.isRightPanelOpen)
+  const toggleRightPanel = useUIStore(s => s.toggleRightPanel)
   const isScreenOpen = useScreenStore(s => s.isScreenOpen)
   const toggleScreen = useScreenStore(s => s.toggleScreen)
   const user = useAuthStore(s => s.user)
@@ -112,12 +107,12 @@ export default function TopBar() {
         <nav className="topbar__nav">
           <button
             id="topbar-chat-btn"
-            className={`topbar__nav-btn topbar__ai-btn ${isChatOpen ? 'topbar__nav-btn--active' : ''}`}
-            aria-pressed={isChatOpen}
-            onClick={toggleChat}
-            title="MonoC AI"
+            className={`topbar__nav-btn topbar__ai-btn ${isRightPanelOpen ? 'topbar__nav-btn--active' : ''}`}
+            aria-pressed={isRightPanelOpen}
+            onClick={toggleRightPanel}
+            title="Learn"
           >
-            <img src={aiIcon} alt="MonoC AI" className="topbar__icon" />
+            <img src={graduationIcon} alt="MonoC Learn" className="topbar__icon" />
           </button>
 
           <button
@@ -127,7 +122,11 @@ export default function TopBar() {
             onClick={toggleScreen}
             title="Display"
           >
-            <img src={screenIcon} alt="Screen" className="topbar__icon" />
+            <img
+              src={isScreenOpen ? screenActiveIcon : screenIcon}
+              alt="Screen"
+              className="topbar__icon"
+            />
           </button>
 
           <button
@@ -176,14 +175,6 @@ export default function TopBar() {
                   <span>Reset Editor</span>
                 </button>
                 <div className="topbar__overflow-divider" />
-                <button className="topbar__overflow-item" onClick={() => { setOverflowOpen(false); setLibraryOpen(true); }}>
-                  <img src={libraryIcon} alt="" className="topbar__icon" />
-                  <span>Example Codes</span>
-                </button>
-                <button className="topbar__overflow-item" onClick={() => { setOverflowOpen(false); toggleDocs(); }}>
-                  <img src={docsIcon} alt="" className="topbar__icon" />
-                  <span>Docs</span>
-                </button>
                 <a className="topbar__overflow-item topbar__link" href="https://github.com/" target="_blank" rel="noopener noreferrer" onClick={() => setOverflowOpen(false)}>
                   <img src={githubIcon} alt="" className="topbar__icon" />
                   <span>GitHub</span>
@@ -194,7 +185,6 @@ export default function TopBar() {
         </nav>
       </header>
 
-      {libraryOpen && <LibraryPanel onClose={() => setLibraryOpen(false)} />}
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
       {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}

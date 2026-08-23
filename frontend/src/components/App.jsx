@@ -27,8 +27,7 @@ function App() {
   const bottomHeight = useUIStore(s => s.bottomHeight)
 
   // ── Store Selectors ──
-  const isChatOpen = useUIStore(s => s.isChatOpen)
-  const isDocsOpen = useUIStore(s => s.isDocsOpen)
+  const isRightPanelOpen = useUIStore(s => s.isRightPanelOpen)
   const isLeftOpen = useUIStore(s => s.isLeftOpen)
   const theme = useSettingsStore(s => s.theme)
   const isScreenOpen = useScreenStore(s => s.isScreenOpen)
@@ -108,14 +107,14 @@ function App() {
         </div>
 
         {/* Right sidebar */}
-        {(isChatOpen || isDocsOpen) && (
+        {isRightPanelOpen && (
           <ResizeDivider
             direction="horizontal"
             onDrag={onRightResize}
           />
         )}
         <AnimatePresence>
-          {(isChatOpen || isDocsOpen) && (
+          {isRightPanelOpen && (
             <RightSideBar key="right-sidebar" style={{ width: rightWidth }} />
           )}
         </AnimatePresence>
