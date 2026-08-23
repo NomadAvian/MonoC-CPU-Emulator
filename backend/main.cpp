@@ -155,14 +155,6 @@ int main()
         return respond(*session, crow::response(200, "cleared"));
     });
 
-    // GET /cpu/memory/:addr
-    // reads 64 bytes of RAM starting at addr (hex or decimal); addr data type conversion happens in the front end
-    CROW_ROUTE(app, "/cpu/memory/<string>")
-    ([&resolve, &respond](const crow::request& req, [[maybe_unused]] const std::string& addr_str) {
-        auto session = resolve(req);
-        // TODO: convert to number and return mem addr
-        return respond(*session, crow::response(200, "memory"));
-    });
 
     app.port(port).multithreaded().run();
 }

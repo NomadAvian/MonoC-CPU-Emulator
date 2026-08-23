@@ -1,5 +1,5 @@
 import './RightSideBar.css'
-import { motion } from 'motion/react'
+
 import ChatPanel from '../panels/chat/ChatPanel'
 import DocsPanel from '../panels/docs/DocsPanel'
 import LibraryPanel from '../panels/library/LibraryPanel'
@@ -17,12 +17,8 @@ export default function RightSideBar({ style }) {
   const closeRightPanel = useUIStore(s => s.closeRightPanel)
 
   return (
-    <motion.aside
+    <aside
       className="panel right-sidebar"
-      initial={{ width: 0, opacity: 0 }}
-      animate={{ width: style.width, opacity: 1 }}
-      exit={{ width: 0, opacity: 0 }}
-      transition={{ duration: 0.2, ease: 'easeOut' }}
       style={{ width: style.width }}
     >
       <div className="panel-content-wrapper" style={{ width: style.width }}>
@@ -58,6 +54,6 @@ export default function RightSideBar({ style }) {
           {activeRightTab === 'examples' && <LibraryPanel />}
         </div>
       </div>
-    </motion.aside>
+    </aside>
   )
 }

@@ -79,6 +79,7 @@ export default function ChatPanel() {
               <button 
                 className="chat-suggestion-chip"
                 onClick={() => sendMessage("Explain the UI layout")}
+                disabled={isLoading}
               >
                 Explain the UI layout
               </button>
@@ -86,6 +87,7 @@ export default function ChatPanel() {
               <button 
                 className="chat-suggestion-chip"
                 onClick={() => sendMessage("What does line 10 do?")}
+                disabled={isLoading}
               >
                 What does line 10 do?
               </button>
@@ -127,6 +129,7 @@ export default function ChatPanel() {
           value={input}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
+          disabled={isLoading}
         />
         <button
           id="chat-send-btn"

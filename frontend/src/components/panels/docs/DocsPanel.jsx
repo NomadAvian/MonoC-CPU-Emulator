@@ -7,7 +7,7 @@ import './DocsPanel.css'
 export default function DocsPanel() {
   // ── Local State ──
   const [search, setSearch] = useState('')
-  const [expanded, setExpanded] = useState(() => new Set(DOCS_DATA.map(d => d.category)))
+  const [expanded, setExpanded] = useState(() => new Set())
   const addToast = useUIStore(s => s.addToast)
 
   // ── Handlers ──

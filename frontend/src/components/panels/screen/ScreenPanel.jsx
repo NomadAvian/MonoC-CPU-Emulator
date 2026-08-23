@@ -13,7 +13,6 @@ export default function ScreenPanel({ style }) {
   const width = useScreenStore(s => s.width)
   const height = useScreenStore(s => s.height)
   const data = useScreenStore(s => s.data)
-  const loading = useScreenStore(s => s.loading)
   const closeScreen = useScreenStore(s => s.closeScreen)
   const refreshScreen = useScreenStore(s => s.refreshScreen)
 
@@ -44,7 +43,6 @@ export default function ScreenPanel({ style }) {
     ctx.putImageData(img, 0, 0)
   }, [data, width, height])
 
-  const hasData = width > 0 && height > 0
   const bufW = width || 128
   const bufH = height || 96
 

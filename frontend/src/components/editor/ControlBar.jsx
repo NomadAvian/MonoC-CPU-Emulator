@@ -63,7 +63,7 @@ export default function ControlBar() {
 
       <div className="control-bar__center">
         <div className="toolbar__actions">
-          {CONTROLS.map(({ id, label, icon, shortcut }) => {
+          {CONTROLS.map(({ id, label, icon }) => {
             const { disabled, loading } = getButtonState(id)
             return (
               <button

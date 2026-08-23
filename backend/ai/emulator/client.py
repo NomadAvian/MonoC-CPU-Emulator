@@ -10,8 +10,7 @@ def get_registers() -> dict:
     return httpx.get(f"{CROW_BASE}/cpu/registers", timeout=5).json()
 
 
-def get_memory(addr: str) -> dict:
-    return httpx.get(f"{CROW_BASE}/cpu/memory/{addr}", timeout=5).json()
+
 
 
 # todo: get instruction

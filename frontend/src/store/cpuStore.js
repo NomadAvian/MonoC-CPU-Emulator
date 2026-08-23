@@ -3,7 +3,6 @@ import { fetchRegisters, stepCpu, resetCpu, compile } from '../api/cpu'
 import { useEditorStore } from './editorStore'
 import { useScreenStore } from './screenStore'
 import { useConsoleStore } from './consoleStore'
-import { useMemoryStore } from './memoryStore'
 
 // throttle framebuffer
 const SCREEN_REFRESH_MS = 50
@@ -187,7 +186,6 @@ export const useCPUStore = create((set, get) => ({
       await resetCpu()
       set({ status: 'stopped', changedRegisters: new Set(), halted: false })
       useConsoleStore.getState().reset()
-      useMemoryStore.getState().clearMemoryWrites()
       await get().fetchRegisters(false)
       maybeRefreshScreen()
       maybeRefreshConsole(true)

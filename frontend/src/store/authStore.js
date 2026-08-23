@@ -25,7 +25,7 @@ export const useAuthStore = create((set) => ({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, email, password })
     });
-    
+
     if (!res.ok) {
       let msg = "Signup failed";
       try {
@@ -36,7 +36,7 @@ export const useAuthStore = create((set) => ({
       }
       throw new Error(msg);
     }
-    
+
     // Auto login after signup by delegating to login
     await useAuthStore.getState().login(email, password);
   },

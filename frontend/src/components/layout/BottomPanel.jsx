@@ -2,7 +2,6 @@ import { useState } from 'react'
 import './BottomPanel.css'
 import OutputTabs from '../panels/bottom/OutputTabs'
 import ConsolePanel from '../panels/bottom/ConsolePanel'
-import collapseIcon from '../../assets/collapse.svg'
 
 const TABS = ['Console', 'Disassembler']
 
@@ -29,8 +28,8 @@ export default function BottomPanel({ style }) {
 
   return (
     <div className="bottom-panel" style={panelStyle}>
-      <div className="bottom-panel__header">
-        <div className="tab-bar">
+      <div className="tab-bar">
+        <div className="tab-bar__tabs">
           {TABS.map(tab => (
             <button
               key={tab}
@@ -43,7 +42,7 @@ export default function BottomPanel({ style }) {
           ))}
         </div>
         <button
-          className="icon-btn"
+          className="icon-btn tab-bar__collapse-btn"
           title={isCollapsed ? "Expand Panel" : "Collapse Panel"}
           onClick={handleCollapseClick}
         >

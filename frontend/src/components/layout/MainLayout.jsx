@@ -1,6 +1,5 @@
 import './MainLayout.css'
 import { useEffect } from 'react'
-import TopBar from './TopBar'
 import { useSettingsStore } from '../../store/settingsStore'
 
 export default function MainLayout({ children }) {

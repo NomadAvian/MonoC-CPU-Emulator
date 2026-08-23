@@ -58,22 +58,12 @@ function App() {
         {/* Left panel shell */}
         <motion.aside
           className="panel left-panel-shell"
-          animate={{ width: isLeftOpen ? leftWidth : 44 }}
+          animate={{ width: isLeftOpen ? leftWidth : 34 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key="left-sidebar"
-              initial={{ opacity: 0, x: -16 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -16 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-              className="left-panel-shell__inner"
-              style={{ width: isLeftOpen ? leftWidth : 44 }}
-            >
-              <LeftSideBar style={{ width: isLeftOpen ? leftWidth : 44 }} />
-            </motion.div>
-          </AnimatePresence>
+          <div className="left-panel-shell__inner" style={{ width: isLeftOpen ? leftWidth : 34 }}>
+            <LeftSideBar />
+          </div>
         </motion.aside>
 
         <ResizeDivider
@@ -107,15 +97,22 @@ function App() {
         </div>
 
         {/* Right sidebar */}
-        {isRightPanelOpen && (
-          <ResizeDivider
-            direction="horizontal"
-            onDrag={onRightResize}
-          />
-        )}
         <AnimatePresence>
           {isRightPanelOpen && (
-            <RightSideBar key="right-sidebar" style={{ width: rightWidth }} />
+            <motion.div
+              key="right-panel-wrapper"
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: rightWidth + 5 }}
+              exit={{ opacity: 0, width: 0 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="right-panel-wrapper"
+            >
+              <ResizeDivider
+                direction="horizontal"
+                onDrag={onRightResize}
+              />
+              <RightSideBar style={{ width: rightWidth }} />
+            </motion.div>
           )}
         </AnimatePresence>
       </div>

@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import './LeftSideBar.css'
 import RegisterGrid from '../panels/registers/RegisterGrid'
-import MemoryBar from '../panels/memory/MemoryBar'
 import { useUIStore } from '../../store/uiStore'
-import collapseIcon from '../../assets/collapse.svg'
 
-const TABS = ['Reg', 'Mem']
+const TABS = ['Reg']
 
-export default function LeftSideBar({ style }) {
+export default function LeftSideBar() {
   // ── Local State ──
   const [activeTab, setActiveTab] = useState('Reg')
 
@@ -72,7 +70,6 @@ export default function LeftSideBar({ style }) {
         {/* Tab content */}
         <div className="left-sidebar__content">
           {activeTab === 'Reg' && <RegisterGrid />}
-          {activeTab === 'Mem' && <MemoryBar />}
         </div>
       </div>
     </div>

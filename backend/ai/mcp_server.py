@@ -4,16 +4,12 @@ from config import CROW_BASE_URL as CROW_BASE
 
 mcp = FastMCP("MonoC-CPU")
 
+# get_source has been integrated inside the sdk of ai models for efficiency
+
 @mcp.tool()
 def read_registers() -> str:
     """Read all 32 cpu registers and the program counter."""
     res = httpx.get(f"{CROW_BASE}/cpu/registers", timeout=5)
-    return res.text
-
-@mcp.tool()
-def read_memory(addr: str) -> str:
-    """Read 64 bytes of RAM at the given address."""
-    res = httpx.get(f"{CROW_BASE}/cpu/memory/{addr}", timeout=5)
     return res.text
 
 @mcp.tool()

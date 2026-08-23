@@ -10,15 +10,6 @@
   border-radius: 12px 12px 0 0;
 }
 
-.bottom-panel__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-surface);
-  flex-shrink: 0;
-  height: 32px;
-  padding-right: 8px;
-}
 
 .bottom-panel__content {
   flex: 1;
