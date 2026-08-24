@@ -175,7 +175,7 @@ export default function TopBar() {
                   <span>Reset Editor</span>
                 </button>
                 <div className="topbar__overflow-divider" />
-                <a className="topbar__overflow-item topbar__link" href="https://github.com/" target="_blank" rel="noopener noreferrer" onClick={() => setOverflowOpen(false)}>
+                <a className="topbar__overflow-item topbar__link" href="https://github.com/NomadAvian/MonoC-CPU-Emulator" target="_blank" rel="noopener noreferrer" onClick={() => setOverflowOpen(false)}>
                   <img src={githubIcon} alt="" className="topbar__icon" />
                   <span>GitHub</span>
                 </a>

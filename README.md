@@ -1,10 +1,15 @@
 # MonoC
 
-A 32-bit RISC-V CPU emulator and assembler, built from scratch in C++. MonoC implements the RV32I base instruction set and the M (integer multiplication/division) extension, exposed through a browser-based interface for writing, assembling, and executing RISC-V assembly.
+A 32-bit RISC-V CPU emulator and assembler, built from scratch in C++, with a browser-based interface for writing, assembling, running and debugging RISC-V assembly.
 
-Programs are written in an in-browser editor, assembled, and executed step-by-step or continuously on a CPU emulator with no dependency on external toolchains or simulators. The register file, memory, a memory-mapped framebuffer, and console I/O are exposed live during execution. Programs interact with the emulated machine through RISC-V `ecall` syscalls for integer, string, and character I/O, with runtime input accepted through an integrated terminal. Each session is backed by an isolated CPU instance on the server, allowing concurrent use without shared state between users.
-
-The web app has documentation, example programs, and an integrated MCP powered AI assistant.
+**Features:**
+- Full RV32I base instruction set + M extension
+- Step-by-step or continuous execution on a live CPU emulator
+- Live register file, memory-mapped framebuffer views
+- Console I/O via RARS-style RISC-V `ecall` syscalls (integer, string, character)
+- Integrated terminal for runtime I/O
+- Isolated server-side CPU instance per session
+- Built-in docs, example programs, and an MCP-powered AI assistant
 
 ## Dependencies
 
