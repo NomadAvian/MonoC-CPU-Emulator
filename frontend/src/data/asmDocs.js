@@ -298,7 +298,7 @@ export const ASM_DOCS = [
       },
       {
         title: 'ebreak',
-        desc: 'Note: unlike some educational simulators (e.g. RARS), ebreak in this emulator is not currently wired to the same halt path as the exit ecalls in the code shown \u2014 only kExit / kExit2 set kHalted. Confirm this is the intended behavior before documenting ebreak as an exit alias.',
+        desc: 'Shorthand for Exit (10)',
         example: 'ebreak'
       },
       {

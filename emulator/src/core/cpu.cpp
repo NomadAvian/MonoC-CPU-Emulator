@@ -1,4 +1,3 @@
-// TODO: linear memory mapping for all memory types
 #include "cpu.h"
 
 #include <cassert>
@@ -31,7 +30,7 @@ void CPU::LoadExecutable(const std::string& filename) {
 
     if (path.empty())
         throw std::runtime_error("CPU: could not open ROM file: " + filename);
-    
+
     Reset();
     ram_.LoadFile(path);
     SetPC(ram_.entry());
@@ -232,7 +231,7 @@ DecodedInstruction CPU::DecodeIType(Word instruction) {
                 break;
             case 0x1:
                 instr.opcode = isa::Opcode::kSlli; // shift left logical immediate
-                instr.imm = shamt; // use shamt for shift amount, sign-extend is not needed 
+                instr.imm = shamt; // use shamt for shift amount, sign-extend is not needed
                 break;
             case 0x2:
                 instr.opcode = isa::Opcode::kSlti; // set less than immediate
@@ -258,10 +257,10 @@ DecodedInstruction CPU::DecodeIType(Word instruction) {
                 instr.opcode = isa::Opcode::kOri; // OR immediate
                 break;
             case 0x7:
-                instr.opcode = isa::Opcode::kAndi; // AND immediate 
+                instr.opcode = isa::Opcode::kAndi; // AND immediate
                 break;
             default:
-                instr.opcode = isa::Opcode::kUnknown; 
+                instr.opcode = isa::Opcode::kUnknown;
         }
     } else if(opcode == 0x03) { // LOAD
         switch (funct3) {
@@ -301,7 +300,7 @@ DecodedInstruction CPU::DecodeIType(Word instruction) {
         }
     } else {
         instr.opcode = isa::Opcode::kUnknown;
-    }   
+    }
     return instr;
 }
 
@@ -388,7 +387,7 @@ DecodedInstruction CPU::DecodeBType(Word instruction) {
             break;
         case 0x7:
             instr.opcode = isa::Opcode::kBgeu; // branch if greater than or equal unsigned
-            break;  
+            break;
         default:
             instr.opcode = isa::Opcode::kUnknown;
     }
@@ -635,7 +634,7 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
                 case isa::Opcode::kLhu: {
                     Half raw = ram_.ReadHalf(addr.result);
                     WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(raw));
-                    break; 
+                    break;
                 }
                 case isa::Opcode::kLw: {
                     WriteReg(static_cast<size_t>(instr.rd), ram_.ReadWord(addr.result));
@@ -673,7 +672,7 @@ bool CPU::ExecuteIType(DecodedInstruction instr) {
             SetCpuState(CpuState::kHalted);
             return false;
         default:
-            assert(false); 
+            assert(false);
             return false;
     }
 }
@@ -704,7 +703,7 @@ bool CPU::ExecuteJType(DecodedInstruction instr) {
     WriteReg(static_cast<size_t>(instr.rd), return_address);
     AluOutput target_address = EffectiveAddress(pc_.value, instr.imm);
     if (target_address.result & 0x3){
-        throw std::runtime_error("JAL: misaligned target address");    
+        throw std::runtime_error("JAL: misaligned target address");
     }
     else {
         SetPC(target_address.result);
@@ -715,11 +714,11 @@ bool CPU::ExecuteJType(DecodedInstruction instr) {
 bool CPU::ExecuteUType(DecodedInstruction instr) {
     switch (instr.opcode) {
         case isa::Opcode::kLui:
-            WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(instr.imm)); 
+            WriteReg(static_cast<size_t>(instr.rd), static_cast<Word>(instr.imm));
             break;
         case isa::Opcode::kAuipc: {
             AluOutput result = EffectiveAddress(pc_.value, instr.imm);
-            WriteReg(static_cast<size_t>(instr.rd), result.result); 
+            WriteReg(static_cast<size_t>(instr.rd), result.result);
             break;
         }
         default:
@@ -750,7 +749,7 @@ bool CPU::ExecuteBType(DecodedInstruction instr) {
             take_branch = (rs1 < rs2);
             break;
         case isa::Opcode::kBgeu:
-            take_branch = (rs1 >= rs2); 
+            take_branch = (rs1 >= rs2);
             break;
         default:
             assert(false);
@@ -865,5 +864,3 @@ void CPU::Ecall() {
 }
 
 } // namespace cpu
-
-
