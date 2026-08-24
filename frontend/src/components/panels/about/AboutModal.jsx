@@ -19,7 +19,7 @@ export default function AboutModal({ onClose }) {
 
       <div className="about-modal__meta">
         {/* <span className="about-modal__row"><span className="about-modal__key">Version</span>1.0.0</span> */}
-        <span className="about-modal__row"><span className="about-modal__key">License</span>MIT</span>
+        <span className="about-modal__row"><span className="about-modal__key">License</span>GPL-3.0</span>
         <a
           className="about-modal__row about-modal__link"
           href="https://github.com/NomadAvian/MonoC-CPU-Emulator"

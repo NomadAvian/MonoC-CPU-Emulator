@@ -1,9 +1,5 @@
-.modal-wrapper.about-modal {
-  width: 100%;
-  max-width: 420px;
+.modal-wrapper.about-modal .modal-wrapper__content {
   overflow-x: hidden;
-  overflow-y: auto;
-  box-sizing: border-box;
 }
 
 .about-modal__text {

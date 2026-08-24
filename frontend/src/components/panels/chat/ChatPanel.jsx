@@ -37,10 +37,14 @@ export default function ChatPanel() {
       const btn = e.target.closest('.chat-codeblock__copy-btn')
       if (!btn) return
       const code = btn.getAttribute('data-code')
-      if (code) {
-        navigator.clipboard.writeText(code)
-        addToast('Copied', 'success', 1500)
+      if (!code) return
+      if (!navigator.clipboard) {
+        addToast('Copy not available over insecure connection', 'error')
+        return
       }
+      navigator.clipboard.writeText(code)
+        .then(() => addToast('Copied', 'success', 1500))
+        .catch(() => addToast('Copy failed', 'error'))
     }
     document.addEventListener('click', handleCopyClick)
     return () => document.removeEventListener('click', handleCopyClick)

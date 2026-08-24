@@ -1,16 +1,23 @@
 export function SimpleMarkdown({ content }) {
   if (!content) return null
 
+  // HTML-escape (& first!) so text is safe inside attributes and <pre>
+  const esc = (s) => s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
   // 1. extract fenced code blocks first, replacing them with placeholders
   const codeBlocks = []
   let processed = content.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) => {
     const index = codeBlocks.length
-    const cleanCode = code.replace(/</g, '<').replace(/>/g, '>')
+    const cleanCode = esc(code)
     codeBlocks.push(
       `<div class="chat-codeblock">` +
         `<div class="chat-codeblock__header">` +
-          (lang ? `<span class="chat-codeblock__lang">${lang}</span>` : '') +
-          `<button class="chat-codeblock__copy-btn" data-code="${cleanCode.replace(/"/g, '"')}" title="Copy to clipboard">` +
+          (lang ? `<span class="chat-codeblock__lang">${esc(lang)}</span>` : '') +
+          `<button class="chat-codeblock__copy-btn" data-code="${cleanCode}" title="Copy to clipboard">` +
             `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>` +
           `</button>` +
         `</div>` +

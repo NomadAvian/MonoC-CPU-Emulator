@@ -7,12 +7,18 @@
 CXX      = g++
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
-CXXFLAGS = -std=c++20 -Wall -Wextra -O2 -pthread
+CXXFLAGS = -std=c++20 -Wall -Wextra -O2 -pthread -MMD -MP
 
 ifeq ($(UNAME_S),Darwin)
 HOMEBREW_PREFIX := $(shell if [ -d /opt/homebrew/include ]; then echo /opt/homebrew; elif [ -d /usr/local/include ]; then echo /usr/local; fi)
 CXXFLAGS += -I$(HOMEBREW_PREFIX)/include -L$(HOMEBREW_PREFIX)/lib
+NPROC    := $(shell sysctl -n hw.logicalcpu)
+else
+NPROC    := $(shell nproc)
 endif
+
+JOBS ?= $(NPROC)
+MAKEFLAGS += --jobs=$(JOBS)
 
 TARGET_SUFFIX = _$(UNAME_M)
 
@@ -33,6 +39,9 @@ SRC = \
 
 BUILD_DIR = build
 TARGET    = $(BUILD_DIR)/crow_server$(TARGET_SUFFIX)
+
+OBJ = $(SRC:%.cpp=$(BUILD_DIR)/%.o)
+DEP = $(OBJ:.o=.d)
 
 all: build
 
