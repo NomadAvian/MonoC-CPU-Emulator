@@ -32,23 +32,19 @@ public:
 
     // registry-guaranteed non-empty sanitized id
     explicit SessionInstance(const std::string& id)
-        : id_(id), exec_name_("session_" + id) {}
+        : id_(id), exec_name_("session_" + id) {
+        cpu_ = std::make_unique<cpu::CPU>();
+    }
 
     const std::string& id() const { return id_; }
 
-    // assembles source into this session's own ROM file and loads it,
-    // so concurrent sessions never overwrite each other's programs;
-    // throws on assembly errors (propagated from AssembleToRom)
+    // assembles source into this session's own ROM file and loads it
     size_t Compile(const std::string& source) {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
         const std::vector<Word> words =
             riscv::Assembler::AssembleToRom(source, exec_name_);
-        if (!cpu_) {
-            cpu_ = std::make_unique<cpu::CPU>(exec_name_ + ".txt");
-        } else {
-            cpu_->Reset();
-            cpu_->LoadExecutable(exec_name_ + ".txt");
-        }
+        cpu_->Reset();
+        cpu_->LoadExecutable(exec_name_ + ".txt");
         cpu_->SetIo(&io_);
         ClearConsole();
         return words.size();
@@ -56,7 +52,7 @@ public:
 
     void Reset() {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        if (cpu_) cpu_->Reset();
+        cpu_->Reset();
         ClearConsole();
     }
 
@@ -69,8 +65,6 @@ public:
         while (executed < static_cast<size_t>(max_steps) && !cpu_->IsHalted()) {
             cpu_->Step();
             ++executed;
-            // parked on a read ecall: stop burning the batch, the PC
-            // stays at the ecall until input arrives
             if (cpu_->IsWaiting()) break;
         }
         return executed;
@@ -78,23 +72,23 @@ public:
 
     bool halted() {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        return cpu_ && cpu_->IsHalted();
+        return cpu_->IsHalted();
     }
 
     bool waiting() {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        return cpu_ && cpu_->IsWaiting();
+        return cpu_->IsWaiting();
     }
 
     Word Pc() {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        return cpu_ ? cpu_->pc() : 0;
+        return cpu_->pc();
     }
 
     std::vector<Word> Registers() {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
         std::vector<Word> regs(32, 0);
-        if (cpu_) {
+        {
             for (size_t i = 0; i < regs.size(); ++i)
                 regs[i] = cpu_->ReadReg(i);
         }
@@ -103,11 +97,10 @@ public:
 
     std::vector<Byte> Framebuffer() {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
-        return cpu_ ? cpu_->ReadFramebuffer() : std::vector<Byte>();
+        return cpu_->ReadFramebuffer();
     }
 
-    // ---- console (print-syscall output / stdin for read syscalls) ----
-    // backed by the CpuIo payload the CPU reads/writes during ecalls
+    // CpuIo payload the CPU reads/writes during ecalls
 
     void AppendOutput(const std::string& data) {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
