@@ -11,6 +11,9 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL   = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 OLLAMA_MODEL   = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
 OLLAMA_HOST    = os.environ.get("OLLAMA_HOST", "")
+OMNIROUTE_API_KEY = os.environ.get("OMNIROUTE_API_KEY", "dummy")
+OMNIROUTE_BASE_URL= os.environ.get("OMNIROUTE_BASE_URL", "http://localhost:20128/v1")
+OMNIROUTE_MODEL   = os.environ.get("OMNIROUTE_MODEL", "auto")
 
 # --- internal networking (docker overrides these via environment: in compose) ---
 CROW_BASE_URL = os.environ.get("CROW_BASE_URL", "http://localhost:6969")

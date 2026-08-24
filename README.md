@@ -33,6 +33,7 @@ To run locally you need to have the following installed:
 3. `npm`: Node.js package manager (ships with Node.js; used for the frontend)
 4. `.env` (optional): copy `.env.example` to a new file named `.env` and set `OLLAMA_MODEL` to be the pulled model (see below). `GEMINI_API_KEY` is only needed for the Gemini fallback. 
 5. `ollama` (optional): local LLM runtime for the AI assistant. Install from https://ollama.com, then pull a model, e.g.:
+
    ```bash
    ollama pull qwen2.5:7b
    ```

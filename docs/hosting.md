@@ -1,62 +1,102 @@
 # Hosting & Usage Guide
 
-MonoC CPU Emulator can be run either natively for personal local development, or via Docker as a server that multiple users can connect to over a network. 
+MonoC CPU Emulator is designed to be highly modular. AI is entirely optional. It can be run either natively for personal local development, or via Docker as a server that multiple users can connect to over a network.
 
-As the Local Model might require better hardware, here are the three supported usage scenarios:
+## AI Provider Overview
 
-## 1. Local Native Usage 
-**Best for:** Running the app on your own machine for personal use. 
+Before choosing a deployment mode, pick your AI strategy and set the relevant vars in your `.env` (copied from `.env.example`):
 
-Follow the [build instructions](../README.md#build).
+| Provider | What it is | Required vars |
+|---|---|---|
+| **None** | Disable AI entirely | _(omit all AI vars)_ |
+| **Gemini** | Google's cloud API | `GEMINI_API_KEY`, `GEMINI_MODEL` |
+| **Ollama** | Local or remote open-weight models | `OLLAMA_HOST`, `OLLAMA_MODEL` |
+| **OmniRoute** | Free-tier gateway across many cloud providers | `OMNIROUTE_API_KEY`, `OMNIROUTE_BASE_URL`, `OMNIROUTE_MODEL` |
 
-AI usage is totally optional. If you have `ollama` installed its detected automatically, but make sure the set model is the right one in the `.env` file.
-
-**Networking:** 
-- The script uses the `localhost` loopback interface by default. 
-- **NO other devices** on your Wi-Fi network will be able to access the emulator.
-
----
-
-## 2. Docker + Ollama (Same Device)
-**Best for:** Hosting the emulator on a home server, letting friends/devices connect, while running the heavy AI models on that same server.
-
-When using Docker, the emulator is exposed to your local network (e.g. Wifi). However, Docker containers run in an isolated network, so it cannot connect to the host machine's Ollama instance using just `localhost`.
-
-**Setup:**
-1. You must tell Ollama to accept external connections (because Docker traffic counts as an external connection). Stop Ollama, and restart it with this environment variable:
-
-   ```bash
-   $ env OLLAMA_HOST="0.0.0.0" ollama serve
-   ```
-2. In your `.env` file, point the emulator to the special Docker host address:
-
-   ```env
-   # If using Mac/Windows Docker Desktop:
-   OLLAMA_HOST=http://host.docker.internal:11434
-   
-   # If using Linux natively:
-   OLLAMA_HOST=http://<your-lan-ip>:11434
-   ```
-3. Run `docker compose up -d --build`.
-4. Other devices on your Wi-Fi can now access the emulator by visiting `http://<your-lan-ip>`.
+Gemini works with **any** deployment mode below. OmniRoute works with `omni` Docker profile but can be configured manually in any mode.
 
 ---
 
-## 3. Docker + Ollama (Different Devices)
-**Best for:** Hosting the emulator on a lightweight server/VPS, but running the heavy AI models on a beefy PC across the house (or world via Tailscale).
+## Local Native (No Docker)
 
-**Setup:**
-1. On your **AI PC** (the one running Ollama), you must tell Ollama to accept connections from the network. Stop Ollama, and restart it with:
+**Best for:** Personal usage on your own machine.
 
-   ```bash
-   $ env OLLAMA_HOST="0.0.0.0" ollama serve
-   ```
-2. On your **Emulator PC** (where Docker runs), edit the `.env` file to point to the IP address of your AI PC (e.g., its Tailscale IP or LAN IP):
+Follow the [build instructions](../README.md#build) to compile and run natively.
 
-   ```env
-   OLLAMA_HOST=http://100.x.y.z:11434
-   ```
-3. Run `docker compose up -d --build` on the emulator server.
+- Ollama is **auto-detected** if installed — set `OLLAMA_MODEL` in `.env` and you're done. No `OLLAMA_HOST` needed.
+- Gemini and OmniRoute both work here — just set the relevant vars in `.env`.
+
+---
+
+## Docker Deployment
+
+The stack is managed via Docker Compose profiles. The core services (frontend, backend, CPU emulator, and proxy) always start. Append `--profile <name>` to use optional configurations.
+
+### Base Profile
+
+```bash
+docker compose up -d
+```
+
+**Use when:** Don't require AI. Only want to use the CPU emulator. Equivalent to [Local Native](#local-native-no-docker) but cleaner.
+
+#### Connecting to Ollama from the Base Profile
+
+**Ollama running natively on the same host:**
+
+```bash
+# In your .env:
+OLLAMA_HOST=http://host.docker.internal:11434
+```
+
+> **Mac note:** Docker on macOS cannot access the GPU. This is the recommended Ollama setup for Mac — run the [Ollama app](https://ollama.com) natively and point the Base Profile at it via `host.docker.internal`.
+
+**Ollama running on a different machine (LAN or Tailscale):**
+
+First, on the **Ollama host machine**, start the server bound to all interfaces:
+
+```bash
+env OLLAMA_HOST="0.0.0.0" ollama serve
+```
 
 > [!WARNING]
 > By default, Ollama strictly blocks all traffic that does NOT originate from `127.0.0.1`. That's why Ollama must be started with `env OLLAMA_HOST="0.0.0.0" ollama serve`.
+
+Then in your `.env` on the machine running Docker:
+
+```bash
+OLLAMA_HOST=http://<host-ip>:11434
+# e.g. a Tailscale address: OLLAMA_HOST=http://100.x.y.z:11434
+```
+
+> **Tip:** [Tailscale](https://tailscale.com/) is the easiest way to securely connect a cloud VPS to a home PC running Ollama without opening router ports.
+
+---
+
+### Omni Profile
+
+```bash
+docker compose --profile omni up -d
+```
+
+**Use when:** You want to load-balance across 300+ free cloud AI providers without using local RAM or a paid API key.
+
+- Spins up the OmniRoute gateway automatically and links it to the backend — no extra config needed.
+- Dashboard available at `http://localhost:20128/dashboard`.
+- To override the model or key, set `OMNIROUTE_MODEL` / `OMNIROUTE_API_KEY` in `.env`.
+
+---
+
+### Ollama Profile
+
+```bash
+docker compose --profile ollama up -d
+```
+
+**Use when:** You want Ollama running **inside Docker** on a Linux machine with GPU passthrough.
+
+- Spins up the official `ollama` container and links it to the backend automatically.
+- Set `OLLAMA_MODEL` in `.env` to choose the model.
+- Requires a **Linux host** with Docker GPU passthrough configured for good performance.
+
+> **Mac warning:** Docker on macOS cannot pass through the GPU. Mac users should use the **Base Profile** and run the [Ollama app](https://ollama.com) natively instead — see [Base Profile → Ollama on same host](#ollama-running-natively-on-the-same-mac-or-windows-host) above.

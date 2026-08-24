@@ -10,6 +10,7 @@ from fastapi import HTTPException
 
 from config import CORS_ORIGINS
 from chat.ollama import chat as ollama_chat
+from chat.omniroute import chat as omniroute_chat
 from chat.gemini import chat as gemini_chat
 import db
 
@@ -30,22 +31,35 @@ class ChatRequest(BaseModel):
     source: str
 
 
+async def _do_chat(messages: list[dict], source: str) -> tuple[str, list[str]]:
+    try:
+        result, tools_used = await ollama_chat(messages, source)
+        print("[api] responded via Ollama")
+        return result, tools_used
+    except Exception as e:
+        print(f"[api] Ollama unavailable, falling back to OmniRoute. Error: {e}")
+        try:
+            result, tools_used = await omniroute_chat(messages, source)
+            print("[api] responded via OmniRoute (fallback)")
+            return result, tools_used
+        except Exception as omniroute_e:
+            import traceback
+            print(f"[api] OmniRoute unavailable, falling back to Gemini. Error:")
+            traceback.print_exc()
+            try:
+                result, tools_used = await gemini_chat(messages, source)
+                print("[api] responded via Gemini (fallback)")
+                return result, tools_used
+            except Exception as gemini_e:
+                msg = str(gemini_e)
+                lw_msg = msg.lower()
+                if "429" in msg or "quota" in lw_msg or "exhausted" in lw_msg:
+                    msg = "API usage limit reached. Please try again later."
+                raise HTTPException(status_code=500, detail=f"AI unavailable: {msg}")
+
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
-    try:
-        result, tools_used = await ollama_chat(request.messages, request.source)
-        print("[api] responded via Ollama")
-    except Exception as e:
-        print(f"[api] Ollama unavailable, falling back to Gemini. Error: {e}")
-        try:
-            result, tools_used = await gemini_chat(request.messages, request.source)
-            print("[api] responded via Gemini (fallback)")
-        except Exception as gemini_e:
-            msg = str(gemini_e)
-            lw_msg = msg.lower()
-            if "429" in msg or "quota" in lw_msg or "exhausted" in lw_msg:
-                msg = "API usage limit reached. Please try again later."
-            raise HTTPException(status_code=500, detail=f"AI unavailable: {msg}")
+    result, tools_used = await _do_chat(request.messages, request.source)
     return {"response": result, "tools_used": tools_used}
 
 
@@ -56,9 +70,10 @@ class ExplainRequest(BaseModel):
 
 @app.post("/explain")
 async def explain_endpoint(request: ExplainRequest):
-    prompt = f"Please explain what line {request.line_number} does. Keep it short. Here is the source code for reference:\n{request.source}"
-    # TODO: call tool calling loop with this prompt
-    return 
+    prompt = f"Please explain what line {request.line_number} does. Keep it short."
+    messages = [{"role": "user", "content": prompt}]
+    result, tools_used = await _do_chat(messages, request.source)
+    return {"response": result, "tools_used": tools_used}
 
 # ----------- auth apis -----------
 class SignupRequest(BaseModel):

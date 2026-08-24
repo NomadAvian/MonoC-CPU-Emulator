@@ -17,19 +17,19 @@
 
 	# ai
 	handle /chat* {
-		reverse_proxy monoc-ai:8000
+		reverse_proxy monoc-py:8000
 	}
     
     handle /explain* {
-		reverse_proxy monoc-ai:8000
+		reverse_proxy monoc-py:8000
 	}
 
 	handle /auth* {
-		reverse_proxy monoc-ai:8000
+		reverse_proxy monoc-py:8000
 	}
 
 	handle /user* {
-		reverse_proxy monoc-ai:8000
+		reverse_proxy monoc-py:8000
 	}
 
 	# Catch-all: Frontend UI (React)

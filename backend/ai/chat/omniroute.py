@@ -2,9 +2,9 @@ import json
 import os
 import sys
 
-from ollama import AsyncClient
+from openai import AsyncOpenAI
 
-from config import OLLAMA_MODEL as MODEL, OLLAMA_HOST
+from config import OMNIROUTE_MODEL as MODEL, OMNIROUTE_API_KEY, OMNIROUTE_BASE_URL
 from chat.prompt import SYSTEM_PROMPT
 
 from mcp import ClientSession, StdioServerParameters
@@ -15,17 +15,7 @@ _mcp_server_path = os.path.join(os.path.dirname(__file__), "..", "mcp_server.py"
 def _numbered(source: str) -> str:
     return "\n".join(f"{i+1:3d} | {line}" for i, line in enumerate(source.split("\n")))
 
-# if OLLAMA_HOST is set, connect to a remote ollama instance
-_ollama_kwargs = {"host": OLLAMA_HOST} if OLLAMA_HOST else {}
-
 async def chat(messages: list[dict], source: str):
-    # check ollama availability before starting mcp server
-    client = AsyncClient(**_ollama_kwargs)
-    try:
-        await client.list()
-    except Exception as e:
-        raise RuntimeError(f"Ollama server unreachable: {e}")
-
     if not messages or messages[0].get("role") != "system":
         messages = [{"role": "system", "content": SYSTEM_PROMPT}] + messages
 
@@ -44,12 +34,12 @@ async def chat(messages: list[dict], source: str):
             # 1. discover tools dynamically from MCP server
             tools_response = await session.list_tools()
             
-            # 2. map MCP tools to Ollama Tool format
-            ollama_tools = []
+            # 2. map MCP tools to OpenAI Tool format
+            openai_tools = []
             for t in tools_response.tools:
                 props = t.inputSchema.get("properties", {})
                 req = t.inputSchema.get("required", [])
-                ollama_tools.append({
+                openai_tools.append({
                     "type": "function",
                     "function": {
                         "name": t.name,
@@ -63,7 +53,7 @@ async def chat(messages: list[dict], source: str):
                 })
             
             # 3. add get_source local tool
-            ollama_tools.append({
+            openai_tools.append({
                 "type": "function",
                 "function": {
                     "name": "get_source",
@@ -73,26 +63,50 @@ async def chat(messages: list[dict], source: str):
             })
 
             # 4. enter AI chat loop
-            client = AsyncClient(**_ollama_kwargs)
+            client = AsyncOpenAI(api_key=OMNIROUTE_API_KEY, base_url=OMNIROUTE_BASE_URL)
             while True:
-                response = await client.chat(
+                response = await client.chat.completions.create(
                     model=MODEL,
                     messages=messages,
-                    tools=ollama_tools,
+                    tools=openai_tools,
                 )
 
-                if not response.message.tool_calls:
-                    return response.message.content, tools_used
+                response_message = response.choices[0].message
 
-                messages.append(response.message)
-                for call in response.message.tool_calls:
+                if not response_message.tool_calls:
+                    return response_message.content, tools_used
+
+                # Append assistant's response to conversation
+                assistant_msg = {
+                    "role": "assistant",
+                    "content": response_message.content,
+                }
+                if response_message.tool_calls:
+                    assistant_msg["tool_calls"] = [
+                        {
+                            "id": call.id,
+                            "type": "function",
+                            "function": {
+                                "name": call.function.name,
+                                "arguments": call.function.arguments
+                            }
+                        } for call in response_message.tool_calls
+                    ]
+                messages.append(assistant_msg)
+
+                for call in response_message.tool_calls:
                     print(f"[tool called: {call.function.name}]")
                     tools_used.append(call.function.name)
-
+                    
                     if call.function.name == "get_source":
                         result_text = json.dumps({"source": _numbered(source)})
                     else:
-                        mcp_result = await session.call_tool(call.function.name, call.function.arguments)
+                        args = json.loads(call.function.arguments) if call.function.arguments else {}
+                        mcp_result = await session.call_tool(call.function.name, args)
                         result_text = mcp_result.content[0].text if mcp_result.content else "{}"
                         
-                    messages.append({"role": "tool", "content": result_text})
+                    messages.append({
+                        "role": "tool", 
+                        "tool_call_id": call.id,
+                        "content": result_text
+                    })

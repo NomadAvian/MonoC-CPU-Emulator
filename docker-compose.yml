@@ -26,8 +26,8 @@ services:
     restart: unless-stopped
 
   python-api:
-    image: monoc/ai:latest
-    container_name: monoc-ai
+    image: monoc/py:latest
+    container_name: monoc-py
     build:
       context: ./backend/ai
       dockerfile: Dockerfile.python
@@ -36,6 +36,9 @@ services:
       CROW_BASE_URL: http://monoc-cpu:6969
       DB_PATH: /app/db/monoc.db
       CORS_ORIGINS: http://localhost
+      OMNIROUTE_BASE_URL: http://omniroute:20128/v1
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
     volumes:
       - monoc_db:/app/db
     depends_on:
@@ -52,5 +55,29 @@ services:
       PORT: 6969
     restart: unless-stopped
 
+  omniroute:
+    image: diegosouzapw/omniroute:latest
+    container_name: monoc-models
+    profiles:
+      - omni
+    ports:
+      - "20128:20128"
+    volumes:
+      - omniroute_data:/app/data
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: monoc-ollama
+    profiles:
+      - ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
 volumes:
   monoc_db:
+  omniroute_data:
+  ollama_data:
