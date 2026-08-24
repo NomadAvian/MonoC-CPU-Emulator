@@ -1,5 +1,3 @@
-# Ollama is the primary model; Gemini is the fallback when Ollama is unavailable
-
 import warnings
 warnings.filterwarnings("ignore")
 

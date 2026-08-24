@@ -15,7 +15,7 @@ A 32-bit RISC-V CPU emulator and assembler, built from scratch in C++, with a br
 
 <div align="center">
   <img src="docs/assets/demo.gif" alt="MonoC Emulator Demo" width="800">
-  <p><em>The MonoC web interface running a RISC-V program</em></p>
+  <p><em>The MonoC web interface running a RISC-V program (Sierpinski Triangle)</em></p>
 </div>
 
 ## Requirements

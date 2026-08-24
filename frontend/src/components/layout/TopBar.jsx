@@ -22,6 +22,7 @@ import exportIcon from '../../assets/export.svg'
 import githubIcon from '../../assets/github.svg'
 import resetIcon from '../../assets/reset.svg'
 import infoIcon from '../../assets/info.svg'
+import monocLogo from '../../assets/MonoCLogo.svg'
 
 export default function TopBar() {
   // ── Local State ──
@@ -103,7 +104,7 @@ export default function TopBar() {
       <header className="topbar">
         {/* Left: Logo */}
         <div className="topbar__logo">
-          <span className="topbar__logo-text">MonoC</span>
+          <img src={monocLogo} alt="MonoC Logo" className="topbar__logo-image" />
         </div>
 
         {/* Right: Nav actions */}

@@ -38,7 +38,7 @@
 }
 
 .disassembler__row--active td {
-  background: var(--accent-dim);
+  background: var(--highlight-bg);
 }
 
 .disassembler__addr { color: var(--cyan); }

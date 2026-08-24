@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
-import './OutputTabs.css'
+import './Disassembler.css'
 import { useCPUStore } from '../../../store/cpuStore'
 
-export default function OutputTabs() {
+export default function Disassembler() {
   const instructions = useCPUStore(s => s.instructions)
   const programCounter = useCPUStore(s => s.programCounter)
   const activeRowRef = useRef(null)

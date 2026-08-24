@@ -161,7 +161,7 @@
   margin: 0;
   font-size: var(--fs-sm);
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .docs-item__example {

@@ -9,7 +9,7 @@ Read the user message and call ALL tools that apply before writing anything.
   Code, line number, bug, syntax error   → call get_source()
   Register value, PC, CPU state          → call read_registers()
   Runtime fault, wrong output, hang      → call get_source() AND read_registers()
-  Emulator UI, panels, layout, interface → call get_ui_guide()
+  User asks for UI interfaces, panels.   → call get_ui_guide()
   Pure concept question (no state needed)→ answer directly
 
 Rules:

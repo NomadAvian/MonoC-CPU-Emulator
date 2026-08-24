@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './BottomPanel.css'
-import OutputTabs from '../panels/bottom/OutputTabs'
+import Disassembler from '../panels/bottom/Disassembler'
 import ConsolePanel from '../panels/bottom/ConsolePanel'
 
 const TABS = ['Console', 'Disassembler']
@@ -57,7 +57,7 @@ export default function BottomPanel({ style }) {
       {!isCollapsed && (
         <div className="bottom-panel__content">
           {activeTab === 'Console' && <ConsolePanel />}
-          {activeTab === 'Disassembler' && <OutputTabs />}
+          {activeTab === 'Disassembler' && <Disassembler />}
         </div>
       )}
     </div>

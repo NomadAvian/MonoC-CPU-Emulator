@@ -17,6 +17,17 @@
   gap: 8px;
 }
 
+.topbar__logo-image {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+  filter: invert(1) brightness(0.77);
+  /* #C4C3C2 ( */
+  transform: scale(2.8);
+  transform-origin: center;
+  margin-left: 40px;
+}
+
 .topbar__logo-text {
   font-family: var(--font-sans);
   font-size: var(--fs-lg);
@@ -67,8 +78,9 @@
 }
 
 .topbar__ai-btn:hover {
-  background: rgba(198, 160, 246, 0.15) !important; 
+  background: rgba(198, 160, 246, 0.15) !important;
 }
+
 [data-theme="gruvbox"] .topbar__ai-btn:hover {
   background: rgba(254, 128, 25, 0.15) !important;
 }
@@ -114,8 +126,15 @@
 }
 
 @keyframes overflow-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .topbar__overflow-item {

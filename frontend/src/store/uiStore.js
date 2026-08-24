@@ -5,7 +5,7 @@ const initialState = {
   isRightPanelOpen: false,
   activeRightTab: 'docs',   // 'docs' | 'ai' | 'examples'
   leftWidth: 260,
-  rightWidth: 420,
+  rightWidth: 460,
   screenWidth: 420,
   bottomHeight: 204,
   toasts: [],

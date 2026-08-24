@@ -1,5 +1,6 @@
 import ModalWrapper from '../../ui/ModalWrapper'
 import githubIcon from '../../../assets/github.svg'
+import monocIcon from '../../../assets/MonoCLogo.svg'
 import './AboutModal.css'
 
 export const ABOUT_TEXT = `MonoC is a 32-bit RISC-V CPU emulator and assembler built from scratch in C++.
@@ -12,7 +13,8 @@ Marshiat Mithe Syed`
 
 export default function AboutModal({ onClose }) {
   return (
-    <ModalWrapper title="About MonoC" onClose={onClose} className="about-modal">
+    <ModalWrapper onClose={onClose} className="about-modal">
+      <img src={monocIcon} alt="MonoC Logo" className='about-modal__monoc-icon' />
       <p className="about-modal__text">{ABOUT_TEXT}</p>
 
       <div className="about-modal__meta">

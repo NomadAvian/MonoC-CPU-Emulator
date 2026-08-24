@@ -1,6 +1,9 @@
 .modal-wrapper.about-modal {
-  width: 480px;
-  max-width: 480px;
+  width: 100%;
+  max-width: 420px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .about-modal__text {
@@ -11,6 +14,15 @@
   white-space: pre-line;
 }
 
+.about-modal__monoc-icon {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+    filter: invert(1) brightness(0.77);
+    /* #C4C3C2 ( */
+    transform: scale(3.4);
+    transform-origin: center;
+}
 .about-modal__meta {
   display: flex;
   flex-direction: column;
