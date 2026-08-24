@@ -20,6 +20,7 @@ export default function ControlBar() {
   const status = useCPUStore(s => s.status)
   const compiling = useCPUStore(s => s.compiling)
   const halted = useCPUStore(s => s.halted)
+  const waiting = useCPUStore(s => s.waiting)
   const romSize = useCPUStore(s => s.romSize)
   const speedIndex = useCPUStore(s => s.speedIndex)
 
@@ -56,8 +57,8 @@ export default function ControlBar() {
   return (
     <div className="control-bar">
       <div className="control-bar__left">
-        <span className={`control-bar__status control-bar__status--${halted ? 'halted' : status}`}>
-          {halted ? 'Halted' : status[0].toUpperCase() + status.slice(1)}
+        <span className={`control-bar__status control-bar__status--${halted ? 'halted' : waiting ? 'waiting' : status}`}>
+          {halted ? 'Halted' : waiting ? 'Waiting for Input' : status[0].toUpperCase() + status.slice(1)}
         </span>
       </div>
 

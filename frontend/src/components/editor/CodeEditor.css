@@ -53,12 +53,6 @@
   border-left-color: var(--cyan) !important;
 }
 
-.cm-executing-line {
-  background-color: var(--yellow-dim) !important;
-  border-left: 3px solid var(--yellow) !important;
-  padding-left: 0 !important;
-}
-
 /* Autocomplete Tooltip overrides */
 .cm-tooltip {
   background-color: var(--bg-elevated) !important;

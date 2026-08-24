@@ -108,6 +108,10 @@ button.ui-button.control-bar__btn:hover:not(:disabled) {
   color: var(--yellow);
 }
 
+.control-bar__status--waiting {
+  color: var(--accent);
+}
+
 /* Spinner */
 .control-bar__spinner {
   width: 14px;

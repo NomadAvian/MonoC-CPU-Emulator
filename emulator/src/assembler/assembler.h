@@ -16,10 +16,7 @@ namespace riscv {
 
 class Assembler {
 public:
-    // Directory the ROM .txt files are written to. The app is launched from the
-    // repo root via start_dev.sh, but the crow server runs with cwd = build/;
-    // resolve the repo's emulator/roms/ from whichever of those (or emulator/)
-    // we're invoked from.
+    // directory the ROM .txt files are written to
     static std::string RomsDirectory() {
         static const char* kCandidates[] = {
             "emulator/roms",     // repo root
@@ -42,17 +39,18 @@ public:
     }
 
     // assembles `source` and writes the words to the roms directory
-    // as little-endian hex bytes (one word per line), prefixed by an
-    // entry-point header "E 0x...." so the CPU knows where code starts.
-    static std::vector<Word> AssembleToRom(const std::string& source, const std::string& name) {
+    // as little-endian hex bytes (one word per line)
+    static std::vector<Word> AssembleToRom(const std::string& source, const std::string& name,
+                                           Word* entry_out = nullptr) {
         std::vector<Word> words;
         riscv::Parser parser;
         parser.Assemble(source, words);
 
-        // Data directives are emitted first; the first instruction lives at
-        // the word-aligned address immediately after them.
+        // Data directives are emitted first
+        // the first instruction is at the word-aligned address immediately
         size_t data_bytes = parser.data_bytes();
         Word entry = static_cast<Word>((data_bytes + 3) & ~static_cast<size_t>(3));
+        if (entry_out) *entry_out = entry;
 
         const std::string path = RomsDirectory() + "/" + name + ".txt";
         std::ofstream out(path);

@@ -124,7 +124,7 @@ _start:
     li   a7, 4                  # write string ecall
     la   a0, prompt_            # load user prompt
     ecall
-    li   a7, 8                  # read string syscall (adjust to your actual ecall enum)
+    li   a7, 8                  # read string syscall
     li   a0, 0x1000             # scratch buffer address, hardcoded into unused RAM
     li   a1, 64                 # max bytes to read (63 chars + NUL terminator)
     ecall
@@ -145,7 +145,7 @@ strlen_done:
     li   a0, res_msg
     ecall
     mv   a0, s0
-    li   a7, 1                   # print int syscall (adjust to your actual ecall enum)
+    li   a7, 1                   # print int syscall
     ecall
 
     li   a7, 10
@@ -226,7 +226,7 @@ fib_loop:
 fib_done:
     # s1 now holds fib(n)
     mv   a0, s1
-    li   a7, 1              # print int syscall (adjust to your actual ecall enum)
+    li   a7, 1              # print int syscall
     ecall
 
     li   a7, 10
@@ -356,7 +356,7 @@ print_loop:
     add  t1, s0, t0               # t1 = address of array[i]
     lw   a0, 0(t1)                # a0 = array[i]
     
-    li   a7, 1                    # print int syscall (adjust to your actual ecall enum)
+    li   a7, 1                    # print int syscall
     ecall
 
     li   a7, 4

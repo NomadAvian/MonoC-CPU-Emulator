@@ -3,6 +3,7 @@ import { fetchRegisters, stepCpu, resetCpu, compile } from '../api/cpu'
 import { useEditorStore } from './editorStore'
 import { useScreenStore } from './screenStore'
 import { useConsoleStore } from './consoleStore'
+import { disassembleWords } from '../../utils/disasm'
 
 // throttle framebuffer
 const SCREEN_REFRESH_MS = 50
@@ -46,6 +47,8 @@ const initialState = {
   running: false,
   compiling: false,
   speedIndex: 2, // default to 60 IPS
+  instructions: [],        // disassembled ROM listing for the bottom panel
+  waiting: false,          // CPU paused on a read ecall, awaiting console input
 }
 
 export const useCPUStore = create((set, get) => ({
@@ -94,6 +97,7 @@ export const useCPUStore = create((set, get) => ({
         programCounter: pc,
         changedRegisters: changed,
         halted,
+        waiting: data.waiting ?? false,
       })
       return data
     } catch (error) {
@@ -117,6 +121,8 @@ export const useCPUStore = create((set, get) => ({
         romSize: result.size ?? 0,
         halted: false,
         compiling: false,
+        waiting: false,
+        instructions: disassembleWords(result.words ?? [], result.entry ?? 0),
       })
       consoleStore.writeSys('Compilation successful')
       await get().fetchRegisters()
@@ -184,7 +190,7 @@ export const useCPUStore = create((set, get) => ({
   reset: async () => {
     try {
       await resetCpu()
-      set({ status: 'stopped', changedRegisters: new Set(), halted: false })
+      set({ status: 'stopped', changedRegisters: new Set(), halted: false, waiting: false })
       useConsoleStore.getState().reset()
       await get().fetchRegisters(false)
       maybeRefreshScreen()

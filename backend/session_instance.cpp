@@ -30,6 +30,13 @@ public:
         size_t      len;
     };
 
+    // read model for POST /cpu/compile: assembled ROM words plus the
+    // entry-point address where instruction words begin
+    struct CompileResult {
+        std::vector<Word> words;
+        Word              entry = 0;
+    };
+
     // registry-guaranteed non-empty sanitized id
     explicit SessionInstance(const std::string& id)
         : id_(id), exec_name_("session_" + id) {
@@ -39,15 +46,16 @@ public:
     const std::string& id() const { return id_; }
 
     // assembles source into this session's own ROM file and loads it
-    size_t Compile(const std::string& source) {
+    CompileResult Compile(const std::string& source) {
         std::lock_guard<std::recursive_mutex> lock(mutex_);
+        Word entry = 0;
         const std::vector<Word> words =
-            riscv::Assembler::AssembleToRom(source, exec_name_);
+            riscv::Assembler::AssembleToRom(source, exec_name_, &entry);
         cpu_->Reset();
         cpu_->LoadExecutable(exec_name_ + ".txt");
         cpu_->SetIo(&io_);
         ClearConsole();
-        return words.size();
+        return {words, entry};
     }
 
     void Reset() {

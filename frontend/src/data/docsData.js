@@ -334,5 +334,45 @@ export const DOCS_DATA = [
         example: '# Plot pixel at (x, y):\nslli t0, y, 7           # t0 = y * 128  (row base offset)\nadd  t0, t0, x          # t0 += x       (add column)\nadd  t0, t0, SCREEN     # t0 = SCREEN + y*128 + x (final address)\nsb   value, 0(t0)       # write pixel\n\n# Plot row of pixels at y:\nslli t0, y, 7           # t0 = y * 128  (compute once)\nadd  t0, t0, SCREEN\nli   x, 0\nloop:\n    add  t1, t0, x      # address of (x, y)\n    sb   value, 0(t1)\n    addi x, x, 1\n    blt  x, 128, loop'
       },
     ]
+  },
+  {
+    category: 'Console Panel',
+    items: [
+      {
+        title: 'What the panel shows',
+        desc: 'The Console tab in the bottom panel is your program\'s terminal. Output printed via print ecalls appears as it is produced, your typed input is echoed back with a > prompt, and [SYSTEM] lines report emulator events such as compilation status and execution completion.',
+        example: '# typical session\n[SYSTEM] Compiling...\n[SYSTEM] Compilation successful\n42\nHello\n> 7              <- you typed this\n[SYSTEM] Execution completed'
+      },
+      {
+        title: 'Providing input',
+        desc: 'Type in the input line at the bottom of the panel and press Enter to feed the running program\'s standard input. Each submission delivers one line, which read ecalls (Read Integer 5, Read String 8, Read Char 12) consume. If a read ecall executes before any line is available, the CPU pauses mid-program and resumes the moment input arrives - no need to time your typing.',
+        example: 'li a0, buffer\nli a1, 64\nli a7, 8\necall             # blocks until you press Enter in the console'
+      },
+      {
+        title: 'Clearing the console',
+        desc: 'The Clear button wipes both the visible transcript and the server-side buffer. Recompiling or resetting the CPU also starts a fresh console, so output from a previous run never bleeds into the next.',
+        example: ''
+      }
+    ]
+  },
+  {
+    category: 'Disassembler Panel',
+    items: [
+      {
+        title: 'What the panel shows',
+        desc: 'After compiling, open the Disassembler tab in the bottom panel to see your program as the CPU sees it: one row per ROM word with its byte address, raw hex encoding, and decoded instruction. Words produced by data directives (.word/.byte/.asciiz) sit before the entry point and are shown as `.word 0x...` since they are not executable.',
+        example: '# columns\n# Address     Hex        Instruction\n# 0x00000000  0x0000002a .word 0x0000002a   <- data\n# 0x00000004  0x00400513 addi a0, zero, 4   <- entry point'
+      },
+      {
+        title: 'Reading disassembled output',
+        desc: 'Instructions are shown exactly as encoded: registers use ABI names (zero, ra, sp, t0-t6, s0-s11, a0-a7), pseudo-instructions appear expanded into their real instructions (li becomes addi/lui, mv becomes add), so what is written may differ from what executes. Branch and jump targets are printed as absolute addresses matching the Address column.',
+        example: 'jal ra, fib          # assembles to:\n# jal ra, 0x00000020 # target = absolute byte address'
+      },
+      {
+        title: 'Following execution',
+        desc: 'While stepping or running, the row at the current PC is highlighted and the list auto-scrolls to keep it in view - use Trace speed to walk one instruction at a time. This shows real control flow: taken branches jump around, calls land in function bodies, and returns come back. If the listing looks out of date, recompile to regenerate it.',
+        example: ''
+      }
+    ]
   }
 ]

@@ -38,9 +38,16 @@ int main()
 
         crow::json::wvalue res;
         try {
-            const size_t size = session->Compile(body["source"].s());
+            const auto result = session->Compile(body["source"].s());
             res["ok"]        = true;
-            res["size"]      = static_cast<int64_t>(size);
+            res["size"]      = static_cast<int64_t>(result.words.size());
+            res["entry"]     = static_cast<int64_t>(result.entry);
+            res["words"]     = std::vector<crow::json::wvalue>();
+            auto& words_list = res["words"];
+            for (size_t i = 0; i < result.words.size(); i++) {
+                // int64 so uint32 words survive json round-trip unharmed
+                words_list[i] = static_cast<int64_t>(result.words[i]);
+            }
             res["sessionId"] = session->id();
         } catch (const std::exception& e) {
             res["ok"]    = false;
@@ -93,7 +100,8 @@ int main()
 
         const auto regs = session->Registers();
         crow::json::wvalue res;
-        res["pc"] = session->Pc();
+        res["pc"]      = session->Pc();
+        res["waiting"] = session->waiting();
         res["registers"] = std::vector<crow::json::wvalue>();
         auto& list = res["registers"];
         for (size_t i = 0; i < regs.size(); i++) {
