@@ -1,65 +1,5 @@
 export const EXAMPLES_DATA = [
   {
-    id: "basic/integer-input-output",
-    category: "Basic",
-    title: "Integer input and output",
-    description: "Prompts for an integer, echoes it back with printint",
-    source: `.data
-    prompt: .asciiz "Please enter an integer.\\n"
-    res:    .asciiz "The value you have entered is:\\n"
-
-.text
-main:
-    li      a7, 4               # a7 = 4  -> select "print string" syscall
-    la      a0, prompt          # a0 = address of prompt string (syscall arg)
-    ecall                       # print the string at a0
-
-    li      a7, 5               # a7 = 5  -> select "read int" syscall
-    ecall                       # read an int from input, returned in a0
-    add     s0, a0, zero        # s0 = a0 (save the input value; s0 is callee-saved)
-
-    li      a7, 4               # a7 = 4  -> select "print string" syscall again
-    la      a0, res             # a0 = address of res string (syscall arg)
-    ecall                       # print "The value you have entered is:"
-
-    li      a7, 1               # a7 = 1  -> select "print int" syscall
-    add     a0, s0, zero        # a0 = s0 (move saved input into arg register)
-    ecall                       # print the integer in a0
-
-    li      a7, 10              # a7 = 10 -> select "exit" syscall
-    ecall                       # terminate the program`
-  },
-  {
-    id: "basic/string-input-output",
-    category: "Basic",
-    title: "String input and output",
-    description: "Reads a line into a RAM buffer and echoes it back",
-    source: `.data
-prompt: .asciz "Enter a string: "
-reply:  .asciz "You typed: "
-
-.text
-    li   a7, 4          # print prompt
-    la   a0, prompt
-    ecall
-
-    li   a7, 8          # readstring: a0 = buffer, a1 = max length
-    li   a0, 0x1000     # scratch buffer in free RAM (unified memory)
-    li   a1, 64         # stores up to 63 chars + NUL terminator
-    ecall               # suspends until you submit a line
-
-    li   a7, 4          # print prefix
-    la   a0, reply
-    ecall
-
-    li   a7, 4          # echo what was typed
-    li   a0, 0x1000
-    ecall
-
-    li   a7, 10         # exit
-    ecall`
-  },
-  {
     id: "basic/add-two-integers",
     category: "Basic",
     title: "Add two integers",
@@ -138,6 +78,80 @@ done:
     ecall                       # terminate the program`
   },
   {
+    id: "basic/string-input-output",
+    category: "Basic",
+    title: "String input and output",
+    description: "Reads a line into a RAM buffer and echoes it back",
+    source: `.data
+prompt: .asciz "Enter a string: "
+reply:  .asciz "You typed: "
+
+.text
+    li   a7, 4          # print prompt
+    la   a0, prompt
+    ecall
+
+    li   a7, 8          # readstring: a0 = buffer, a1 = max length
+    li   a0, 0x1000     # scratch buffer in free RAM (unified memory)
+    li   a1, 64         # stores up to 63 chars + NUL terminator
+    ecall               # suspends until you submit a line
+
+    li   a7, 4          # print prefix
+    la   a0, reply
+    ecall
+
+    li   a7, 4          # echo what was typed
+    li   a0, 0x1000
+    ecall
+
+    li   a7, 10         # exit
+    ecall`
+  },
+  {
+    id: "basic/string-length",
+    category: "Basic",
+    title: "String Length",
+    description: "Output the length of an inputted string with the null terminator",
+    source: `# String length (strlen)
+# Reads a string from stdin into a scratch buffer, then computes its
+# length by walking the buffer byte-by-byte until the null terminator
+.global _start
+.data
+    prompt_: .asciiz "enter a string: "
+    res_msg: .asciiz "the length of the entered string is: "
+.text
+_start:
+    li   a7, 4                  # write string ecall
+    la   a0, prompt_            # load user prompt
+    ecall
+    li   a7, 8                  # read string syscall (adjust to your actual ecall enum)
+    li   a0, 0x1000             # scratch buffer address, hardcoded into unused RAM
+    li   a1, 64                 # max bytes to read (63 chars + NUL terminator)
+    ecall
+
+    li   t0, 0x1000             # t0 = pointer, starts at buffer[0]
+    li   s0, 0                  # s0 = length counter
+
+strlen_loop:
+    lbu  t1, 0(t0)               # t1 = current byte (zero-extended)
+    beq  t1, zero, strlen_done   # if byte == 0, end of string -> stop
+
+    addi t0, t0, 1               # pointer++
+    addi s0, s0, 1               # length++
+    j    strlen_loop
+
+strlen_done:
+    li   a7, 4
+    li   a0, res_msg
+    ecall
+    mv   a0, s0
+    li   a7, 1                   # print int syscall (adjust to your actual ecall enum)
+    ecall
+
+    li   a7, 10
+    ecall`
+  },
+  {
     id: "intermediate/array-maximum",
     category: "Intermediate",
     title: "Array maximum",
@@ -178,6 +192,45 @@ loop_end:
 
     li      a7, 10              # a7 = 10 -> select "exit" syscall
     ecall                       # terminate the program`
+  },
+  {
+    id: "intermediate/fibonacci",
+    category: "Intermediate",
+    title: "Fibonacci",
+    description: "Prints the Nth fibonacci number",
+    source:`# Fibonacci (iterative)
+# Computes fib(N) using two running registers, no recursion.
+# fib(0)=0, fib(1)=1, fib(2)=1, fib(3)=2, ...
+.global _start
+.data
+N: .word 10             # which fibonacci number to compute
+.text
+_start:
+    la   t0, N
+    lw   s0, 0(t0)        # s0 = n (loop count)
+
+    li   s1, 0            # s1 = a = fib(i)
+    li   s2, 1            # s2 = b = fib(i+1)
+    li   s3, 0            # s3 = loop counter
+
+fib_loop:
+    beq  s3, s0, fib_done  # while (counter != n)
+
+    add  s4, s1, s2        # s4 = a + b
+    mv   s1, s2             # a = b
+    mv   s2, s4              # b = a + b (old sum)
+
+    addi s3, s3, 1
+    j    fib_loop
+
+fib_done:
+    # s1 now holds fib(n)
+    mv   a0, s1
+    li   a7, 1              # print int syscall (adjust to your actual ecall enum)
+    ecall
+
+    li   a7, 10
+    ecall`
   },
   {
     id: "intermediate/signed-mul-with-overflow",
@@ -238,6 +291,141 @@ overflow:
 done:
     li      a7, 10              # a7 = 10 -> select "exit" syscall
     ecall                       # terminate the program`
+  },
+  {
+    id: "intermediate/bubble-sort",
+    category: "Intermediate",
+    title: "Bubble Sort",
+    description: "Sort a predefined list of integers using bubble sort",
+    source: `# Bubble sort (small fixed array)
+# Sorts an array of 10 signed 32-bit integers in ascending order using
+# the bubble sort algorithm: repeatedly scan the array, swap adjacent
+# out-of-order pairs, and stop when a full pass finds no swaps.
+.global _start
+.data
+    array: .word 16, 6, 4, 1, 10, 9, 2, 18, 5, 22   # 10 unsorted integers
+    space: .ascii " "
+.text
+_start:
+    la   s0, array                # s0 = pointer to array start
+    li   s1, 10                   # s1 = array length (constant)
+    li   s2, 0                    # s2 = outer loop counter (pass number)
+
+outer_loop:
+    bge  s2, s1, sort_done        # if (pass >= len) done
+    
+    li   s3, 0                    # s3 = inner loop counter (current position)
+    li   s4, 0                    # s4 = swap flag (1 if any swap occurred this pass, else 0)
+
+inner_loop:
+    addi t0, s1, -1               # t0 = len - 1 (last valid pair index)
+    bge  s3, t0, inner_loop_end   # if (i >= len-1) end this pass
+    
+    slli t1, s3, 2                # t1 = i * 4 (convert array index to byte offset)
+    add  t2, s0, t1               # t2 = address of array[i]
+    
+    lw   t3, 0(t2)                # t3 = array[i]
+    lw   t4, 4(t2)                # t4 = array[i+1]
+    
+    ble  t3, t4, no_swap          # if (array[i] <= array[i+1]) no swap neededA
+    
+    sw   t4, 0(t2)                # array[i] = array[i+1]
+    sw   t3, 4(t2)                # array[i+1] = array[i]  (swap complete)
+    
+    li   s4, 1                    # set swap flag to 1 (a swap occurred)
+
+no_swap:
+    addi s3, s3, 1                # i++ (move to next pair)
+    j    inner_loop
+
+inner_loop_end:
+    beq  s4, zero, sort_done      # if (no swaps this pass) array is sorted, exit
+    
+    addi s2, s2, 1                # pass++ (do another pass)
+    j    outer_loop
+
+sort_done:
+    # Array is now sorted in ascending order at the original address (s0)
+    # Print each element
+    li   s5, 0                    # s5 = print loop counter
+
+print_loop:
+    bge  s5, s1, print_done       # if (i >= len) done printing
+    
+    slli t0, s5, 2                # t0 = i * 4 (byte offset)
+    add  t1, s0, t0               # t1 = address of array[i]
+    lw   a0, 0(t1)                # a0 = array[i]
+    
+    li   a7, 1                    # print int syscall (adjust to your actual ecall enum)
+    ecall
+
+    li   a7, 4
+    li   a0, space
+    ecall
+    
+    addi s5, s5, 1                # i++ (next element)
+    j    print_loop
+
+print_done:
+    li   a7, 10                   # exit
+    ecall`
+  },
+  {
+    id: "graphics/print-rect",
+    category: "Graphics",
+    title: "Print Rectangle",
+    description: "Draws a rectangle on the screen",
+    source: `# Draw rectangle
+# Draws a filled white rectangle on a 128x96 framebuffer (stride 128,
+# 1 byte/pixel). Rectangle defined by top-left corner (x0, y0) and
+# dimensions (width, height)
+.global _start
+.data
+X0:     .word 20             # left edge
+Y0:     .word 15             # top edge
+width:  .word 60             # rectangle width
+height: .word 40             # rectangle height
+.text
+_start:
+    li   s0, SCREEN          # s0 = framebuffer base
+    la   t1, X0
+    lw   s1, 0(t1)           # s1 = x0
+    la   t1, Y0
+    lw   s2, 0(t1)           # s2 = y0
+    la   t1, width
+    lw   s3, 0(t1)           # s3 = width
+    la   t1, height
+    lw   s4, 0(t1)           # s4 = height
+
+    li   t0, 0               # t0 = row counter (0..height-1)
+
+row_loop:
+    bge  t0, s4, done        # while (row < height)
+
+    add  t2, s2, t0          # t2 = y0 + row   (actual screen y)
+    slli t2, t2, 7           # t2 = (y0 + row) * 128
+    add  t2, t2, s0          # t2 = fb + (y0 + row)*128
+    add  t2, t2, s1          # t2 = fb + (y0 + row)*128 + x0 (row start addr)
+
+    li   t3, 0               # t3 = col counter (0..width-1)
+
+col_loop:
+    bge  t3, s3, col_loop_end # while (col < width)
+
+    add  t4, t2, t3          # t4 = address of pixel at (x0 + col, y0 + row)
+    li   t5, -1              # t5 = 0xFF (white pixel)
+    sb   t5, 0(t4)           # write pixel
+
+    addi t3, t3, 1           # col++
+    j    col_loop
+
+col_loop_end:
+    addi t0, t0, 1           # row++
+    j    row_loop
+
+done:
+    li   a7, 10              # exit
+    ecall`
   },
   {
     id: "graphics/monoc-screen",
@@ -332,5 +520,51 @@ skip:
 
     li   a7, 10              # a7 = 10 -> select "exit" syscall
     ecall                    # terminate the program`
+  },
+  {
+    id: "graphics/XOR / Sierpinski Triangle",
+    category: "Graphics",
+    title: "Sierpinski Triangle",
+    description: "Draws Sierpinski Triangle fractal pattern to the screen",
+    source:`# Sierpinski fractal (XOR/AND rule)
+# For every pixel (x, y), plots it white if (x & y) == 0.
+# This single bitwise test produces a Sierpinski gasket with no recursion,
+# or stack, it falls directly out of how binary AND behaves
+# across all (x, y) pairs, stride 128, 1 byte/pixel.
+.global _start
+.data
+.text
+_start:
+    li   s0, SCREEN          # s0 = framebuffer base
+    li   s1, 0               # s1 = y, 0..95
+yloop:
+    li   t5, 96
+    bge  s1, t5, done        # while (y < 96)
+
+    slli t0, s1, 7           # t0 = y * 128  (row base offset into framebuffer)
+    add  t0, t0, s0          # t0 = fb + y*128 = address of (0, y)
+
+    li   s2, 0               # s2 = x, 0..127
+xloop:
+    li   t5, 128
+    bge  s2, t5, xloop_end    # while (x < 128)
+
+    and  t1, s2, s1           # t1 = x & y
+    bne  t1, zero, skip       # if (x & y) != 0, not part of the gasket -> skip
+
+    add  t2, t0, s2           # t2 = address of (x, y)
+    li   t3, -1               # t3 = 0xFF, white pixel
+    sb   t3, 0(t2)
+
+skip:
+    addi s2, s2, 1            # x++
+    j    xloop
+xloop_end:
+    addi s1, s1, 1            # y++
+    j    yloop
+
+done:
+    li   a7, 10
+    ecall`
   }
 ];
