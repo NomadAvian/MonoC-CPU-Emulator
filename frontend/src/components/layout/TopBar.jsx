@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import './TopBar.css'
 import SettingsModal from '../panels/settings/SettingsModal'
+import AboutModal from '../panels/about/AboutModal'
 import AuthModal from '../panels/profile/AuthModal'
 import ProfileModal from '../panels/profile/ProfileModal'
 import SaveModal from '../panels/profile/SaveModal'
@@ -20,10 +21,12 @@ import moreIcon from '../../assets/more.svg'
 import exportIcon from '../../assets/export.svg'
 import githubIcon from '../../assets/github.svg'
 import resetIcon from '../../assets/reset.svg'
+import infoIcon from '../../assets/info.svg'
 
 export default function TopBar() {
   // ── Local State ──
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [saveOpen, setSaveOpen] = useState(false)
@@ -175,6 +178,14 @@ export default function TopBar() {
                   <span>Reset Editor</span>
                 </button>
                 <div className="topbar__overflow-divider" />
+                <button
+                  id="topbar-about-btn"
+                  className="topbar__overflow-item"
+                  onClick={() => { setOverflowOpen(false); setAboutOpen(true) }}
+                >
+                  <img src={infoIcon} alt="" className="topbar__icon" />
+                  <span>About</span>
+                </button>
                 <a className="topbar__overflow-item topbar__link" href="https://github.com/NomadAvian/MonoC-CPU-Emulator" target="_blank" rel="noopener noreferrer" onClick={() => setOverflowOpen(false)}>
                   <img src={githubIcon} alt="" className="topbar__icon" />
                   <span>GitHub</span>
@@ -186,6 +197,7 @@ export default function TopBar() {
       </header>
 
       {settingsOpen && <SettingsModal onClose={() => setSettingsOpen(false)} />}
+      {aboutOpen && <AboutModal onClose={() => setAboutOpen(false)} />}
       {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
       {profileOpen && <ProfileModal onClose={() => setProfileOpen(false)} />}
       {saveOpen && <SaveModal onClose={() => setSaveOpen(false)} />}

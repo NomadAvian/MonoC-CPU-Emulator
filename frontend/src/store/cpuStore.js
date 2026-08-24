@@ -189,7 +189,7 @@ export const useCPUStore = create((set, get) => ({
       await get().fetchRegisters(false)
       maybeRefreshScreen()
       maybeRefreshConsole(true)
-      useConsoleStore.getState().writeSys('CPU reset')
+      useConsoleStore.getState().writeSys('CPU reset: recompile to run program again')
       return true
     } catch (error) {
       console.error('reset failed:', error)

@@ -1,0 +1,53 @@
+.modal-wrapper.about-modal {
+  width: 480px;
+  max-width: 480px;
+}
+
+.about-modal__text {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--text-secondary);
+  white-space: pre-line;
+}
+
+.about-modal__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.about-modal__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+}
+
+.about-modal__key {
+  width: 64px;
+  flex-shrink: 0;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.about-modal__link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.about-modal__link:hover {
+  text-decoration: underline;
+}
+
+.about-modal__icon {
+  width: 16px;
+  height: 16px;
+}
