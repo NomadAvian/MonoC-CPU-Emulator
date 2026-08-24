@@ -10,6 +10,39 @@
   border-radius: 12px 0 0 12px;
 }
 
+.docs-panel__tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 14px 0;
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.docs-panel__tab {
+  flex: 1;
+  padding: 7px 10px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font: 500 var(--fs-sm) var(--font-sans);
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.docs-panel__tab:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.docs-panel__tab--active {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-bottom-color: var(--accent);
+}
+
 .docs-panel__header {
   padding: 12px 14px;
   background: var(--bg-surface);

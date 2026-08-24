@@ -1,14 +1,27 @@
 import { useState, useMemo } from 'react'
-import { DOCS_DATA } from '../../../data/docsData'
+import { ASM_DOCS } from '../../../data/asmDocs'
+import { MONOC_DOCS } from '../../../data/monocDocs'
 import { useUIStore } from '../../../store/uiStore'
 import copyIcon from '../../../assets/copy.svg'
 import './DocsPanel.css'
 
+const DOC_SECTIONS = [
+  { id: 'assembly', label: 'RISC-V Assembly', data: ASM_DOCS },
+  { id: 'monoc', label: 'MonoC', data: MONOC_DOCS },
+]
+
 export default function DocsPanel() {
   // ── Local State ──
+  const [section, setSection] = useState(DOC_SECTIONS[0].id)
   const [search, setSearch] = useState('')
   const [expanded, setExpanded] = useState(() => new Set())
   const addToast = useUIStore(s => s.addToast)
+
+  // ── Derived State ──
+  const activeDocs = useMemo(
+    () => DOC_SECTIONS.find(s => s.id === section)?.data ?? [],
+    [section]
+  )
 
   // ── Handlers ──
   const handleSearchChange = (e) => {
@@ -20,13 +33,13 @@ export default function DocsPanel() {
     addToast('Copied', 'success', 1500)
   }
 
-  const isAllExpanded = expanded.size >= DOCS_DATA.length
+  const isAllExpanded = expanded.size >= activeDocs.length
 
   const handleToggleAll = () => {
     if (isAllExpanded) {
       setExpanded(new Set())
     } else {
-      setExpanded(new Set(DOCS_DATA.map(d => d.category)))
+      setExpanded(new Set(activeDocs.map(d => d.category)))
     }
   }
 
@@ -39,12 +52,11 @@ export default function DocsPanel() {
     })
   }
 
-  // ── Derived State ──
   const filteredData = useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return DOCS_DATA
+    if (!q) return activeDocs
 
-    return DOCS_DATA.map(section => {
+    return activeDocs.map(section => {
       if (section.category.toLowerCase().includes(q)) {
         return section
       }
@@ -56,10 +68,25 @@ export default function DocsPanel() {
 
       return { ...section, items: matchingItems }
     }).filter(section => section.items.length > 0)
-  }, [search])
+  }, [search, activeDocs])
 
   return (
     <div className="docs-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div className="docs-panel__tabs" role="tablist">
+          {DOC_SECTIONS.map(({ id, label }) => (
+            <button
+              key={id}
+              id={`docs-tab-${id}`}
+              role="tab"
+              aria-selected={section === id}
+              className={`docs-panel__tab ${section === id ? 'docs-panel__tab--active' : ''}`}
+              onClick={() => setSection(id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         <div className="docs-panel__header">
           <input
             type="text"
