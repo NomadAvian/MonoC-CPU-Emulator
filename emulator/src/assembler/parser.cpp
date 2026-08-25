@@ -457,7 +457,7 @@ void Parser::SecondPass(std::vector<Word>& words) {
 }
 
 bool Parser::IsPseudoInstruction(const std::string& mnem) const {
-    return mnem == "la" || mnem == "li" || mnem == "j" ||
+    return mnem == "la" || mnem == "li" || mnem == "j" || mnem == "ret" ||
            mnem == "mv" || mnem == "call" || mnem == "nop" ||
            mnem == "ble" || mnem == "bgt" || mnem == "bleu" || mnem == "bgtu";
 }
@@ -465,7 +465,7 @@ bool Parser::IsPseudoInstruction(const std::string& mnem) const {
 size_t Parser::PseudoExpansionWords(const Statement& s, size_t idx) const {
     const std::string& mnem = s.tokens[idx].lexeme();
 
-    if (mnem == "j" || mnem == "mv" || mnem == "nop") return 1;
+    if (mnem == "j" || mnem == "mv" || mnem == "nop" || mnem == "ret") return 1;
     if (mnem == "call") return 2;
 
     // For "li"/"la" the expansion size depends on the resolved value
@@ -650,6 +650,13 @@ void Parser::EncodePseudo(const Statement& s, size_t idx, Word pc,
         e = Lookup("bltu");
         // bgtu rs1, rs2, label  =>  bltu rs2, rs1, label
         words.push_back(Encode(*e, 0, rs2, rs1, 0, off));
+        return;
+    }
+    if (mnem == "ret") {
+        ExpectEnd(s, i);
+        // ret => jalr x0, 0(ra)
+        e = Lookup("jalr");
+        words.push_back(Encode(*e, 0, 1, 0, 0, 0));
         return;
     }
 

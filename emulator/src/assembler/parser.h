@@ -54,11 +54,11 @@ private:
                 int64_t imm, int64_t offset) const;
 
     // Field helpers
-    static Word FieldRd(int rd)              { return (static_cast<Word>(rd) & 0x1F) << 7; }
-    static Word FieldRs1(int rs1)          { return (static_cast<Word>(rs1) & 0x1F) << 15; }
-    static Word FieldRs2(int rs2)          { return (static_cast<Word>(rs2) & 0x1F) << 20; }
-    static Word FieldFunct3(uint32_t f3)   { return (f3 & 0x7) << 12; }
-    static Word FieldFunct7(uint32_t f7)   { return (f7 & 0x7F) << 25; }
+    static Word FieldRd(int rd)           { return (static_cast<Word>(rd) & 0x1F) << 7; }
+    static Word FieldRs1(int rs1)         { return (static_cast<Word>(rs1) & 0x1F) << 15; }
+    static Word FieldRs2(int rs2)         { return (static_cast<Word>(rs2) & 0x1F) << 20; }
+    static Word FieldFunct3(uint32_t f3)  { return (f3 & 0x7) << 12; }
+    static Word FieldFunct7(uint32_t f7)  { return (f7 & 0x7F) << 25; }
     static Word FieldImm12(int64_t imm)   { return (static_cast<Word>(imm) & 0xFFF) << 20; }
     static Word FieldImm20(int64_t imm)   { return (static_cast<Word>(imm) & 0xFFFFF) << 12; }
     Word FieldImmS(int64_t imm) const;

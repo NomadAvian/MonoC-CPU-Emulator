@@ -31,8 +31,8 @@ const std::unordered_set<std::string> Scanner::kInstructions = {
     "div", "divu", "rem", "remu",
 
     // Pseudo-instructions
-    "la", "li", "j", "mv", "call", "nop",
-    "ble", "bgt", "bleu", "bgtu"
+    "la", "li", "j", "mv", "call", "nop", "ret",
+    "ble", "bgt", "bleu", "bgtu",
 };
 
 // Set of canonical and ABI register names

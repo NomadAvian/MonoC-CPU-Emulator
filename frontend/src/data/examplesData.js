@@ -650,7 +650,7 @@ blit_next_row:
     j    blit_row_loop
 
 blit_done:
-    jalr x0, ra, 0`
+    ret`
   },
   {
     id: "graphics/XOR / Sierpinski Triangle",
