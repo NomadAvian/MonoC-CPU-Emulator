@@ -1,8 +1,22 @@
-// MonoC user manual — emulator-specific features: running programs,
+// MonoC user manual : emulator-specific features: running programs,
 // console, disassembler panel and framebuffer. The ISA/assembly
 // reference lives in asmDocs.js.
 
 export const MONOC_DOCS = [
+  {
+    category: 'Introduction',
+    items: [
+      {
+        title: 'What is MonoC',
+        desc: 'MonoC emulates a [von Neumann machine](https://www.geeksforgeeks.org/computer-organization-architecture/computer-organization-von-neumann-architecture/): one unified memory holds instructions and data. The CPU implements the RV32I+M. It has 32 general-purpose registers (x0 hardwired to zero) and a fetch/decode/execute cycle running over little-endian, byte-addressable 32-bit memory. It was made following the [RISC-V ISA specification](https://docs.riscv.org/reference/isa/_attachments/riscv-unprivileged.pdf).',
+        example: ''
+      },
+      {
+        title: 'Some Limitations',
+        example: '# always put .data before .globl and .text as the instruction are loaded sequentially in memory and PC starts after .data ends\n\n# ret keyword is not supported, which is a shorthand for: jalr x0, 0(ra).'
+      }
+    ]
+  },
   {
     category: 'Running Programs',
     items: [
@@ -39,16 +53,16 @@ export const MONOC_DOCS = [
       {
         title: 'What the panel shows',
         desc: 'The Console tab in the bottom panel is your program\'s terminal. Output printed via print ecalls appears as it is produced, your typed input is echoed back with a > prompt, and [SYSTEM] lines report emulator events such as compilation status and execution completion.',
-        example: '# typical session\n[SYSTEM] Compiling...\n[SYSTEM] Compilation successful\n42\nHello\n> 7              <- you typed this\n[SYSTEM] Execution completed'
+        example: '# typical session\n[SYSTEM] Compiling...\n[SYSTEM] Compilation successful\n42\nHello\n> 7              <- user input\n[SYSTEM] Execution completed'
       },
       {
         title: 'Providing input',
-        desc: 'Type in the input line at the bottom of the panel and press Enter to feed the running program\'s standard input. Each submission delivers one line, which read ecalls (Read Integer 5, Read String 8, Read Char 12) consume. If a read ecall executes before any line is available, the CPU pauses mid-program and resumes the moment input arrives - no need to time your typing.',
+        desc: 'Type in the input line at the bottom of the panel and press Enter to feed the running program\'s standard input. Each submission delivers one line, which read ecalls (Read Integer 5, Read String 8, Read Char 12) consume. If a read ecall executes before any line is available, the CPU pauses mid-program and resumes the moment input arrives.',
         example: 'li a0, buffer\nli a1, 64\nli a7, 8\necall             # blocks until you press Enter in the console'
       },
       {
         title: 'Clearing the console',
-        desc: 'The Clear button wipes both the visible transcript and the server-side buffer. Recompiling or resetting the CPU also starts a fresh console, so output from a previous run never bleeds into the next.',
+        desc: 'The Clear button wipes both the visible transcript and the server-side buffer. Recompiling or resetting the CPU also starts a fresh console.',
         example: ''
       }
     ]

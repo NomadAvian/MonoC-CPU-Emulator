@@ -3,9 +3,19 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  border-right: 1px solid var(--border);
 }
 
+.left-sidebar-container.collapsed {
+  width: 34px;
+}
 
+.left-sidebar__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
 
 .left-sidebar__collapsed-header {
   display: flex;
@@ -14,8 +24,21 @@
   height: 34px;
 }
 
-.left-sidebar__content {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+.left-sidebar__collapsed-header .icon-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.icon-collapse {
+  display: block;
+  width: 20px;
+  height: 20px;
 }

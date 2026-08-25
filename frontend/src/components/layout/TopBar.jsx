@@ -179,6 +179,10 @@ export default function TopBar() {
                   <span>Reset Editor</span>
                 </button>
                 <div className="topbar__overflow-divider" />
+                <a className="topbar__overflow-item topbar__link" href="https://github.com/NomadAvian/MonoC-CPU-Emulator" target="_blank" rel="noopener noreferrer" onClick={() => setOverflowOpen(false)}>
+                  <img src={githubIcon} alt="" className="topbar__icon" />
+                  <span>GitHub</span>
+                </a>
                 <button
                   id="topbar-about-btn"
                   className="topbar__overflow-item"
@@ -187,10 +191,6 @@ export default function TopBar() {
                   <img src={infoIcon} alt="" className="topbar__icon" />
                   <span>About</span>
                 </button>
-                <a className="topbar__overflow-item topbar__link" href="https://github.com/NomadAvian/MonoC-CPU-Emulator" target="_blank" rel="noopener noreferrer" onClick={() => setOverflowOpen(false)}>
-                  <img src={githubIcon} alt="" className="topbar__icon" />
-                  <span>GitHub</span>
-                </a>
               </div>
             )}
           </div>

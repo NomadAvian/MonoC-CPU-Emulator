@@ -1,4 +1,4 @@
-// RISC-V assembly reference — ISA syntax, instructions and programming patterns.
+// RISC-V assembly reference : ISA syntax, instructions and programming patterns.
 // UI-facing MonoC features live in monocDocs.js.
 
 export const ASM_DOCS = [
@@ -7,12 +7,16 @@ export const ASM_DOCS = [
     items: [
       {
         title: 'What is RISC-V',
-        desc: 'RISC-V (pronounced "risk five") is an open, free instruction set architecture (ISA) designed for simplicity and modularity. Unlike x86 or ARM, RISC-V has no proprietary licensing, anyone can build hardware or software around it. The ISA is modular: a minimal base set (RV32I for 32-bit, RV64I for 64-bit) can be extended with optional modules (M for multiply/divide, F/D for floating-point, etc.).\nThis emulator implements RV32I + M, a powerful subset for education and embedded systems that can be a target for programming languages and operating systems.',
+        desc: 'RISC-V (pronounced "risk five") is an open, free instruction set architecture (ISA) designed for simplicity and modularity. Unlike x86 or ARM, RISC-V has no proprietary licensing, anyone can build hardware or software around it. The ISA is modular: a minimal base set (RV32I for 32-bit, RV64I for 64-bit) can be extended with optional modules (M for multiply/divide, F/D for floating-point, etc.).',
         example: ''
       },
       {
+        title: 'RISC-V Assembly',
+        desc: 'A low-level programming language for writing instructions that run directly on RISC-V processors. MonoC\'s assembler implements a small subset of the [RISC-V assembly language](https://zju-os.github.io/doc/spec/riscv-asm.pdf)'
+      },
+      {
         title: 'Endianness',
-        desc: 'All registers and memory words are 32 bits. Memory is byte-addressable and little-endian: the least significant byte is stored at the lowest address.',
+        desc: 'All registers 32 bits. Memory is byte-addressable and little-endian: the least significant byte is stored at the lowest address.',
         example: ''
       }
     ]
@@ -162,7 +166,7 @@ export const ASM_DOCS = [
     items: [
       {
         title: '.data directive',
-        desc: 'Defines the data section where static variables and initialized data are stored. All variables defined here are allocated at assembly time.',
+        desc: 'Defines the data section where static variables and initialized data are stored. All variables defined here are allocated at assembly time. Should be placed in the top-most part of any program.',
         example: '.data\nmy_var: .word 42\nmy_str: .asciiz "Hello"\nmy_arr: .word 1, 2, 3, 4, 5'
       },
       {
@@ -177,7 +181,7 @@ export const ASM_DOCS = [
     items: [
       {
         title: '.text directive',
-        desc: 'Defines the text (code) section where executable instructions are placed. The program starts executing at the first instruction after .text.',
+        desc: 'Defines the text (code) section where executable instructions are placed. The program starts executing at the first instruction after .text. This section should be placed after .data section.',
         example: '.text\nmain:\n    li a0, 42\n    li a7, 10\n    ecall'
       },
       {
@@ -197,7 +201,7 @@ export const ASM_DOCS = [
       },
       {
         title: 'jal rd, label',
-        desc: 'Jump and link - jumps to label and stores return address (PC+4) in rd. Used for function calls.',
+        desc: 'Jump and link: jumps to label and stores return address (PC+4) in rd. Used for function calls.',
         example: 'jal ra, my_func  # call my_func, return addr in ra'
       },
       {
@@ -298,8 +302,7 @@ export const ASM_DOCS = [
       },
       {
         title: 'ebreak',
-        desc: 'Shorthand for Exit (10)',
-        example: 'ebreak'
+        desc: 'Used to return control to a debuggin environment. Here, it is equivalent to exit.'
       },
       {
         title: 'Unknown ecall codes',

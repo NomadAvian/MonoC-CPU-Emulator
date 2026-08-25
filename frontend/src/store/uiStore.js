@@ -2,7 +2,7 @@ import { create } from 'zustand'
 
 const initialState = {
   isLeftOpen: true,
-  isRightPanelOpen: false,
+  isRightPanelOpen: true,
   activeRightTab: 'docs',   // 'docs' | 'ai' | 'examples'
   leftWidth: 260,
   rightWidth: 460,

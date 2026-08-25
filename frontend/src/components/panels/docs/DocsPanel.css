@@ -161,7 +161,16 @@
   margin: 0;
   font-size: var(--fs-sm);
   color: var(--text-secondary);
-  line-height: 1.45;
+  line-height: 1.4;
+}
+
+.docs-item p a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.docs-item p a:hover {
+  text-decoration: underline;
 }
 
 .docs-item__example {

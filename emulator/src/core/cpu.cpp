@@ -700,14 +700,12 @@ bool CPU::ExecuteSType(DecodedInstruction instr) {
 
 bool CPU::ExecuteJType(DecodedInstruction instr) {
     Word return_address = pc_.value + 4; // address of the next instruction
-    WriteReg(static_cast<size_t>(instr.rd), return_address);
     AluOutput target_address = EffectiveAddress(pc_.value, instr.imm);
     if (target_address.result & 0x3){
         throw std::runtime_error("JAL: misaligned target address");
     }
-    else {
-        SetPC(target_address.result);
-    }
+    WriteReg(static_cast<size_t>(instr.rd), return_address);
+    SetPC(target_address.result);
     return true;
 }
 

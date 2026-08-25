@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { ASM_DOCS } from '../../../data/asmDocs'
 import { MONOC_DOCS } from '../../../data/monocDocs'
+import { renderRichText } from '../../../../utils/richText.jsx'
 import { useUIStore } from '../../../store/uiStore'
 import copyIcon from '../../../assets/copy.svg'
 import './DocsPanel.css'
@@ -122,7 +123,7 @@ export default function DocsPanel() {
                 {section.items.map((item, idx) => (
                   <div key={idx} className="docs-item">
                     <h4>{item.title}</h4>
-                    <p>{item.desc}</p>
+                    <p>{renderRichText(item.desc)}</p>
                     {item.example && (
                       <div className="docs-item__example-wrapper">
                         <button

@@ -49,6 +49,7 @@ const initialState = {
   speedIndex: 2, // default to 60 IPS
   instructions: [],        // disassembled ROM listing for the bottom panel
   waiting: false,          // CPU paused on a read ecall, awaiting console input
+  resumeOnInput: false,    // run loop paused by a wait; auto-resume on next console input
 }
 
 export const useCPUStore = create((set, get) => ({
@@ -85,7 +86,7 @@ export const useCPUStore = create((set, get) => ({
 
       // pc is a byte address; romSize is instruction count.
       // past the end = program ran off the end of ROM
-      const halted = romSize > 0 && pc >= romSize * 4
+      const halted = data.halted ?? (romSize > 0 && pc >= romSize * 4)
 
       if (halted && !get().halted) {
         useConsoleStore.getState().writeSys('Execution completed')
@@ -122,6 +123,7 @@ export const useCPUStore = create((set, get) => ({
         halted: false,
         compiling: false,
         waiting: false,
+        resumeOnInput: false,
         instructions: disassembleWords(result.words ?? [], result.entry ?? 0),
       })
       consoleStore.writeSys('Compilation successful')
@@ -149,6 +151,11 @@ export const useCPUStore = create((set, get) => ({
       await get().fetchRegisters()
       maybeRefreshScreen(get().halted)
       maybeRefreshConsole(get().halted)
+
+      // suspend cpu on read ecall
+      if (get().running && get().waiting) {
+        set({ resumeOnInput: true, running: false, status: 'stopped' })
+      }
       return true
     } catch (error) {
       console.error('step failed:', error)
@@ -183,14 +190,23 @@ export const useCPUStore = create((set, get) => ({
     requestAnimationFrame(tick)
   },
 
-  stopRun: () => set({ running: false, status: 'stopped' }),
+  stopRun: () => set({ running: false, status: 'stopped', resumeOnInput: false }),
+
+  // restarts the run loop after input submit
+  resumeForInput: () => {
+    if (get().resumeOnInput) {
+      set({ resumeOnInput: false })
+      get().startRun()
+    }
+  },
+
   setSpeedIndex: (speedIndex) => set({ speedIndex }),
 
   // --------- RESET ---------
   reset: async () => {
     try {
       await resetCpu()
-      set({ status: 'stopped', changedRegisters: new Set(), halted: false, waiting: false })
+      set({ status: 'stopped', changedRegisters: new Set(), halted: false, waiting: false, resumeOnInput: false })
       useConsoleStore.getState().reset()
       await get().fetchRegisters(false)
       maybeRefreshScreen()

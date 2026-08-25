@@ -9,7 +9,8 @@ export async function sendPrompt(messages, source) {
 
   if (!res.ok) {
     const errorText = await res.text()
-    throw new Error(`POST /chat failed: ${res.status} - ${errorText}`)
+    // throw new Error(`POST /chat failed: ${res.status} - ${errorText}`)
+    throw new Error(`Something went wrong`)
   }
 
   return res.json()

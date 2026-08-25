@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useConsoleStore } from '../../../store/consoleStore'
+import { useCPUStore } from '../../../store/cpuStore'
 import './ConsolePanel.css'
 
 export default function ConsolePanel() {
@@ -24,10 +25,12 @@ export default function ConsolePanel() {
     bottomRef.current?.scrollIntoView()
   }, [lines])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!input) return
-    write(input + '\n')
+    await write(input + '\n')
+    // restart the run loop if it was paused by a waiting read ecall
+    useCPUStore.getState().resumeForInput()
     setInput('')
   }
 

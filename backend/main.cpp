@@ -101,6 +101,7 @@ int main()
         const auto regs = session->Registers();
         crow::json::wvalue res;
         res["pc"]      = session->Pc();
+        res["halted"]  = session->halted();
         res["waiting"] = session->waiting();
         res["registers"] = std::vector<crow::json::wvalue>();
         auto& list = res["registers"];
