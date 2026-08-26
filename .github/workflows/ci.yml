@@ -1,8 +1,9 @@
-name: CI
+name: CICD
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - '**'
   pull_request:
     branches: ["main"]
 
@@ -14,10 +15,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          
+      - name: Install Python API Dependencies and Run Tests
+        run: |
+          cd backend/ai
+          pip install -e .[test]
+          cd ../..
+          pytest tests/ai-test/test_api.py
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
@@ -37,3 +50,45 @@ jobs:
 
       - name: Validate Docker Compose build
         run: docker compose build --parallel
+
+  deploy:
+    needs: test-and-build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cd /home/Blimp6233/MonoC-CPU-Emulator
+            
+            # save current working commit for rollback
+            PREV_COMMIT=$(git rev-parse HEAD)
+
+            git fetch origin main
+            git reset --hard origin/main
+
+            docker compose --profile omni build --parallel
+            docker compose --profile omni up -d --no-deps --remove-orphans
+
+            # 90s healthy cooldown
+            echo "Waiting for containers to initialize..."
+            timeout 90s bash -c 'until [ -z "$(docker ps --filter "health=starting" -q)" ]; do sleep 5; done' || true
+
+            # fail if any container is unhealthy
+            UNHEALTHY=$(docker ps --filter "health=unhealthy" --filter "name=monoc" --format "{{.Names}}")
+            if [ -n "$UNHEALTHY" ]; then
+              echo "DEPLOYMENT FAILED — unhealthy containers: $UNHEALTHY"
+              echo "Rolling back to previous commit ($PREV_COMMIT)..."
+              git reset --hard $PREV_COMMIT
+              docker compose --profile omni build --parallel
+              docker compose --profile omni up -d --no-deps --remove-orphans
+              exit 1
+            else
+              echo "DEPLOYMENT SUCCESSFUL!"
+              docker image prune -f
+            fi
