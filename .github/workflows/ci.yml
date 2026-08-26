@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Build C++ backend
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libasio-dev
+        git clone https://github.com/CrowCpp/Crow.git /tmp/Crow
+        sudo cp -r /tmp/Crow/include/* /usr/local/include/
+        make build
+
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm install
+        npm run build
+
+    - name: Build Docker Compose services
+      run: docker compose build --parallel
