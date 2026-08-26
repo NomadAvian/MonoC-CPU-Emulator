@@ -90,6 +90,14 @@ export default function ChatPanel() {
 
               <button 
                 className="chat-suggestion-chip"
+                onClick={() => sendMessage("Write a hello world program")}
+                disabled={isLoading}
+              >
+                Write a hello world program
+              </button>
+
+              <button 
+                className="chat-suggestion-chip"
                 onClick={() => sendMessage("What does line 10 do?")}
                 disabled={isLoading}
               >
