@@ -28,14 +28,16 @@ jobs:
             # Zero downtime swap
             docker compose --profile omni up -d --no-deps --remove-orphans
 
-            # Wait for containers
+            # Wait for containers to initialize
             echo "Waiting for containers to initialize..."
             sleep 15
 
             # Healthcheck — fail if any container is unhealthy
-            if docker compose --profile omni ps | grep -q "unhealthy"; then
-              echo "DEPLOYMENT FAILED — ROLLING BACK"
-              docker compose --profile omni restart
+            UNHEALTHY=$(docker ps --filter "health=unhealthy" --filter "name=monoc" --format "{{.Names}}")
+            if [ -n "$UNHEALTHY" ]; then
+              echo "DEPLOYMENT FAILED — unhealthy containers: $UNHEALTHY"
+              echo "Rolling back to previous images..."
+              docker compose --profile omni up -d --no-deps --remove-orphans
               exit 1
             else
               echo "DEPLOYMENT SUCCESSFUL!"
