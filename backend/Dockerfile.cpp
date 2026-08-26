@@ -12,6 +12,7 @@ RUN make build
 FROM debian:stable-slim
 
 WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/build /app/build
 RUN mkdir -p /app/emulator/roms
 # cpu architecture name aware

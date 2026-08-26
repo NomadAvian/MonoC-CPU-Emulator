@@ -61,7 +61,7 @@ function App() {
           animate={{ width: isLeftOpen ? leftWidth : 34 }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
         >
-          <div className="left-panel-shell__inner" style={{ width: isLeftOpen ? leftWidth : 34 }}>
+          <div className="left-panel-shell__inner">
             <LeftSideBar />
           </div>
         </motion.aside>

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import './ResizeDivider.css'
 
-export default function ResizeDivider({ direction = 'horizontal', onDrag }) {
+export default function ResizeDivider({ direction = 'horizontal', onDrag, style }) {
   const cleanupRef = useRef(null)
 
   useEffect(() => {
@@ -47,6 +47,7 @@ export default function ResizeDivider({ direction = 'horizontal', onDrag }) {
   return (
     <div
       className={`resize-divider resize-divider--${direction}`}
+      style={style}
       onMouseDown={handleMouseDown}
       role="separator"
       aria-orientation={direction === 'horizontal' ? 'vertical' : 'horizontal'}
