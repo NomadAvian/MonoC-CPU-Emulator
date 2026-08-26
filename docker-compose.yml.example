@@ -1,18 +1,21 @@
 services:
-  caddy:
-    image: caddy:alpine
-    container_name: monoc-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-    depends_on:
-      - frontend
-      - python-api
-      - cpp-api
-    restart: unless-stopped
-
+#  # Optional Caddy Reverse Proxy Template
+#  # Uncomment this block to run Caddy inside Docker (e.g. for automatic HTTPS or local routing)
+#  caddy:
+#    image: caddy:alpine
+#    container_name: monoc-proxy
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    volumes:
+#      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+#      - caddy_data:/data
+#      - caddy_config:/config
+#    depends_on:
+#      - frontend
+#      - python-api
+#      - cpp-api
+#    restart: unless-stopped
   frontend:
     image: monoc/frontend:latest
     container_name: monoc-frontend
@@ -20,9 +23,15 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.frontend
       args:
-        # caddy handles routing; frontend talks to same origin
         VITE_AI_API_URL: ""
         VITE_CPU_API_URL: ""
+    ports:
+      - "127.0.0.1:5173:80"
+    healthcheck:
+      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/80"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
   python-api:
@@ -31,18 +40,23 @@ services:
     build:
       context: ./backend/ai
       dockerfile: Dockerfile.python
-    env_file: .env                          # user secrets
-    environment:                            # internal docker networking
+    env_file: .env
+    environment:
       CROW_BASE_URL: http://monoc-cpu:6969
       DB_PATH: /app/db/monoc.db
       CORS_ORIGINS: http://localhost
       OMNIROUTE_BASE_URL: http://omniroute:20128/v1
     extra_hosts:
-      - "host.docker.internal:host-gateway" 
+      - "host.docker.internal:host-gateway"
     volumes:
       - monoc_db:/app/db
     depends_on:
       - cpp-api
+    healthcheck:
+      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/8000"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
   cpp-api:
@@ -53,6 +67,13 @@ services:
       dockerfile: backend/Dockerfile.cpp
     environment:
       PORT: 6969
+    ports:
+      - "127.0.0.1:6969:6969"
+    healthcheck:
+      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/6969"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
   omniroute:
@@ -81,3 +102,5 @@ volumes:
   monoc_db:
   omniroute_data:
   ollama_data:
+#  caddy_data:
+#  caddy_config:
