@@ -1,7 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore")
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi import HTTPException
@@ -11,6 +11,7 @@ from chat.ollama import chat as ollama_chat
 from chat.omniroute import chat as omniroute_chat
 from chat.gemini import chat as gemini_chat
 import db
+from typing import Optional
 
 # CORS policy management
 app = FastAPI()
@@ -31,6 +32,7 @@ def health_check():
 class ChatRequest(BaseModel):
     messages: list[dict]
     source: str
+    token: Optional[str] = None
 
 
 async def _do_chat(messages: list[dict], source: str) -> tuple[str, list[str]]:
@@ -60,7 +62,10 @@ async def _do_chat(messages: list[dict], source: str) -> tuple[str, list[str]]:
                 raise HTTPException(status_code=500, detail=f"AI unavailable: {msg}")
 
 @app.post("/chat")
-async def chat_endpoint(request: ChatRequest):
+async def chat_endpoint(request: ChatRequest, req: Request):
+    ip_address = req.headers.get("x-forwarded-for") or req.client.host
+    if not db.check_and_increment_ai_usage(request.token, ip_address):
+        raise HTTPException(status_code=429, detail="Daily AI usage limit reached. Please try again tomorrow.")
     result, tools_used = await _do_chat(request.messages, request.source)
     return {"response": result, "tools_used": tools_used}
 

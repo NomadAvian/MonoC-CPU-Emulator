@@ -32,6 +32,18 @@ def init_db():
                     FOREIGN KEY(email) REFERENCES users(email)
                 )
             """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS guest_ai_usage(
+                    ip_address TEXT PRIMARY KEY,
+                    ai_usage INTEGER DEFAULT 0,
+                    last_reset_date TEXT
+                )
+            """)
+            try:
+                cursor.execute("ALTER TABLE users ADD COLUMN ai_usage INTEGER DEFAULT 0")
+                cursor.execute("ALTER TABLE users ADD COLUMN last_reset_date TEXT")
+            except sqlite3.OperationalError:
+                pass
             conn.commit()
     except sqlite3.OperationalError as e:
         print("[log] failed to connect with sqlite database:", e)
@@ -108,5 +120,57 @@ def delete_user_code(token, code_id):
         return cursor.rowcount > 0
 
 
+# sussy ai usage limiter - to be deleted
+from datetime import date
+from typing import Optional
+from config import CHAT_PROMPT_LIMIT
 
+def check_and_increment_ai_usage(token: Optional[str], ip_address: str) -> bool:
+    today = date.today().isoformat()
+    with sqlite3.connect(DB) as conn:
+        if token:
+            user = conn.execute(
+                "SELECT email, ai_usage, last_reset_date FROM users WHERE token = ?", (token,)
+            ).fetchone()
+            if user:
+                email, usage, last_reset = user
+                if last_reset != today:
+                    usage = 0
+                if usage >= CHAT_PROMPT_LIMIT:
+                    return False
+                conn.execute(
+                    "UPDATE users SET ai_usage = ?, last_reset_date = ? WHERE email = ?",
+                    (usage + 1, today, email)
+                )
+                conn.commit()
+                return True
+
+        if not ip_address:
+            ip_address = "unknown"
+
+        guest = conn.execute(
+            "SELECT ai_usage, last_reset_date FROM guest_ai_usage WHERE ip_address = ?", (ip_address,)
+        ).fetchone()
+        if guest:
+            usage, last_reset = guest
+            if last_reset != today:
+                usage = 0
+        else:
+            usage = 0
+
+        if usage >= CHAT_PROMPT_LIMIT:
+            return False
+
+        if guest:
+            conn.execute(
+                "UPDATE guest_ai_usage SET ai_usage = ?, last_reset_date = ? WHERE ip_address = ?",
+                (usage + 1, today, ip_address)
+            )
+        else:
+            conn.execute(
+                "INSERT INTO guest_ai_usage (ip_address, ai_usage, last_reset_date) VALUES (?, ?, ?)",
+                (ip_address, 1, today)
+            )
+        conn.commit()
+        return True
 

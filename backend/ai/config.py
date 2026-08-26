@@ -7,6 +7,7 @@ _root_dir = Path(__file__).parent.parent.parent  # backend/ai -> backend -> root
 load_dotenv(_root_dir / ".env", override=False)
 
 # --- user config (from .env) ---
+CHAT_PROMPT_LIMIT = int(os.environ.get("CHAT_PROMPT_LIMIT", "20"))
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_MODEL   = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 OLLAMA_MODEL   = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
