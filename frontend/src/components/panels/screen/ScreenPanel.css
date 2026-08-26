@@ -1,6 +1,4 @@
 .screen-panel {
-  min-width: 180px;
-  max-width: 500px;
   display: flex;
   flex-direction: column;
   background: var(--bg-panel);

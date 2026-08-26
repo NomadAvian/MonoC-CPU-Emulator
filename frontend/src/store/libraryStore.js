@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { EXAMPLES_DATA } from '../data/examplesData'
 import { useEditorStore } from './editorStore'
 import { useUIStore } from './uiStore'
+import { useScreenStore } from './screenStore'
 
 const initialState = {
   examples: EXAMPLES_DATA,
@@ -17,6 +18,9 @@ export const useLibraryStore = create((set) => ({
     const example = EXAMPLES_DATA.find(ex => ex.id === id)
     if (example && example.source) {
       useEditorStore.getState().setSource(example.source)
+      if (example.category === 'Graphics') {
+        useScreenStore.getState().openScreen()
+      }
       if (onSuccess) onSuccess()
       useUIStore.getState().addToast(`Loaded Example`, 'success')
     } else {

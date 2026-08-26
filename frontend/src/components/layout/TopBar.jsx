@@ -78,11 +78,22 @@ export default function TopBar() {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = '.txt,.s,.asm'
+    input.style.display = 'none'
+    
+    document.body.appendChild(input)
+
     input.onchange = (e) => {
       const file = e.target.files[0]
-      if (!file) return
+      if (!file) {
+        document.body.removeChild(input)
+        return
+      }
       const reader = new FileReader()
-      reader.onload = (e) => setSource(e.target.result)
+      reader.onload = (e) => {
+        setSource(e.target.result)
+        document.body.removeChild(input)
+      }
+      reader.onerror = () => document.body.removeChild(input)
       reader.readAsText(file)
     }
     input.click()

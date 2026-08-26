@@ -81,7 +81,7 @@ function App() {
                 <motion.div
                   key="screen-panel-wrapper"
                   initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: screenWidth }}
+                  animate={{ opacity: 1, width: screenWidth + 5 }}
                   exit={{ opacity: 0, width: 0 }}
                   transition={{ duration: 0.2, ease: 'easeOut' }}
                   className="screen-panel-wrapper"

@@ -23,6 +23,10 @@ app.add_middleware(
 )
 
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 # ------------- chat apis -------------
 class ChatRequest(BaseModel):
     messages: list[dict]
@@ -60,18 +64,6 @@ async def chat_endpoint(request: ChatRequest):
     result, tools_used = await _do_chat(request.messages, request.source)
     return {"response": result, "tools_used": tools_used}
 
-
-class ExplainRequest(BaseModel):
-    line_number: int
-    source: str
-
-
-@app.post("/explain")
-async def explain_endpoint(request: ExplainRequest):
-    prompt = f"Please explain what line {request.line_number} does. Keep it short."
-    messages = [{"role": "user", "content": prompt}]
-    result, tools_used = await _do_chat(messages, request.source)
-    return {"response": result, "tools_used": tools_used}
 
 # ----------- auth apis -----------
 class SignupRequest(BaseModel):

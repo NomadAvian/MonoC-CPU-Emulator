@@ -1,7 +1,15 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import './ResizeDivider.css'
 
 export default function ResizeDivider({ direction = 'horizontal', onDrag }) {
+  const cleanupRef = useRef(null)
+
+  useEffect(() => {
+    return () => {
+      if (cleanupRef.current) cleanupRef.current()
+    }
+  }, [])
+
   const handleMouseDown = useCallback((e) => {
     e.preventDefault()
     let lastPos = direction === 'horizontal' ? e.clientX : e.clientY
@@ -22,8 +30,13 @@ export default function ResizeDivider({ direction = 'horizontal', onDrag }) {
       document.removeEventListener('mouseup', onMouseUp)
       document.body.style.cursor = ''
       document.body.style.userSelect = ''
-      document.head.removeChild(styleEl)
+      if (document.head.contains(styleEl)) {
+        document.head.removeChild(styleEl)
+      }
+      cleanupRef.current = null
     }
+    
+    cleanupRef.current = onMouseUp
 
     document.body.style.cursor   = direction === 'horizontal' ? 'col-resize' : 'row-resize'
     document.body.style.userSelect = 'none'

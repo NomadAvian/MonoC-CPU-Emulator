@@ -1,5 +1,8 @@
 import { create } from 'zustand'
 import { fetchScreen } from '../api/cpu'
+import { useUIStore } from './uiStore'
+
+let lastErrorToast = 0
 
 const initialState = {
   width: 0,
@@ -27,7 +30,11 @@ export const useScreenStore = create((set, get) => ({
       set({ width, height, data })
     } catch (error) {
       console.error('refreshScreen failed:', error)
-      useLogStore.getState().addLog('Screen refresh failed')
+      const now = Date.now() // experimental code. otherwise spams frontend with errors
+      if (now - lastErrorToast > 3000) { // 3s delay
+        useUIStore.getState().addToast('Screen refresh failed', 'error')
+        lastErrorToast = now
+      }
     } finally {
       set({ loading: false })
     }
