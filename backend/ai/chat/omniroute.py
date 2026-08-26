@@ -24,7 +24,7 @@ async def chat(messages: list[dict], source: str):
     server_params = StdioServerParameters(
         command=sys.executable,
         args=[_mcp_server_path],
-        env=None
+        env=dict(os.environ)
     )
 
     async with stdio_client(server_params) as (read, write):

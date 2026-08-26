@@ -63,7 +63,8 @@ async def _do_chat(messages: list[dict], source: str) -> tuple[str, list[str]]:
 
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest, req: Request):
-    ip_address = req.headers.get("x-forwarded-for") or req.client.host
+    raw_ip = req.headers.get("x-forwarded-for") or (req.client.host if req.client else "unknown")
+    ip_address = raw_ip.split(",")[0].strip() if raw_ip else "unknown"
     if not db.check_and_increment_ai_usage(request.token, ip_address):
         raise HTTPException(status_code=429, detail="Daily AI usage limit reached. Please try again tomorrow.")
     result, tools_used = await _do_chat(request.messages, request.source)

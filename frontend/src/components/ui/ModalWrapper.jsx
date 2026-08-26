@@ -24,10 +24,10 @@ export default function ModalWrapper({ title, onClose, children, className = '',
         className={`modal-wrapper ${className}`}
         style={style}
         onClick={handleModalClick}
-        initial={{ opacity: 0, scale: 0.90, y: 50 }}
+        initial={{ opacity: 0, scale: 0.90, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.94, y: 10 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 350}}
+        transition={{ type: 'spring', damping: 25, stiffness: 350 }}
       >
         {title && <h2>{title}</h2>}
         <div className="modal-wrapper__content">

@@ -2,7 +2,6 @@
 name = "monoc-mcp"
 version = "0.1.0"
 description = "This is an AI orchestrator and mcp server implementation code base for MonoC Cpu Emulator"
-readme = "README.md"
 authors = [
     { name = "Toha", email = "abutohaalnur@gmail.com" }
 ]
@@ -19,3 +18,12 @@ dependencies = [
     "bcrypt>=4.0.0",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "httpx>=0.28.1",
+]
+
+[tool.setuptools]
+packages = ["chat", "emulator"]

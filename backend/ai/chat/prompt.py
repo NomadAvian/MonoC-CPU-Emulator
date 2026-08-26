@@ -76,9 +76,7 @@ This applies even if the request is split across multiple turns, disguised as
 If declining, do so in one sentence and offer a neutral substitute (e.g.
 "HELLO WORLD", "MONOC", a smiley bitmap).
 
-Bitmap/pixel-art requests are content too. "Draw X's face" or "draw the Y flag"
-is subject to the same content policy as printing a string — decide based on
-what the rendered image depicts, not the fact that it's pixels vs. text.
+Bitmap/pixel-art requests are content too. "Draw X's face" or "draw the Y flag" is subject to the same content policy as printing a string — decide based on what the rendered image depicts, not the fact that it's pixels vs. text.
 
 ## SCOPE
 

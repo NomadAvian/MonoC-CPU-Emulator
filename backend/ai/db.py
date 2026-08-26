@@ -2,6 +2,7 @@ import sqlite3
 import uuid
 import bcrypt
 from config import DB_PATH as DB
+from contextlib import contextmanager
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -9,10 +10,20 @@ def hash_password(password: str) -> str:
 def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
 
+@contextmanager
+def get_db():
+    """yields a connection that safely closes after use"""
+    conn = sqlite3.connect(DB)
+    try:
+        with conn:
+            yield conn
+    finally:
+        conn.close()
+
 # sqlite database setup
 def init_db():
     try:
-        with sqlite3.connect(DB) as conn:
+        with get_db() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users(
@@ -41,10 +52,12 @@ def init_db():
             """)
             try:
                 cursor.execute("ALTER TABLE users ADD COLUMN ai_usage INTEGER DEFAULT 0")
+            except sqlite3.OperationalError:
+                pass
+            try:
                 cursor.execute("ALTER TABLE users ADD COLUMN last_reset_date TEXT")
             except sqlite3.OperationalError:
                 pass
-            conn.commit()
     except sqlite3.OperationalError as e:
         print("[log] failed to connect with sqlite database:", e)
 
@@ -54,21 +67,20 @@ init_db()
 
 
 def create_user(username, email, password):
-    with sqlite3.connect(DB) as conn:
+    with get_db() as conn:
         hashed = hash_password(password)
         try:
             conn.execute(
                 "INSERT INTO users (username, email, password, saved_codes) VALUES (?, ?, ?, ?)",
                 (username, email, hashed, "[]"),
             )
-            conn.commit()
             return True
         except sqlite3.IntegrityError:
-            return False  
+            return False
 
 
 def login_user(email, password):
-    with sqlite3.connect(DB) as conn:
+    with get_db() as conn:
         user = conn.execute(
             "SELECT username, password FROM users WHERE email = ?", (email,)
         ).fetchone()
@@ -81,14 +93,14 @@ def login_user(email, password):
 
 
 def verify_token(token):
-    with sqlite3.connect(DB) as conn:
+    with get_db() as conn:
         return conn.execute(
             "SELECT username FROM users WHERE token = ?", (token,)
         ).fetchone()
 
 
 def save_user_code(token, name, code):
-    with sqlite3.connect(DB) as conn:
+    with get_db() as conn:
         user = conn.execute("SELECT email FROM users WHERE token = ?", (token,)).fetchone()
         if not user:
             return False
@@ -100,7 +112,7 @@ def save_user_code(token, name, code):
 
 
 def get_user_codes(token):
-    with sqlite3.connect(DB) as conn:
+    with get_db() as conn:
         user = conn.execute("SELECT email FROM users WHERE token = ?", (token,)).fetchone()
         if not user:
             return []
@@ -110,7 +122,7 @@ def get_user_codes(token):
 
 
 def delete_user_code(token, code_id):
-    with sqlite3.connect(DB) as conn:
+    with get_db() as conn:
         user = conn.execute("SELECT email FROM users WHERE token = ?", (token,)).fetchone()
         if not user:
             return False
@@ -127,7 +139,7 @@ from config import CHAT_PROMPT_LIMIT
 
 def check_and_increment_ai_usage(token: Optional[str], ip_address: str) -> bool:
     today = date.today().isoformat()
-    with sqlite3.connect(DB) as conn:
+    with get_db() as conn:
         if token:
             user = conn.execute(
                 "SELECT email, ai_usage, last_reset_date FROM users WHERE token = ?", (token,)
