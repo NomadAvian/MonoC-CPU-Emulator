@@ -39,7 +39,8 @@ To run locally you need to have the following installed:
    ```
 
 ## Build
-You can also use MonoC via [Docker](https://docs.docker.com/get-started/). For detailed guide check [hosting & usage guide](docs/hosting.md#hosting--usage-guide).
+
+Build from scratch after downloading dependencies. 
 
 ```bash
 git clone https://github.com/NomadAvian/MonoC-CPU-Emulator
@@ -48,6 +49,8 @@ chmod +x start_monoc.sh
 ./start_monoc.sh 
 ```
 Then open `http://localhost:5173` in your browser.
+
+You can also use MonoC via [Docker](https://docs.docker.com/get-started/). For detailed guide check [hosting & usage guide](docs/hosting.md#hosting--usage-guide).
 
 ## Architecture Diagram
 
@@ -58,16 +61,24 @@ Then open `http://localhost:5173` in your browser.
 
 ## Tech Stack
 - **Emulator**: C++20 from-scratch RV32 core (fetch / decode / execute), ALU with the M-extension, sparse unified RAM hosting a memory-mapped framebuffer
-- **Assembler**: supports pseudo-instructions, labels, data directives and predefined constants (e.g. SCREEN).
+- **Assembler**: Supports pseudo-instructions, labels, data directives and predefined constants (e.g. SCREEN).
 - **Backend**: [Crow](https://crowcpp.org/) C++ REST server; each client session owns an isolated `SessionInstance` (CPU + per-session ROM + console I/O payload) managed by a thread-safe session registry.
-- **Frontend**: React + Vite single-page app; Zustand stores for editor/emulator/console/memory state, CodeMirror editor (`@uiw/react-codemirror`), `motion` for panel animations.
-- **AI service**: Python FastAPI microservice running a local LLM via Ollama (Gemini as fallback), wired to the emulator through tool calls so it can inspect live CPU state.
+- **Frontend**: `React` + `Vite` single-page app; `Zustand` stores for editor/emulator/console/memory state, CodeMirror editor (`@uiw/react-codemirror`), `motion` for panel animations.
+- **AI Service**: Python `FastAPI` microservice running user-configurable local LLM via `Ollama` or `Gemini` API, connected to the emulator through [`MCP server`](docs/mcp_server.md) so it can inspect live CPU state.
+- **Deployment**: Containerized with `Docker` and deployed on VPS using `Caddy` as reverse proxy with `CI/CD`.
 
 <br>
 <div align="center">
-  <img src="docs/assets/ai_preview.png" alt="Preview of MCP Server & AI" width="800">
+  <img src="docs/assets/ai_preview_v2.png" alt="Preview of MCP Server & AI" width="800">
   <p><em>Integrated AI assistant powered by MCP</em></p>
 </div>
+
+## Docs
+
+- [API Diagrams](docs/api.md)
+- [MCP Server](docs/mcp_server.md)
+- [System Prompt](docs/system_prompt.md)
+- [Hosting & Usage Guide](docs/hosting.md)
 
 ## References
 

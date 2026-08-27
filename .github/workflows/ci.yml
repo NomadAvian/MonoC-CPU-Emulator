@@ -15,6 +15,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check sensitive files
+        run: |
+          echo "Checking sensitive files..."
+
+          if ! git check-ignore -q .env || git ls-files | grep -qE '(^|/)(\.env|\.env\.(?!example$).*|\.secrets?$|\.secrets/|.*\.pem|.*\.key|.*\.secret|.*\.secrets)$'; then
+            echo "ERROR: .env is not ignored or sensitive files are tracked by git"
+            exit 1
+          fi
+          echo "Sensitive file check passed."
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:

@@ -15,9 +15,8 @@ Before choosing a deployment mode, pick your AI strategy and set the relevant va
 
 Gemini works with **any** deployment mode below. OmniRoute works with `omni` Docker profile but can be configured manually in any mode.
 
----
 
-## Local Native (No Docker)
+## 1. Local Native (No Docker)
 
 **Best for:** Personal usage on your own machine.
 
@@ -28,11 +27,9 @@ Follow the [build instructions](../README.md#build) to compile and run natively.
 
 ---
 
-## Docker Deployment
+## 2. Docker Deployment
 
-The stack is managed via Docker Compose profiles. The core services (frontend, backend, CPU emulator, and proxy) always start. Append `--profile <name>` to use optional configurations.
-
-### Base Profile
+The stack is managed via Docker Compose profiles. The core services (frontend, backend, CPU emulator, and proxy) always start. Append `--profile <name>` to use optional configurations (omni, ollama).
 
 ```bash
 docker compose up -d
@@ -40,9 +37,8 @@ docker compose up -d
 
 **Use when:** Don't require AI. Only want to use the CPU emulator. Equivalent to [Local Native](#local-native-no-docker) but cleaner.
 
-#### Connecting to Ollama from the Base Profile
-
-**Ollama running natively on the same host:**
+#### 2.1 Ollama running natively on the same host:
+---
 
 ```bash
 # In your .env:
@@ -51,7 +47,17 @@ OLLAMA_HOST=http://host.docker.internal:11434
 
 > **Mac note:** Docker on macOS cannot access the GPU. This is the recommended Ollama setup for Mac — run the [Ollama app](https://ollama.com) natively and point the Base Profile at it via `host.docker.internal`.
 
-**Ollama running on a different machine (LAN or Tailscale):**
+#### 2.2 Ollama running inside Docker
+---
+
+```bash
+OLLAMA_HOST=http://ollama:11434
+```
+
+In this case, you do not need to start host-level Ollama with OLLAMA_HOST="0.0.0.0" because the containers communicate through the Docker network.
+
+#### 2.3 Ollama running on a different machine (LAN or Tailscale):
+---
 
 First, on the **Ollama host machine**, start the server bound to all interfaces:
 
@@ -60,7 +66,7 @@ env OLLAMA_HOST="0.0.0.0" ollama serve
 ```
 
 > [!WARNING]
-> By default, Ollama strictly blocks all traffic that does NOT originate from `127.0.0.1`. That's why Ollama must be started with `env OLLAMA_HOST="0.0.0.0" ollama serve`.
+> By default, Ollama strictly blocks all traffic that does NOT originate from `127.0.0.1`/`localhost`. Thus Ollama must be started with `env OLLAMA_HOST="0.0.0.0" ollama serve`.
 
 Then in your `.env` on the machine running Docker:
 
@@ -71,9 +77,10 @@ OLLAMA_HOST=http://<host-ip>:11434
 
 > **Tip:** [Tailscale](https://tailscale.com/) is the easiest way to securely connect a cloud VPS to a home PC running Ollama without opening router ports.
 
----
 
-### Omni Profile
+## 3. Profile Based
+
+### 3.1 Omni Profile
 
 ```bash
 docker compose --profile omni up -d
@@ -87,13 +94,13 @@ docker compose --profile omni up -d
 
 ---
 
-### Ollama Profile
+### 3.2 Ollama Profile
 
 ```bash
 docker compose --profile ollama up -d
 ```
 
-**Use when:** You want Ollama running **inside Docker** on a Linux machine with GPU passthrough.
+**Use when:** You want Ollama running **inside Docker**. Clean installation on devices without GPU.
 
 - Spins up the official `ollama` container and links it to the backend automatically.
 - Set `OLLAMA_MODEL` in `.env` to choose the model.

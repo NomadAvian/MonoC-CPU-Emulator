@@ -126,6 +126,7 @@ Jump:    jal jalr, ret
 Upper:   lui auipc
 Env:     ecall ebreak fence
 Pseudo:  li la mv j nop call ret ble bgt bleu bgtu
+(WARNING: Do NOT use standard pseudo-branches like bnez, beqz, jz, jnz, etc. They are NOT supported by this assembler. Only use the exact pseudo-instructions listed above.)
 
 Syscalls (code in a7):
   1: PrintInt (a0=int)       4: PrintString (a0=addr)

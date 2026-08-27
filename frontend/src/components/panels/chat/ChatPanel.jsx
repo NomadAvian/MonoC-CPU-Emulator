@@ -130,6 +130,21 @@ export default function ChatPanel() {
 
       </div>
 
+      {useChatStore(s => s.contextualSuggestion) && (
+        <div className="chat-panel__context-suggestion">
+          <button 
+            className="chat-suggestion-chip"
+            onClick={() => {
+              sendMessage(useChatStore.getState().contextualSuggestion);
+              useChatStore.getState().setContextualSuggestion(null);
+            }}
+            disabled={isLoading}
+          >
+            Ask AI about this compilation error
+          </button>
+        </div>
+      )}
+
       {/* Input area */}
       <div className="chat-panel__input-wrap">
         <textarea

@@ -63,6 +63,8 @@ def init_db():
 
 
 # Run once on import
+import os
+os.makedirs(os.path.dirname(DB), exist_ok=True)
 init_db()
 
 
@@ -185,4 +187,3 @@ def check_and_increment_ai_usage(token: Optional[str], ip_address: str) -> bool:
             )
         conn.commit()
         return True
-
