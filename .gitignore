@@ -1,20 +1,22 @@
-*.nvim.lua
+# mandatory
+.env
 
+# ide + code editor
+*.nvim.lua
+*.zed
+*.gram
+
+# generated files
 *.exe
 *.obj
 *.o
-.env
-frontend/.env
-.zed
-.gram
 test_program.txt
 session_*.txt
 
+# modules & caches
 .DS_Store
-
 __pycache__/
 *.py[cod]
-
 .venv/
 venv/
 .python-version
@@ -24,5 +26,11 @@ build/
 
 Caddyfile
 
+# tests
 *.egg-info/
 .pytest_cache/
+
+# databases
+*.db
+*.sqlite3
+backend/db/

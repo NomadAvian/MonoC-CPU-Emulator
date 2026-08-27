@@ -382,3 +382,11 @@
   border-radius: var(--radius-sm);
   line-height: 1.4;
 }
+
+.chat-panel__context-suggestion {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}

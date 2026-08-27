@@ -3,6 +3,8 @@ import { fetchRegisters, stepCpu, resetCpu, compile } from '../api/cpu'
 import { useEditorStore } from './editorStore'
 import { useScreenStore } from './screenStore'
 import { useConsoleStore } from './consoleStore'
+import { useUIStore } from './uiStore'
+import { useChatStore } from './chatStore'
 import { disassembleWords } from '../../utils/disasm'
 
 // throttle framebuffer
@@ -127,6 +129,7 @@ export const useCPUStore = create((set, get) => ({
         instructions: disassembleWords(result.words ?? [], result.entry ?? 0),
       })
       consoleStore.writeSys('Compilation successful')
+      useChatStore.getState().setContextualSuggestion(null)
       await get().fetchRegisters()
       maybeRefreshScreen()
       maybeRefreshConsole(true)
@@ -135,6 +138,7 @@ export const useCPUStore = create((set, get) => ({
       set({ compiling: false })
       console.error('compilation failed:', error)
       consoleStore.writeSys(`Compilation failed: ${error.message}`)
+      useChatStore.getState().setContextualSuggestion(`How do I fix this compilation error: ${error.message}`)
       return { ok: false, error: error.message };
     }
   },
