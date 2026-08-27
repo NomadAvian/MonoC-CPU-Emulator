@@ -144,6 +144,8 @@ strlen_done:
     li   a7, 4
     li   a0, res_msg
     ecall
+    la   s1, 1
+    sub  s0, s0, s1
     mv   a0, s0
     li   a7, 1                   # print int syscall
     ecall
