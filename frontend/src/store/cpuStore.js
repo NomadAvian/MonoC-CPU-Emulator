@@ -130,8 +130,6 @@ export const useCPUStore = create((set, get) => ({
       })
       consoleStore.writeSys('Compilation successful')
       useChatStore.getState().setContextualSuggestion(null)
-      // for fresh run, make sure console panel is revealed
-      useUIStore.getState().armRevealOnOutput()
       await get().fetchRegisters()
       maybeRefreshScreen()
       maybeRefreshConsole(true)
@@ -140,12 +138,6 @@ export const useCPUStore = create((set, get) => ({
       set({ compiling: false })
       console.error('compilation failed:', error)
       consoleStore.writeSys(`Compilation failed: ${error.message}`)
-      // surface the error: expand the bottom panel and switch to the console
-      useUIStore.getState().openBottomWithTab('Console')
-      // pinpoint the failing source line in the editor
-      const lineMatch = error.message.match(/line (\d+)/)
-      const errorLine = lineMatch ? parseInt(lineMatch[1], 10) - 1 : null
-      useUIStore.getState().setCompileErrorLine(errorLine)
       useChatStore.getState().setContextualSuggestion(`How do I fix this compilation error: ${error.message}`)
       return { ok: false, error: error.message };
     }

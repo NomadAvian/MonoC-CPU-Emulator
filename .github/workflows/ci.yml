@@ -19,7 +19,7 @@ jobs:
         run: |
           echo "Checking sensitive files..."
 
-          if ! git check-ignore -q .env || git ls-files | grep -qE '(^|/)(\.env|\.env\.(?!example$).*|\.secrets?$|\.secrets/|.*\.pem|.*\.key|.*\.secret|.*\.secrets)$'; then
+          if ! git check-ignore -q .env || git ls-files | grep -qE '(^|/)(\.env|\.env\..*|\.secrets?$|\.secrets/|.*\.pem|.*\.key|.*\.secret|.*\.secrets)$'; then
             echo "ERROR: .env is not ignored or sensitive files are tracked by git"
             exit 1
           fi
