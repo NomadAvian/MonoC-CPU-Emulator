@@ -109,6 +109,13 @@ All registers are 32-bit.
 Memory is byte addressable and indices spans the length of unsigned 32 bit integer.
 Beyond that, the numbers overflow and wrap around.
 
+The screen module starts at 0x07FFD000 and has dimensions 128x96.
+Starting from this location, 12280 bytes are allocated to the screen.
+Each byte can be set to non-zero value to turn the corresponding pixel on.
+If it is zero, it is turned off.
+The assembler implements a custom keyword 'SCREEN', that points to the first memory index.
+It is mapped in the memory in row major form. 
+
 R-type:  add sub sll slt sltu xor srl sra or and
 M-ext:   mul mulh mulhsu mulhu div divu rem remu
 I-type:  addi slti sltiu xori ori andi slli srli srai
