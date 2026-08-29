@@ -21,13 +21,13 @@ def init_test_db():
 client = TestClient(app)
 
 def test_auth_flow():
-    res = client.post("/auth/signup", json={"username": "u1", "email": "e1@a.com", "password": "p1"})
+    res = client.post("/auth/signup", json={"username": "u1", "email": "e1@a.com", "password": "password123"})
     assert res.json().get("success") is True
     
-    res = client.post("/auth/signup", json={"username": "u2", "email": "e1@a.com", "password": "p1"})
+    res = client.post("/auth/signup", json={"username": "u2", "email": "e1@a.com", "password": "password123"})
     assert res.status_code == 400
 
-    res = client.post("/auth/login", json={"email": "e1@a.com", "password": "p1"})
+    res = client.post("/auth/login", json={"email": "e1@a.com", "password": "password123"})
     assert "token" in res.json()
 
 @patch("main._do_chat", new_callable=AsyncMock)
