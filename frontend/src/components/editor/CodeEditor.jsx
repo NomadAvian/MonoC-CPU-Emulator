@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { basicSetup } from 'codemirror'
 import { EditorView, keymap } from '@codemirror/view'
-import { indentWithTab, defaultKeymap, history, historyKeymap } from '@codemirror/commands'
+import { defaultKeymap, history, historyKeymap, indentMore, indentLess } from '@codemirror/commands'
 import { EditorState, Compartment } from '@codemirror/state'
 import { indentUnit } from '@codemirror/language'
 
@@ -10,6 +10,21 @@ import { useEditorStore } from '../../store/editorStore'
 import { useSettingsStore } from '../../store/settingsStore'
 import './CodeEditor.css'
 
+
+// Tab inserts the configured indent unit at the cursor (indentWithTab/indentMore
+// instead shift every selected line right, which reads as moving the whole line).
+const indentAtCursor = {
+  key: 'Tab',
+  run: ({ state, dispatch }) => {
+    if (state.readOnly) return false
+    // Any non-empty selection indents the affected lines rather than replacing
+    // the selected text with spaces.
+    if (state.selection.ranges.some(r => !r.empty)) return indentMore({ state, dispatch })
+    dispatch(state.update(state.replaceSelection(state.facet(indentUnit)), { scrollIntoView: true, userEvent: 'input' }))
+    return true
+  },
+  shift: ({ state, dispatch }) => indentLess({ state, dispatch }),
+}
 
 // ─── Component ──────────────────────────────────────────────
 
@@ -47,7 +62,7 @@ export default function CodeEditor() {
         keymap.of([
           ...defaultKeymap,
           ...historyKeymap,
-          indentWithTab,
+          indentAtCursor,
         ]),
       ],
     })
