@@ -53,6 +53,12 @@
   border-left-color: var(--cyan) !important;
 }
 
+/* line the compiler reported an error on */
+.cm-editor .cm-error-line {
+  background-color: rgba(229, 57, 53, 0.12) !important;
+  box-shadow: inset 2px 0 0 var(--danger, #e53935);
+}
+
 /* Autocomplete Tooltip overrides */
 .cm-tooltip {
   background-color: var(--bg-elevated) !important;

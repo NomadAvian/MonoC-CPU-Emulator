@@ -130,6 +130,8 @@ export const useCPUStore = create((set, get) => ({
       })
       consoleStore.writeSys('Compilation successful')
       useChatStore.getState().setContextualSuggestion(null)
+      // for fresh run, make sure console panel is revealed
+      useUIStore.getState().armRevealOnOutput()
       await get().fetchRegisters()
       maybeRefreshScreen()
       maybeRefreshConsole(true)
@@ -140,6 +142,10 @@ export const useCPUStore = create((set, get) => ({
       consoleStore.writeSys(`Compilation failed: ${error.message}`)
       // surface the error: expand the bottom panel and switch to the console
       useUIStore.getState().openBottomWithTab('Console')
+      // pinpoint the failing source line in the editor
+      const lineMatch = error.message.match(/line (\d+)/)
+      const errorLine = lineMatch ? parseInt(lineMatch[1], 10) - 1 : null
+      useUIStore.getState().setCompileErrorLine(errorLine)
       useChatStore.getState().setContextualSuggestion(`How do I fix this compilation error: ${error.message}`)
       return { ok: false, error: error.message };
     }
@@ -161,6 +167,8 @@ export const useCPUStore = create((set, get) => ({
       // suspend cpu on read ecall
       if (get().running && get().waiting) {
         set({ resumeOnInput: true, running: false, status: 'stopped' })
+        // auto-expand console + focus the input so the user can type immediately
+        useUIStore.getState().openBottomWithTab('Console')
       }
       return true
     } catch (error) {
@@ -213,6 +221,7 @@ export const useCPUStore = create((set, get) => ({
     try {
       await resetCpu()
       set({ status: 'stopped', changedRegisters: new Set(), halted: false, waiting: false, resumeOnInput: false })
+      useUIStore.getState().setCompileErrorLine(null)
       useConsoleStore.getState().reset()
       await get().fetchRegisters(false)
       maybeRefreshScreen()

@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react'
 import { basicSetup } from 'codemirror'
-import { EditorView, keymap } from '@codemirror/view'
+import { EditorView, keymap, Decoration } from '@codemirror/view'
 import { defaultKeymap, history, historyKeymap, indentMore, indentLess } from '@codemirror/commands'
-import { EditorState, Compartment } from '@codemirror/state'
+import { EditorState, Compartment, StateEffect, StateField } from '@codemirror/state'
 import { indentUnit } from '@codemirror/language'
 
 import { riscv } from './riscvLang'
 import { useEditorStore } from '../../store/editorStore'
 import { useSettingsStore } from '../../store/settingsStore'
+import { useUIStore } from '../../store/uiStore'
 import './CodeEditor.css'
 
 
@@ -29,6 +30,18 @@ const indentAtCursor = {
 // disable browsers native find
 const disableFind = { key: 'Mod-f', run: () => true }
 
+// highlight the line with compile error
+const setErrorLine = StateEffect.define()
+const errorLineField = StateField.define({
+  create: () => Decoration.none,
+  update(deco, tr) {
+    deco = deco.map(tr.changes)
+    for (const e of tr.effects) if (e.is(setErrorLine)) deco = e.value
+    return deco
+  },
+  provide: f => EditorView.decorations.from(f),
+})
+
 // ─── Component ──────────────────────────────────────────────
 
 export default function CodeEditor() {
@@ -44,6 +57,7 @@ export default function CodeEditor() {
   const fontStyle = useSettingsStore(s => s.fontStyle)
   const editorFontSize = useSettingsStore(s => s.editorFontSize)
   const tabSize   = useSettingsStore(s => s.tabSize)
+  const compileErrorLine = useUIStore(s => s.compileErrorLine)
 
   // ── INIT: create the CodeMirror editor instance ──
   useEffect(() => {
@@ -54,6 +68,7 @@ export default function CodeEditor() {
         basicSetup,
         riscv,
         history(),
+        errorLineField,
         EditorView.lineWrapping,
         tabSizeCompartment.current.of([
           EditorState.tabSize.of(tabSize),
@@ -104,6 +119,21 @@ export default function CodeEditor() {
       })
     }
   }, [tabSize])
+
+  // ── COMPILE ERROR: underline + jump to the failing source line ──
+  useEffect(() => {
+    const view = viewRef.current
+    if (!view) return
+    const lineNo = compileErrorLine
+    if (lineNo == null || lineNo < 0 || lineNo >= view.state.doc.lines) {
+      view.dispatch({ effects: setErrorLine.of(Decoration.none) })
+      return
+    }
+    const line = view.state.doc.line(lineNo + 1)
+    const deco = Decoration.line({ class: 'cm-error-line' }).range(line.from)
+    view.dispatch({ effects: setErrorLine.of(Decoration.set([deco])) })
+    view.dispatch({ effects: EditorView.scrollIntoView(line.from), selection: { anchor: line.from } })
+  }, [compileErrorLine])
 
   return (
     <div

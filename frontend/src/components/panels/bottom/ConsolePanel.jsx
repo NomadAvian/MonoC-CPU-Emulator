@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useConsoleStore } from '../../../store/consoleStore'
 import { useCPUStore } from '../../../store/cpuStore'
+import { useUIStore } from '../../../store/uiStore'
 import './ConsolePanel.css'
 
 export default function ConsolePanel() {
@@ -10,8 +11,17 @@ export default function ConsolePanel() {
   const poll = useConsoleStore(s => s.poll)
   const openConsole = useConsoleStore(s => s.openConsole)
   const closeConsole = useConsoleStore(s => s.closeConsole)
+  const waiting = useCPUStore(s => s.waiting)
   const bottomRef = useRef(null)
+  const inputRef = useRef(null)
   const [input, setInput] = useState('')
+
+  // when CPU waits for input, ensure the console is visible + focused
+  useEffect(() => {
+    if (waiting && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [waiting])
 
   // opening/closing the tab gates polling in the console store
   useEffect(() => {
@@ -60,13 +70,13 @@ export default function ConsolePanel() {
         <form className="console-panel__line console-panel__line--in" onSubmit={handleSubmit}>
           <span className="console-panel__prompt">&gt;</span>
           <input
+            ref={inputRef}
             className="console-panel__input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder=""
             spellCheck={false}
             autoComplete="off"
-            autoFocus
           />
         </form>
         <div ref={bottomRef} />
