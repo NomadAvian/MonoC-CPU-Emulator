@@ -72,13 +72,14 @@ export default function AuthModal({ onClose }) {
           onChange={handleEmailChange} 
           required 
         />
-        <input 
-          type="password" 
-          className="ui-input" 
-          placeholder="Password" 
-          value={password} 
-          onChange={handlePasswordChange} 
-          required 
+        <input
+          type="password"
+          className="ui-input"
+          placeholder={isLogin ? "Password" : "Password (min 8 chars)"}
+          value={password}
+          onChange={handlePasswordChange}
+          minLength={isLogin ? undefined : 8}
+          required
         />
         
         <button

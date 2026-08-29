@@ -2,6 +2,10 @@ import { create } from 'zustand'
 
 const API_URL = import.meta.env.VITE_AI_API_URL ?? 'http://localhost:8000'
 
+function authHeaders(token) {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+}
+
 export const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem('auth_user')) || null,
   token: localStorage.getItem('auth_token') || null,
@@ -30,18 +34,32 @@ export const useAuthStore = create((set) => ({
       let msg = "Signup failed";
       try {
         const errorData = await res.json();
-        msg = errorData.detail || msg;
+        if (typeof errorData.detail === 'string') {
+          msg = errorData.detail;
+        } else if (Array.isArray(errorData.detail) && errorData.detail.length > 0) {
+          msg = errorData.detail.map(d => d.msg || 'Invalid input').join(', ');
+        }
       } catch (e) {
         console.warn('Failed to parse error response as JSON:', e)
       }
       throw new Error(msg);
     }
 
-    // Auto login after signup by delegating to login
     await useAuthStore.getState().login(email, password);
   },
 
-  logout: () => {
+  logout: async () => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      try {
+        await fetch(`${API_URL}/auth/logout`, {
+          method: 'POST',
+          headers: authHeaders(token),
+        });
+      } catch (e) {
+        // server unreachable — clear client state anyway
+      }
+    }
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
     set({ token: null, user: null });
@@ -52,8 +70,8 @@ export const useAuthStore = create((set) => ({
     if (!token) throw new Error("Must be logged in to save code");
     const res = await fetch(`${API_URL}/user/codes`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, name, code })
+      headers: authHeaders(token),
+      body: JSON.stringify({ name, code })
     });
     if (res.status === 401) {
       useAuthStore.getState().logout();
@@ -65,7 +83,9 @@ export const useAuthStore = create((set) => ({
   fetchSavedCodes: async () => {
     const token = localStorage.getItem('auth_token');
     if (!token) return [];
-    const res = await fetch(`${API_URL}/user/codes?token=${encodeURIComponent(token)}`);
+    const res = await fetch(`${API_URL}/user/codes`, {
+      headers: authHeaders(token),
+    });
     if (res.status === 401) {
       useAuthStore.getState().logout();
       return [];
@@ -80,8 +100,8 @@ export const useAuthStore = create((set) => ({
     if (!token) throw new Error("Must be logged in to delete code");
     const res = await fetch(`${API_URL}/user/codes/delete`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, id })
+      headers: authHeaders(token),
+      body: JSON.stringify({ id })
     });
     if (res.status === 401) {
       useAuthStore.getState().logout();

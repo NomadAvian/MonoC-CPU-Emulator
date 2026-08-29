@@ -1,10 +1,12 @@
 import warnings
 warnings.filterwarnings("ignore")
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from fastapi import HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from pydantic import BaseModel, Field
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from config import CORS_ORIGINS
 from chat.ollama import chat as ollama_chat
@@ -13,8 +15,24 @@ from chat.gemini import chat as gemini_chat
 import db
 from typing import Optional
 
-# CORS policy management
+def get_real_ip(request: Request) -> str:
+    """
+    Extract real client IP from X-Forwarded-For header when behind reverse proxy.
+    Falls back to direct client host if header is missing.
+    """
+    forwarded = request.headers.get("x-forwarded-for")
+    if forwarded:
+        # X-Forwarded-For can be a comma-separated list; first entry is the original client
+        return forwarded.split(",")[0].strip()
+    # Direct connection (dev mode) or no proxy header
+    return request.client.host if request.client else "unknown"
+
+limiter = Limiter(key_func=get_real_ip)
+
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
@@ -22,6 +40,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+security = HTTPBearer(auto_error=False)
+
+
+def _extract_token(creds: Optional[HTTPAuthorizationCredentials]) -> Optional[str]:
+    return creds.credentials if creds else None
+
+
+def _require_token(creds: Optional[HTTPAuthorizationCredentials] = Depends(security)) -> str:
+    token = _extract_token(creds)
+    if not token or not db.verify_token(token):
+        raise HTTPException(status_code=401, detail="Invalid or expired session token")
+    return token
 
 
 @app.get("/health")
@@ -73,9 +104,9 @@ async def chat_endpoint(request: ChatRequest, req: Request):
 
 # ----------- auth apis -----------
 class SignupRequest(BaseModel):
-    username: str
-    email: str
-    password: str
+    username: str = Field(..., min_length=1, max_length=64)
+    email: str = Field(..., min_length=3, max_length=254)
+    password: str = Field(..., min_length=8, max_length=72)
 
 
 class LoginRequest(BaseModel):
@@ -84,48 +115,56 @@ class LoginRequest(BaseModel):
 
 
 @app.post("/auth/signup")
-def signup(req: SignupRequest):
+@limiter.limit("10/minute")
+def signup(req: SignupRequest, request: Request):
     if not db.create_user(req.username, req.email, req.password):
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="Signup failed")
     return {"success": True}
 
 
 @app.post("/auth/login")
-def login(req: LoginRequest):
+@limiter.limit("10/minute")
+def login(req: LoginRequest, request: Request):
     res = db.login_user(req.email, req.password)
     if not res:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     return res
 
 
+@app.post("/auth/logout")
+def logout(creds: Optional[HTTPAuthorizationCredentials] = Depends(security)):
+    token = _extract_token(creds)
+    if token:
+        db.logout_user(token)
+    return {"success": True}
+
+
 # ----------- user apis ------------
 class SaveCodeRequest(BaseModel):
-    token: str
     name: str
     code: str
 
 
 @app.post("/user/codes")
-def save_code(req: SaveCodeRequest):
-    success = db.save_user_code(req.token, req.name, req.code)
+def save_code(req: SaveCodeRequest, token: str = Depends(_require_token)):
+    success = db.save_user_code(token, req.name, req.code)
     if not success:
         raise HTTPException(status_code=401, detail="Invalid session token")
     return {"success": True}
 
 
 @app.get("/user/codes")
-def get_codes(token: str):
+def get_codes(token: str = Depends(_require_token)):
     return {"codes": db.get_user_codes(token)}
 
 
 class DeleteCodeRequest(BaseModel):
-    token: str
     id: str
 
 
 @app.post("/user/codes/delete")
-def delete_code(req: DeleteCodeRequest):
-    success = db.delete_user_code(req.token, req.id)
+def delete_code(req: DeleteCodeRequest, token: str = Depends(_require_token)):
+    success = db.delete_user_code(token, req.id)
     if not success:
         raise HTTPException(status_code=400, detail="Failed to delete code")
     return {"success": True}
