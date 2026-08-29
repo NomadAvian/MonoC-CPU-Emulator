@@ -7,6 +7,17 @@ import sendIcon from '../../../assets/send-horizontal.svg'
 
 const MAX_TEXTAREA_HEIGHT = 140;
 
+const THINKING_MESSAGES = [
+  'Debating the ALU…',
+  'Counting Bits…',
+  'Reading registers, not minds…',
+  'Fighting with transistors…',
+  'Asking the assembler nicely…',
+  'Fetching, decoding, judging…',
+  'Checking redacted documents…',
+  'Waking up the MCP server…',
+]
+
 export default function ChatPanel() {
   // ── Refs ──
   const messagesEndRef = useRef(null)
@@ -14,12 +25,22 @@ export default function ChatPanel() {
 
   // ── Local State ──
   const [input, setInput] = useState('')
+  const [thinkingIndex, setThinkingIndex] = useState(0)
 
   // ── Store Selectors ──
   const messages    = useChatStore(s => s.messages)
   const isLoading   = useChatStore(s => s.isLoading)
   const sendMessage = useChatStore(s => s.sendMessage)
   const addToast    = useUIStore(s => s.addToast)
+
+  // rotate the thinking status
+  useEffect(() => {
+    if (!isLoading) return
+    const id = setInterval(() => {
+      setThinkingIndex(i => (i + 1) % THINKING_MESSAGES.length)
+    }, 3000)
+    return () => clearInterval(id)
+  }, [isLoading])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -80,7 +101,7 @@ export default function ChatPanel() {
               I'm your local AI assistant. I can write MonoC assembly, debug your code, or explain how this emulator works.
             </p>
             <div className="chat-panel__suggestions">
-              <button 
+              <button
                 className="chat-suggestion-chip"
                 onClick={() => sendMessage("Explain the UI layout")}
                 disabled={isLoading}
@@ -88,7 +109,7 @@ export default function ChatPanel() {
                 Explain the UI layout
               </button>
 
-              <button 
+              <button
                 className="chat-suggestion-chip"
                 onClick={() => sendMessage("Write a hello world program")}
                 disabled={isLoading}
@@ -96,7 +117,7 @@ export default function ChatPanel() {
                 Write a hello world program
               </button>
 
-              <button 
+              <button
                 className="chat-suggestion-chip"
                 onClick={() => sendMessage("What does line 10 do?")}
                 disabled={isLoading}
@@ -123,6 +144,7 @@ export default function ChatPanel() {
             <span className="chat-thinking__dot" />
             <span className="chat-thinking__dot" />
             <span className="chat-thinking__dot" />
+            <span className="chat-thinking__text">{THINKING_MESSAGES[thinkingIndex]}</span>
           </div>
         )}
 
@@ -132,7 +154,7 @@ export default function ChatPanel() {
 
       {useChatStore(s => s.contextualSuggestion) && (
         <div className="chat-panel__context-suggestion">
-          <button 
+          <button
             className="chat-suggestion-chip"
             onClick={() => {
               sendMessage(useChatStore.getState().contextualSuggestion);

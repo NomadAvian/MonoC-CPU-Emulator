@@ -8,6 +8,8 @@ const initialState = {
   rightWidth: 460,
   screenWidth: 420,
   bottomHeight: 204,
+  isBottomCollapsed: false,
+  bottomActiveTab: 'Console', // 'Console' | 'Disassembler'
   toasts: [],
 }
 
@@ -18,6 +20,12 @@ export const useUIStore = create((set) => ({
   setRightWidth: (rightWidth) => set({ rightWidth }),
   setScreenWidth: (screenWidth) => set({ screenWidth }),
   setBottomHeight: (bottomHeight) => set({ bottomHeight }),
+
+  toggleBottom: () => set((state) => ({ isBottomCollapsed: !state.isBottomCollapsed })),
+  setBottomActiveTab: (tab) => set({ bottomActiveTab: tab }),
+
+  // expand the bottom panel and switch to a given tab (e.g. show a compile error)
+  openBottomWithTab: (tab) => set({ isBottomCollapsed: false, bottomActiveTab: tab }),
 
   toggleLeft: () => set((state) => ({ isLeftOpen: !state.isLeftOpen })),
 

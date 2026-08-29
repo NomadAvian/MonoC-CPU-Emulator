@@ -1,29 +1,31 @@
-import { useState } from 'react'
 import './BottomPanel.css'
+import { useUIStore } from '../../store/uiStore'
 import Disassembler from '../panels/bottom/Disassembler'
 import ConsolePanel from '../panels/bottom/ConsolePanel'
 
 const TABS = ['Console', 'Disassembler']
 
 export default function BottomPanel({ style }) {
-  // ── Local State ──
-  const [activeTab, setActiveTab] = useState('Console')
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  // ── Store State ──
+  const activeTab    = useUIStore(s => s.bottomActiveTab)
+  const isCollapsed  = useUIStore(s => s.isBottomCollapsed)
+  const setActiveTab = useUIStore(s => s.setBottomActiveTab)
+  const toggleBottom = useUIStore(s => s.toggleBottom)
 
   // ── Handlers ──
   const handleTabClick = (tab) => {
     setActiveTab(tab)
     if (isCollapsed) {
-      setIsCollapsed(false)
+      toggleBottom()
     }
   }
 
   const handleCollapseClick = () => {
-    setIsCollapsed(!isCollapsed)
+    toggleBottom()
   }
 
-  const panelStyle = isCollapsed 
-    ? { ...style, height: '36px', minHeight: '36px' } 
+  const panelStyle = isCollapsed
+    ? { ...style, height: '36px', minHeight: '36px' }
     : style
 
   return (
