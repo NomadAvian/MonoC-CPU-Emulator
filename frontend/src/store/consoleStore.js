@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { fetchOutput, sendInput, clearConsole } from '../api/cpu'
+import { useUIStore } from './uiStore'
 
 const initialState = {
   lines: [],     // ordered transcript: [{ kind: 'in' | 'out', text }]
@@ -17,7 +18,6 @@ export const useConsoleStore = create((set, get) => ({
 
   // Fetches output and appends only the newly-produced portion as an entry.
   poll: async () => {
-    if (!get().isConsoleOpen) return
     if (get().loading) return
     set({ loading: true })
     try {
@@ -28,6 +28,10 @@ export const useConsoleStore = create((set, get) => ({
           lines: [...get().lines, { kind: 'out', text: delta }],
           lastLen: len,
         })
+        const uiState = useUIStore.getState()
+        if (uiState.revealOnOutput) {
+          uiState.consumeConsoleReveal()
+        }
       }
     } catch (error) {
       // silent: polling retries on the next tick, and output may simply not

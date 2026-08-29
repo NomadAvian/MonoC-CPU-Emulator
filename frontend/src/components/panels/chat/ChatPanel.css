@@ -354,6 +354,12 @@
   animation-delay: 0.4s;
 }
 
+.chat-thinking__text {
+  margin-left: 4px;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
 @keyframes thinking-pulse {
 
   0%,

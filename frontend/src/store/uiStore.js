@@ -8,7 +8,11 @@ const initialState = {
   rightWidth: 460,
   screenWidth: 420,
   bottomHeight: 204,
+  isBottomCollapsed: false,
+  bottomActiveTab: 'Console', // 'Console' | 'Disassembler'
   toasts: [],
+  compileErrorLine: null,
+  revealOnOutput: false,
 }
 
 export const useUIStore = create((set) => ({
@@ -19,10 +23,23 @@ export const useUIStore = create((set) => ({
   setScreenWidth: (screenWidth) => set({ screenWidth }),
   setBottomHeight: (bottomHeight) => set({ bottomHeight }),
 
+  toggleBottom: () => set((state) => ({ isBottomCollapsed: !state.isBottomCollapsed })),
+  setBottomActiveTab: (tab) => set({ bottomActiveTab: tab }),
+
+  // expand the bottom panel and switch to a given tab
+  openBottomWithTab: (tab) => set({ isBottomCollapsed: false, bottomActiveTab: tab }),
+  setCompileErrorLine: (compileErrorLine) => set({ compileErrorLine }),
+  armRevealOnOutput: () => set({ revealOnOutput: true }),
+
+  // if armed, expands the bottom panel onto the Console tab
+  consumeConsoleReveal: () => set((state) => {
+    if (!state.revealOnOutput) return {}
+    return { revealOnOutput: false, isBottomCollapsed: false, bottomActiveTab: 'Console' }
+  }),
+
   toggleLeft: () => set((state) => ({ isLeftOpen: !state.isLeftOpen })),
 
-  // opens the right panel on the given tab; clicking the entry for the
-  // already-active tab collapses the panel instead
+  // already active tab collapses the panel instead
   openRightTab: (tab) => set((state) => (
     state.isRightPanelOpen && state.activeRightTab === tab
       ? { isRightPanelOpen: false }
@@ -30,8 +47,7 @@ export const useUIStore = create((set) => ({
   )),
   closeRightPanel: () => set({ isRightPanelOpen: false }),
 
-  // plain open/close of the whole panel; the last-active tab is kept
-  // (defaults to 'docs' on a fresh session)
+  // defaults to docs on a fresh session
   toggleRightPanel: () => set((state) => ({ isRightPanelOpen: !state.isRightPanelOpen })),
 
   addToast: (message, type = 'info', duration = 3000) => {

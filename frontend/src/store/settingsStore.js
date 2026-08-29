@@ -7,6 +7,7 @@ const initialState = {
     fontStyle: 'Monospace',
     editorFontSize: 16,
     tabSize: 4,
+    showCompletionDocs: true,
 }
 
 export const useSettingsStore = create(
@@ -22,6 +23,7 @@ export const useSettingsStore = create(
             setFontStyle: (fontStyle) => set({ fontStyle }),
             setEditorFontSize: (editorFontSize) => set({ editorFontSize }),
             setTabSize: (tabSize) => set({ tabSize }),
+            setShowCompletionDocs: (showCompletionDocs) => set({ showCompletionDocs }),
 
             resetSettings: () => set(initialState),
         }),
