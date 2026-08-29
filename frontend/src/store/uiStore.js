@@ -26,16 +26,8 @@ export const useUIStore = create((set) => ({
   toggleBottom: () => set((state) => ({ isBottomCollapsed: !state.isBottomCollapsed })),
   setBottomActiveTab: (tab) => set({ bottomActiveTab: tab }),
 
-  // expand the bottom panel and switch to a given tab
+  // expand the bottom panel and switch to a given tab (e.g. show a compile error)
   openBottomWithTab: (tab) => set({ isBottomCollapsed: false, bottomActiveTab: tab }),
-  setCompileErrorLine: (compileErrorLine) => set({ compileErrorLine }),
-  armRevealOnOutput: () => set({ revealOnOutput: true }),
-
-  // if armed, expands the bottom panel onto the Console tab
-  consumeConsoleReveal: () => set((state) => {
-    if (!state.revealOnOutput) return {}
-    return { revealOnOutput: false, isBottomCollapsed: false, bottomActiveTab: 'Console' }
-  }),
 
   toggleLeft: () => set((state) => ({ isLeftOpen: !state.isLeftOpen })),
 

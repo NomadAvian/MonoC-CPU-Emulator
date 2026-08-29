@@ -154,7 +154,7 @@ export default function ChatPanel() {
 
       {useChatStore(s => s.contextualSuggestion) && (
         <div className="chat-panel__context-suggestion">
-          <button 
+          <button
             className="chat-suggestion-chip"
             onClick={() => {
               sendMessage(useChatStore.getState().contextualSuggestion);

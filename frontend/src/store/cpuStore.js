@@ -138,6 +138,8 @@ export const useCPUStore = create((set, get) => ({
       set({ compiling: false })
       console.error('compilation failed:', error)
       consoleStore.writeSys(`Compilation failed: ${error.message}`)
+      // surface the error: expand the bottom panel and switch to the console
+      useUIStore.getState().openBottomWithTab('Console')
       useChatStore.getState().setContextualSuggestion(`How do I fix this compilation error: ${error.message}`)
       return { ok: false, error: error.message };
     }

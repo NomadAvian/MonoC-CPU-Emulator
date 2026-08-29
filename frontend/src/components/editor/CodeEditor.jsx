@@ -27,6 +27,9 @@ const indentAtCursor = {
   shift: ({ state, dispatch }) => indentLess({ state, dispatch }),
 }
 
+// disable browsers native find
+const disableFind = { key: 'Mod-f', run: () => true }
+
 // ─── Component ──────────────────────────────────────────────
 
 export default function CodeEditor() {
@@ -66,6 +69,7 @@ export default function CodeEditor() {
           ...defaultKeymap,
           ...historyKeymap,
           indentAtCursor,
+          disableFind,
         ]),
       ],
     })
