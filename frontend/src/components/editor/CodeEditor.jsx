@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { basicSetup } from 'codemirror'
-import { EditorView, keymap } from '@codemirror/view'
+import { EditorView, keymap, Decoration } from '@codemirror/view'
 import { defaultKeymap, history, historyKeymap, indentMore, indentLess } from '@codemirror/commands'
-import { EditorState, Compartment } from '@codemirror/state'
+import { EditorState, Compartment, StateEffect, StateField } from '@codemirror/state'
 import { indentUnit } from '@codemirror/language'
 
 import { riscv } from './riscvLang'
@@ -29,6 +29,18 @@ const indentAtCursor = {
 
 // disable browsers native find
 const disableFind = { key: 'Mod-f', run: () => true }
+
+// highlight the line with compile error
+const setErrorLine = StateEffect.define()
+const errorLineField = StateField.define({
+  create: () => Decoration.none,
+  update(deco, tr) {
+    deco = deco.map(tr.changes)
+    for (const e of tr.effects) if (e.is(setErrorLine)) deco = e.value
+    return deco
+  },
+  provide: f => EditorView.decorations.from(f),
+})
 
 // ─── Component ──────────────────────────────────────────────
 
