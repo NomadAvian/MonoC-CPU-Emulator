@@ -1,30 +1,31 @@
-import { LanguageSupport, StreamLanguage, syntaxHighlighting, HighlightStyle } from '@codemirror/language'
-import { tags as t, Tag } from '@lezer/highlight'
 import { completeFromList } from '@codemirror/autocomplete'
+import { HighlightStyle, LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language'
+import { tags as t, Tag } from '@lezer/highlight'
 
-const riscvKeywords = [
-    'addi', 'slti', 'sltu', 'sltiu', 'andi', 'ori', 'xori',
-    'slli', 'srli', 'srai', 'lui', 'auipc', 'add', 'sub',
-    'slt', 'and', 'or', 'xor', 'sll', 'srl', 'sra', 'jal',
-    'jalr', 'ret', 'beq', 'bne', 'blt', 'bge', 'bltu', 'bgeu', 'lb',
-    'lh', 'lw', 'lbu', 'lhu', 'sb', 'sh', 'sw', 'fence', 'ecall',
-    'ebreak', 'mul', 'mulh', 'mulhsu', 'mulhu', 'div', 'divu',
-    'rem', 'remu', 'li', 'la', 'mv', 'j', 'nop', 'call', 'ble', 'bgt', 'bleu', 'bgtu'];
-
-const riscvRegisters = ['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9', 'x10', 'x11', 'x12', 'x13', 'x14', 'x15', 'x16', 'x17', 'x18', 'x19', 'x20', 'x21', 'x22', 'x23', 'x24', 'x25', 'x26', 'x27', 'x28', 'x29', 'x30', 'x31', 'zr', 'ra', 'sp', 'gp', 'tp', 't0', 't1', 't2', 't3', 't4', 't5', 't6', 's0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 'a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7'];
-const customKeywords = ['SCREEN']
+import { completionInfoFor, docFor, riscvHover } from './asmHover'
+import { customKeywords, riscvKeywords, riscvRegisters } from './riscvWords'
 
 // Register a real highlight tag on the shared tags object so CodeMirror can
 t.customKeyword = Tag.define('customKeyword')
 
+const completionDirectives = ['.text', '.data', '.word', '.string']
+
+// attach the docs entry (when there is one) so the popup shows the full docs tooltip
+const completion = (label, type) => {
+    const entry = docFor(label)
+    if (!entry) return { label, type }
+    return {
+        label,
+        type,
+        info: completionInfoFor(entry),
+    }
+}
+
 const completions = [
-    ...riscvKeywords.map(k => ({ label: k, type: 'keyword' })),
-    ...riscvRegisters.map(r => ({ label: r, type: 'variable' })),
-    ...customKeywords.map(k => ({ label: k, type: 'customKeyword'})),
-    { label: '.text', type: 'keyword' },
-    { label: '.data', type: 'keyword' },
-    { label: '.word', type: 'keyword' },
-    { label: '.string', type: 'keyword' },
+    ...riscvKeywords.map(k => completion(k, 'keyword')),
+    ...riscvRegisters.map(r => completion(r, 'variable')),
+    ...customKeywords.map(k => completion(k, 'customKeyword')),
+    ...completionDirectives.map(d => completion(d, 'keyword')),
 ]
 
 const riscvLanguage = StreamLanguage.define({
@@ -43,7 +44,7 @@ const riscvLanguage = StreamLanguage.define({
 
         if (stream.match(/\bx([0-9]|[12]\d|3[01])\b/)) return 'atom'
 
-        if (stream.match(/[(),:+\-]/)) return 'punctuation'
+        if (stream.match(/[(),:+-]/)) return 'punctuation'
 
         if (stream.match(/[a-zA-Z_][a-zA-Z0-9_]*(?=:)/)) return 'labelName'
 
@@ -80,4 +81,5 @@ export const riscv = new LanguageSupport(riscvLanguage, [
         autocomplete: completeFromList(completions)
     }),
     syntaxHighlighting(riscvHighlight),
+    riscvHover,
 ])

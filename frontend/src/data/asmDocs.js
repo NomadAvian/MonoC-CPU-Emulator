@@ -265,9 +265,14 @@ export const ASM_DOCS = [
         example: '# if (x1 == 0) { x2 = 1 } else { x2 = 2 }\n    bne  x1, zero, else_path  # if x1 != 0, skip to else\n    li   x2, 1                 # x1 == 0: set x2 = 1\n    j    if_end                # jump to end\nelse_path:\n    li   x2, 2                 # x1 != 0: set x2 = 2\nif_end:\n    # continue after if-else'
       },
       {
-        title: 'Conditional branches',
+        title: 'beq / bne / blt / bge / bltu / bgeu: conditional branches',
         desc: 'Branch instructions compare registers and jump if condition is true: beq (equal), bne (not equal), blt (less than), bge (greater or equal), bltu, bgeu (unsigned variants).',
         example: 'loop:\n    addi x1, x1, 1\n    blt x1, x10, loop  # if x1 < x10, jump to loop'
+      },
+      {
+        title: 'ble / bgt / bleu / bgtu: branch pseudo-instructions',
+        desc: 'Pseudo-instruction branch variants that expand into real (RV32I) branches.\n\nble (branch if less-or-equal), bgt (branch if greater), bleu, and bgtu are not native opcodes; MonoC assembles them by swapping the operands and negating the condition, e.g. ble x1, x2, label becomes bge x2, x1, label.',
+        example: 'ble x1, x2, loop   # if x1 <= x2, jump -> bge x2, x1, loop\nbgt x1, x2, loop   # if x1 >  x2, jump -> blt x2, x1, loop'
       },
       {
         title: 'Loop counter pattern',
@@ -286,7 +291,7 @@ export const ASM_DOCS = [
     category: 'Other Keywords',
     items: [
       {
-        title: 'Shift instructions: sll / srl / sra / slli / srli / srai',
+        title: 'sll / srl / sra / slli / srli / srai: shift instructions',
         desc: 'Shift left logical (sll/slli), shift right logical (srl/srli), and shift right arithmetic (sra/srai).\n\nRegister versions (sll, srl, sra) use the low 5 bits of rs2 as the shift amount; immediate versions (slli, srli, srai) use a 5-bit immediate.\n\nsra and srai preserve the sign bit when shifting right; srl and srli zero-fill.',
         example: 'slli x1, x2, 3          # x1 = x2 << 3\nsrli x1, x2, 2          # x1 = x2 >> 2  (logical, zero-fill)\nsrai x1, x2, 2          # x1 = x2 >> 2  (arithmetic, sign-extend)\nsll  x1, x2, x3         # x1 = x2 << (x3 & 0x1F)'
       },
@@ -294,6 +299,21 @@ export const ASM_DOCS = [
         title: 'auipc',
         desc: 'Add upper immediate to PC: loads a 20-bit immediate into the upper 20 bits, zeros the lower 12, and adds the result to the current program counter.\n\nPrimarily used for position-independent code and PC-relative addressing in linker-heavy scenarios; rarely needed in hand-written assembly.',
         example: 'auipc x1, 0             # x1 = PC + 0  (no-op in most cases)'
+      },
+      {
+        title: 'andi rd, rs1, imm',
+        desc: 'Bitwise AND of register rs1 with the sign-extended 12-bit immediate. Stores the result in rd.',
+        example: 'andi x1, x2, 0xFF       # x1 = x2 & 0xFF (keep low byte)'
+      },
+      {
+        title: 'fence',
+        desc: 'Memory-ordering barrier: ensures loads/stores issued before it complete before later ones execute. In the single-core emulator it is effectively a no-op, but it is part of the ISA and accepted by the assembler.',
+        example: 'fence                    # order preceding memory ops before following ones'
+      },
+      {
+        title: 'ret / mv / nop / call: pseudo-instructions',
+        desc: 'Pseudo-instructions that MonoC’s assembler expands into real instructions.\n\nret returns from a function, expanding to jalr x0, 0(ra).\nmv rd, rs copies a register, expanding to addi rd, rs, 0.\nnop does nothing, expanding to addi x0, x0, 0.\ncall label calls a function, expanding to auipc + jalr.',
+        example: 'mv  s0, a0           # s0 = a0\nret                # return from a function\ncall some_func     # call some_func\nnop                # no-op'
       }
     ]
     },

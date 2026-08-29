@@ -16,6 +16,7 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "uvicorn>=0.50.1",
     "bcrypt>=4.0.0",
+    "slowapi>=0.1.10",
 ]
 
 [project.optional-dependencies]

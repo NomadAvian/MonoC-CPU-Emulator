@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import './SettingsModal.css'
-import { useUIStore } from '../../../store/uiStore'
 import { useSettingsStore } from '../../../store/settingsStore'
 import ModalWrapper from '../../ui/ModalWrapper'
 
@@ -16,13 +15,14 @@ export default function SettingsModal({ onClose }) {
   const fontStyle = useSettingsStore(s => s.fontStyle)
   const editorFontSize = useSettingsStore(s => s.editorFontSize)
   const tabSize = useSettingsStore(s => s.tabSize)
-  const addToast = useUIStore(s => s.addToast)
+  const showCompletionDocs = useSettingsStore(s => s.showCompletionDocs)
 
   const setTheme = useSettingsStore(s => s.setTheme)
   const setFormat = useSettingsStore(s => s.setFormat)
   const setFontStyle = useSettingsStore(s => s.setFontStyle)
   const setEditorFontSize = useSettingsStore(s => s.setEditorFontSize)
   const setTabSize = useSettingsStore(s => s.setTabSize)
+  const setShowCompletionDocs = useSettingsStore(s => s.setShowCompletionDocs)
 
   // ── Local State ──
   const [draftTheme, setDraftTheme] = useState(theme === 'gruvbox' ? 'Gruvbox' : 'Catppuccin')
@@ -30,6 +30,7 @@ export default function SettingsModal({ onClose }) {
   const [draftFont, setDraftFont] = useState(fontStyle)
   const [draftFontSize, setDraftFontSize] = useState(editorFontSize)
   const [draftTab, setDraftTab] = useState(tabSize)
+  const [draftShowDocs, setDraftShowDocs] = useState(showCompletionDocs)
   const [saved, setSaved] = useState(false)
 
   // ── Handlers ──
@@ -63,6 +64,7 @@ export default function SettingsModal({ onClose }) {
     setEditorFontSize(finalSize)
     setDraftFontSize(finalSize) // update draft state with clamped value
     setTabSize(draftTab)
+    setShowCompletionDocs(draftShowDocs)
 
     setSaved(true)
     setTimeout(() => {
@@ -150,6 +152,23 @@ export default function SettingsModal({ onClose }) {
                 id={`tab-${opt}`}
                 className={`ui-button settings-modal__opt-btn ${draftTab === opt ? 'active' : ''}`}
                 onClick={() => handleTabChange(opt)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Completion Docs */}
+        <div className="settings-modal__field">
+          <label className="settings-modal__label">Completion Docs</label>
+          <div className="settings-modal__options">
+            {['On', 'Off'].map(opt => (
+              <button
+                key={opt}
+                id={`docs-${opt.toLowerCase()}`}
+                className={`ui-button settings-modal__opt-btn ${(opt === 'On') === draftShowDocs ? 'active' : ''}`}
+                onClick={() => setDraftShowDocs(opt === 'On')}
               >
                 {opt}
               </button>

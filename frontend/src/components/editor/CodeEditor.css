@@ -2,7 +2,7 @@
   width: 100%;
   height: 100%;
   background: var(--bg-base);
-  overflow: auto;
+  overflow: hidden;
   position: relative;
 }
 
@@ -53,6 +53,12 @@
   border-left-color: var(--cyan) !important;
 }
 
+/* line the compiler reported an error on */
+.cm-editor .cm-error-line {
+  background-color: rgba(229, 57, 53, 0.12) !important;
+  box-shadow: inset 2px 0 0 var(--danger, #e53935);
+}
+
 /* Autocomplete Tooltip overrides */
 .cm-tooltip {
   background-color: var(--bg-elevated) !important;
@@ -60,6 +66,15 @@
   border-radius: 6px !important;
   color: var(--text-base) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* tool tip hover style */
+:root .cm-editor .cm-tooltip,
+[data-theme="catppuccin"] .cm-editor .cm-tooltip {
+  background-color: #252a35 !important;
+}
+[data-theme="gruvbox"] .cm-editor .cm-tooltip {
+  background-color: #423c39 !important;
 }
 
 .cm-tooltip-autocomplete>ul {
@@ -78,5 +93,28 @@
 
 .cm-completionIcon {
   display: none !important;
-  /* hide default icons to keep it minimal and clean */
+}
+
+/* lsp style tool tip */
+.cm-tooltip-docs {
+  padding: 6px;
+  max-width: 440px;
+}
+
+.cm-tooltip-docs .docs-item {
+  margin: 0;
+}
+
+.cm-tooltip-docs .docs-item h4 {
+  font-size: var(--fs-sm);
+}
+
+.cm-tooltip-docs .docs-item p {
+  white-space: normal;
+}
+
+.cm-tooltip-docs .docs-item__example {
+  margin-top: 6px;
+  max-height: 160px;
+  overflow-y: auto;
 }

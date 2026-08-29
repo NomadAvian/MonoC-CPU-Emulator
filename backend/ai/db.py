@@ -3,6 +3,13 @@ import uuid
 import bcrypt
 from config import DB_PATH as DB
 from contextlib import contextmanager
+from datetime import datetime, timedelta, timezone
+
+TOKEN_TTL_DAYS = 7
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -58,6 +65,10 @@ def init_db():
                 cursor.execute("ALTER TABLE users ADD COLUMN last_reset_date TEXT")
             except sqlite3.OperationalError:
                 pass
+            try:
+                cursor.execute("ALTER TABLE users ADD COLUMN token_expires_at TEXT")
+            except sqlite3.OperationalError:
+                pass
     except sqlite3.OperationalError as e:
         print("[log] failed to connect with sqlite database:", e)
 
@@ -88,7 +99,11 @@ def login_user(email, password):
         ).fetchone()
         if user and verify_password(password, user[1]):
             token = str(uuid.uuid4())
-            conn.execute("UPDATE users SET token = ? WHERE email = ?", (token, email))
+            expires_at = (datetime.now(timezone.utc) + timedelta(days=TOKEN_TTL_DAYS)).isoformat()
+            conn.execute(
+                "UPDATE users SET token = ?, token_expires_at = ? WHERE email = ?",
+                (token, expires_at, email)
+            )
             conn.commit()
             return {"username": user[0], "token": token}
     return None
@@ -96,9 +111,23 @@ def login_user(email, password):
 
 def verify_token(token):
     with get_db() as conn:
-        return conn.execute(
-            "SELECT username FROM users WHERE token = ?", (token,)
+        row = conn.execute(
+            "SELECT username, token_expires_at FROM users WHERE token = ?", (token,)
         ).fetchone()
+        if not row:
+            return None
+        username, expires_at = row
+        if expires_at and datetime.fromisoformat(expires_at) < datetime.now(timezone.utc):
+            return None
+        return (username,)
+
+
+def logout_user(token):
+    with get_db() as conn:
+        conn.execute(
+            "UPDATE users SET token = NULL, token_expires_at = NULL WHERE token = ?", (token,)
+        )
+        conn.commit()
 
 
 def save_user_code(token, name, code):

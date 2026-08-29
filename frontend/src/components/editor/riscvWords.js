@@ -1,0 +1,23 @@
+// Shared token lists for the RISC-V language definition. Kept separate from
+// riscvLang.js so both the language (completion/highlighting) and the hover
+// docs can import them without a circular dependency.
+
+export const riscvKeywords = [
+    'addi', 'slti', 'sltu', 'sltiu', 'andi', 'ori', 'xori',
+    'slli', 'srli', 'srai', 'lui', 'auipc', 'add', 'sub',
+    'slt', 'and', 'or', 'xor', 'sll', 'srl', 'sra', 'jal',
+    'jalr', 'ret', 'beq', 'bne', 'blt', 'bge', 'bltu', 'bgeu', 'lb',
+    'lh', 'lw', 'lbu', 'lhu', 'sb', 'sh', 'sw', 'fence', 'ecall',
+    'ebreak', 'mul', 'mulh', 'mulhsu', 'mulhu', 'div', 'divu',
+    'rem', 'remu', 'li', 'la', 'mv', 'j', 'nop', 'call', 'ble', 'bgt', 'bleu', 'bgtu']
+
+export const riscvRegisters = ['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9', 'x10', 'x11', 'x12', 'x13', 'x14', 'x15', 'x16', 'x17', 'x18', 'x19', 'x20', 'x21', 'x22', 'x23', 'x24', 'x25', 'x26', 'x27', 'x28', 'x29', 'x30', 'x31', 'zr', 'ra', 'sp', 'gp', 'tp', 't0', 't1', 't2', 't3', 't4', 't5', 't6', 's0', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 'a0', 'a1', 'a2', 'a3', 'a4', 'a5', 'a6', 'a7']
+
+export const customKeywords = ['SCREEN']
+
+// Superset of directives that can appear as documentation titles (and be
+// hovered in the editor). The completion list in riscvLang.js is a subset.
+export const riscvDirectives = [
+    '.text', '.data', '.globl', '.word', '.half', '.byte',
+    '.ascii', '.asciiz', '.float', '.double', '.space', '.string',
+]
