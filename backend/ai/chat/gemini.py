@@ -33,14 +33,18 @@ def _to_gemini_contents(messages: list[dict]) -> list[types.Content]:
         )
     return contents
 
-async def chat(messages: list[dict], source: str) -> tuple[str, list[dict]]:
+async def chat(messages: list[dict], source: str, session_id: str) -> tuple[str, list[dict]]:
     contents = _to_gemini_contents(messages)
     tools_used = []
+
+    env = dict(os.environ)
+    if session_id:
+        env["MONOC_SESSION_ID"] = session_id
 
     server_params = StdioServerParameters(
         command=sys.executable,
         args=[_mcp_server_path],
-        env=dict(os.environ)
+        env=env
     )
 
     async with stdio_client(server_params) as (read, write):

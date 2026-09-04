@@ -1,12 +1,12 @@
 const API_URL = import.meta.env.VITE_AI_API_URL ?? 'http://localhost:8000'
 
-export async function sendPrompt(messages, source) {
+export async function sendPrompt(messages, source, session_id) {
   const token = localStorage.getItem('auth_token')
 
   const res = await fetch(`${API_URL}/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, source, token }),
+    body: JSON.stringify({ messages, source, token, session_id }),
   })
 
   if (!res.ok) {

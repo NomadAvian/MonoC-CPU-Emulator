@@ -6,10 +6,14 @@ mcp = FastMCP("MonoC-CPU")
 
 # get_source has been integrated inside the sdk of ai models for efficiency
 
+import os
+
 @mcp.tool()
 def read_registers() -> str:
     """Read all 32 cpu registers and the program counter."""
-    res = httpx.get(f"{CROW_BASE}/cpu/registers", timeout=5)
+    session_id = os.environ.get("MONOC_SESSION_ID", "")
+    headers = {"X-Session-Id": session_id} if session_id else {}
+    res = httpx.get(f"{CROW_BASE}/cpu/registers", headers=headers, timeout=5)
     return res.text
 
 @mcp.tool()

@@ -18,7 +18,7 @@ def _numbered(source: str) -> str:
 # if OLLAMA_HOST is set, connect to a remote ollama instance
 _ollama_kwargs = {"host": OLLAMA_HOST} if OLLAMA_HOST else {}
 
-async def chat(messages: list[dict], source: str):
+async def chat(messages: list[dict], source: str, session_id: str):
     # check ollama availability before starting mcp server
     client = AsyncClient(**_ollama_kwargs)
     try:
@@ -31,10 +31,14 @@ async def chat(messages: list[dict], source: str):
 
     tools_used = []
 
+    env = dict(os.environ)
+    if session_id:
+        env["MONOC_SESSION_ID"] = session_id
+
     server_params = StdioServerParameters(
         command=sys.executable,
         args=[_mcp_server_path],
-        env=dict(os.environ)
+        env=env
     )
 
     async with stdio_client(server_params) as (read, write):

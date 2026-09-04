@@ -5,7 +5,7 @@ const CROW_BASE = import.meta.env.VITE_CPU_API_URL ?? ''
 // so storing whatever comes back keeps the client self-healing
 const SESSION_KEY = 'monoc_session_id'
 
-function sessionId() {
+export function sessionId() {
   return localStorage.getItem(SESSION_KEY) || ''
 }
 
