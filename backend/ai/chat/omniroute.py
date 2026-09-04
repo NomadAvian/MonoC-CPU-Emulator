@@ -15,16 +15,20 @@ _mcp_server_path = os.path.join(os.path.dirname(__file__), "..", "mcp_server.py"
 def _numbered(source: str) -> str:
     return "\n".join(f"{i+1:3d} | {line}" for i, line in enumerate(source.split("\n")))
 
-async def chat(messages: list[dict], source: str):
+async def chat(messages: list[dict], source: str, session_id: str):
     if not messages or messages[0].get("role") != "system":
         messages = [{"role": "system", "content": SYSTEM_PROMPT}] + messages
 
     tools_used = []
 
+    env = dict(os.environ)
+    if session_id:
+        env["MONOC_SESSION_ID"] = session_id
+
     server_params = StdioServerParameters(
         command=sys.executable,
         args=[_mcp_server_path],
-        env=dict(os.environ)
+        env=env
     )
 
     async with stdio_client(server_params) as (read, write):

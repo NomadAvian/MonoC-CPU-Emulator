@@ -12,6 +12,9 @@ const DEFAULT_SOURCE = [
   '    li a0, 10       # load 10 into a0 register',
   '    li a1, 25       # load 25 into a1 register',
   '    add t0, a0, a1  # t0 = a0 + a1',
+  '',
+  '    li a7, 10       # syscall 10 (Exit)',
+  '    ecall           # halt the CPU',
 ].join('\n')
 
 export const useEditorStore = create(

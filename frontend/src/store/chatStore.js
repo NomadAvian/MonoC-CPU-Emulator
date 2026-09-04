@@ -3,6 +3,7 @@
 import { create } from 'zustand'
 import { sendPrompt } from '../api/ai';
 import { useEditorStore } from './editorStore';
+import { sessionId } from '../api/cpu';
 
 const initialState = {
   messages: [],
@@ -23,7 +24,7 @@ export const useChatStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const source = useEditorStore.getState().source;
-      const data = await sendPrompt(get().messages, source)
+      const data = await sendPrompt(get().messages, source, sessionId())
       if (!data.response && (!data.tools_used || data.tools_used.length === 0)) {
         get().addMessage('assistant', 'Error: AI returned an empty response. Please try again.');
       } else {

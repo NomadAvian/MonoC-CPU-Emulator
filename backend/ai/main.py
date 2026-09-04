@@ -64,17 +64,18 @@ class ChatRequest(BaseModel):
     messages: list[dict]
     source: str
     token: Optional[str] = None
+    session_id: Optional[str] = None
 
 
-async def _do_chat(messages: list[dict], source: str) -> tuple[str, list[str]]:
+async def _do_chat(messages: list[dict], source: str, session_id: str) -> tuple[str, list[str]]:
     try:
-        result, tools_used = await ollama_chat(messages, source)
+        result, tools_used = await ollama_chat(messages, source, session_id)
         print("[api] responded via Ollama")
         return result, tools_used
     except Exception as e:
         print(f"[api] Ollama unavailable, falling back to OmniRoute. Error: {e}")
         try:
-            result, tools_used = await omniroute_chat(messages, source)
+            result, tools_used = await omniroute_chat(messages, source, session_id)
             print("[api] responded via OmniRoute (fallback)")
             return result, tools_used
         except Exception as omniroute_e:
@@ -82,7 +83,7 @@ async def _do_chat(messages: list[dict], source: str) -> tuple[str, list[str]]:
             print(f"[api] OmniRoute unavailable, falling back to Gemini. Error:")
             traceback.print_exc()
             try:
-                result, tools_used = await gemini_chat(messages, source)
+                result, tools_used = await gemini_chat(messages, source, session_id)
                 print("[api] responded via Gemini (fallback)")
                 return result, tools_used
             except Exception as gemini_e:
@@ -98,7 +99,14 @@ async def chat_endpoint(request: ChatRequest, req: Request):
     ip_address = raw_ip.split(",")[0].strip() if raw_ip else "unknown"
     if not db.check_and_increment_ai_usage(request.token, ip_address):
         raise HTTPException(status_code=429, detail="Daily AI usage limit reached. Please try again tomorrow.")
-    result, tools_used = await _do_chat(request.messages, request.source)
+    
+    clean_messages = [{"role": m.get("role", "user"), "content": m.get("content", "")} for m in request.messages]
+    
+    result, tools_used = await _do_chat(clean_messages, request.source, request.session_id)
+    
+    if not result and not tools_used:
+        result = "I'm sorry, I couldn't generate a response. Could you try rephrasing your question?"
+        
     return {"response": result, "tools_used": tools_used}
 
 
